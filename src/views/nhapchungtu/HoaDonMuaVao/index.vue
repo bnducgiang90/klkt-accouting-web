@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import TableData from '../TableData'
+import TableData from '../../../components/TableData'
 
 export default {
   components: {

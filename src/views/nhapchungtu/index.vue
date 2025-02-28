@@ -1,16 +1,16 @@
 <template>
   <div id="page-container">
-    <el-tabs id="content-box" type="border-card">
-      <el-tab-pane label="Nhật ký chung">
+    <el-tabs id="content-box" v-model="activeTab" type="border-card" @tab-click="handleTabClick">
+      <el-tab-pane label="Nhật ký chung" name="TAB_NHAT_KY_CHUNG">
         <NhatKyChung />
       </el-tab-pane>
-      <el-tab-pane label="Hạch toán">
+      <el-tab-pane label="Hạch toán" name="TAB_HACH_TOAN">
         <HachToan />
       </el-tab-pane>
-      <el-tab-pane label="Nhập vật tư">
+      <el-tab-pane label="Nhập vật tư" name="TAB_VAT_TU">
         <NhapVatTu />
       </el-tab-pane>
-      <el-tab-pane label="Hóa đơn mua vào">
+      <el-tab-pane label="Hóa đơn mua vào" name="TAB_HOA_DON_MUA_VAO">
         <HoaDonMuaVao />
       </el-tab-pane>
     </el-tabs>
@@ -52,6 +52,7 @@ export default {
 
   data() {
     return {
+      activeTab: 'TAB_NHAT_KY_CHUNG' // Tab mặc định khi load trang
     }
   },
 
@@ -83,7 +84,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('nhapchungtu', ['togglePopup', 'loadKhachHang', 'loadNhaCungCap', 'loadTaiKhoan', 'loadHinhThucTT', 'handleRowSelected']),
+    ...mapActions('nhapchungtu', ['togglePopup', 'loadKhachHang', 'loadNhaCungCap', 'loadTaiKhoan', 'loadHinhThucTT', 'handleRowSelected', 'updateLoaiChungTu', 'updateTabType']),
     onSubmit() {
       console.log('submit!')
     },
@@ -96,9 +97,14 @@ export default {
     getLoaiChungTu() {
       const path = this.$route.path // Lấy đường dẫn hiện tại, ví dụ: /nhap/phieuchitienmat/index
       const parts = path.split('/') // Tách đường dẫn thành các phần
+      console.log(path)
+
       if (parts.length >= 3) {
-        this.loaiChungTu = parts[2] // Lấy phần tử thứ 2 (phieuchitienmat)
+        this.updateLoaiChungTu(parts[2]) // Cập nhật vào Vuex store
       }
+    },
+    handleTabClick(tab) {
+      this.updateTabType(tab.name) // Cập nhật state tabtype với giá trị tab hiện tại
     }
   },
   mounted() {

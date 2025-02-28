@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import TableData from '../TableData'
+import TableData from '../../../components/TableData'
 import { mapState, mapActions } from 'vuex'
 
 export default {

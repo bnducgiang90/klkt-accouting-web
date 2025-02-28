@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 const state = {
-  loaiChungTu: 1,
+  loaiChungTu: '',
+  tabtype: 'TAB_NHAT_KY_CHUNG',
   popup: {
     showPopup: false,
     popupCode: '',
@@ -65,6 +66,12 @@ const state = {
 }
 
 const mutations = {
+  SET_LOAI_CHUNG_TU(state, loaiChungTu) {
+    state.loaiChungTu = loaiChungTu
+  },
+  SET_TAB_TYPE(state, tabtype) {
+    state.tabtype = tabtype
+  },
   TOGGLE_POPUP(state, popupData) {
     state.popup = popupData
   },
@@ -127,6 +134,12 @@ const mutations = {
 }
 
 const actions = {
+  async updateLoaiChungTu({ commit }, loaiChungTu) {
+    commit('SET_LOAI_CHUNG_TU', loaiChungTu)
+  },
+  async updateTabType({ commit }, tabtype) {
+    commit('SET_TAB_TYPE', tabtype)
+  },
   async togglePopup({ commit }, type) {
     console.log('togglePopup: ' + type)
     if (type === 'TAIKHOAN') {
