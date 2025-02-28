@@ -18,11 +18,65 @@ const state = {
     selectedRow: {
     }
   },
+  columnKhachHangPopupTable: [
+    { prop: 'id', label: 'ID', width: '120px' },
+    { prop: 'cap', label: 'Cấp', width: '80px', align: 'center' },
+    { prop: 'mst', label: 'Mã số thuế', width: '100px' },
+    { prop: 'tenDonVi', label: 'Tên đơn vị', width: '250px' },
+    { prop: 'duNo', label: 'Dư nợ', width: '150px', align: 'right', format: 'currency' },
+    { prop: 'duCo', label: 'Dư có', width: '150px', align: 'right', format: 'currency' },
+    { prop: 'diaChi', label: 'Địa chỉ', width: '250px', wrapText: true },
+    { prop: 'huyen', label: 'Huyện', width: '150px' },
+    { prop: 'tinh', label: 'Tỉnh', width: '150px' },
+    { prop: 'dienThoai', label: 'Điện thoại', width: '120px' },
+    { prop: 'tenGiamDoc', label: 'Tên giám đốc', width: '180px' },
+    { prop: 'tenKeToan', label: 'Tên kế toán', width: '180px' },
+    { prop: 'linhVucKd', label: 'Lĩnh vực DK', width: '150px' },
+    { prop: 'khachHang', label: 'Khách hàng', width: '180px' },
+    { prop: 'nhaCungCap', label: 'Nhà cung cấp', width: '180px' },
+    { prop: 'taiKhoan', label: 'Tài khoản', width: '120px' },
+    { prop: 'nganHang', label: 'Ngân hàng', width: '200px' },
+    { prop: 'email', label: 'Địa chỉ Email', width: '200px' }
+  ],
   lstKhachHang: [],
+
+  columnNhaCungCapPopupTable: [
+    { prop: 'id', label: 'ID', width: '120px' },
+    { prop: 'cap', label: 'Cấp', width: '80px', align: 'center' },
+    { prop: 'mst', label: 'Mã số thuế', width: '100px' },
+    { prop: 'tenDonVi', label: 'Tên đơn vị', width: '250px' },
+    { prop: 'duNo', label: 'Dư nợ', width: '150px', align: 'right', format: 'currency' },
+    { prop: 'duCo', label: 'Dư có', width: '150px', align: 'right', format: 'currency' },
+    { prop: 'diaChi', label: 'Địa chỉ', width: '250px', wrapText: true },
+    { prop: 'huyen', label: 'Huyện', width: '150px' },
+    { prop: 'tinh', label: 'Tỉnh', width: '150px' },
+    { prop: 'dienThoai', label: 'Điện thoại', width: '120px' },
+    { prop: 'tenGiamDoc', label: 'Tên giám đốc', width: '180px' },
+    { prop: 'tenKeToan', label: 'Tên kế toán', width: '180px' },
+    { prop: 'linhVucKd', label: 'Lĩnh vực DK', width: '150px' },
+    { prop: 'khachHang', label: 'Khách hàng', width: '180px' },
+    { prop: 'nhaCungCap', label: 'Nhà cung cấp', width: '180px' },
+    { prop: 'taiKhoan', label: 'Tài khoản', width: '120px' },
+    { prop: 'nganHang', label: 'Ngân hàng', width: '200px' },
+    { prop: 'email', label: 'Địa chỉ Email', width: '200px' }
+  ],
   lstNhaCungCap: [],
+
+  columnTaiKhoanPopupTable: [
+    { prop: 'id', label: 'ID' },
+    { prop: 'name', label: 'Name' },
+    { prop: 'age', label: 'Age' }
+  ],
   lstTaiKhoan: [],
+
   lstHinhThucTT: [],
+
+  columnNguoiGiaoDichPopupTable: [
+    { prop: 'maNguoiGd', label: 'Mã người giao dịch', width: '100px' },
+    { prop: 'tenNguoiGd', label: 'Tên người giao dịch', width: '180px' }
+  ],
   lstNguoiGiaoDich: [],
+
   nhatKyChung: {
     chungTu: {
       sttgs: '123',
@@ -94,9 +148,9 @@ const mutations = {
     state.lstNguoiGiaoDich = data
   },
   UPDATE_NHAT_KY_CHUNG(state, data) {
-    if (state.popup.popupCode === 'DM_NHACUNGCAP') {
+    if (state.popup.popupCode === 'POPUP_NHACUNGCAP') {
       state.nhatKyChung.thongTinKhachHang.nhaCungCap = data.id
-    } else if (state.popup.popupCode === 'DM_KHACHHANG') {
+    } else if (state.popup.popupCode === 'POPUP_KHACHHANG') {
       state.nhatKyChung.chungTu.khachHang = data.id
     }
 
@@ -121,10 +175,8 @@ const mutations = {
     const existingRecord = state.hachToan.data.find(item => item.dongChungTu === newRecord.dongChungTu)
 
     if (existingRecord) {
-      // Nếu tìm thấy, cập nhật bản ghi đó
       Object.assign(existingRecord, newRecord)
     } else {
-      // Nếu không tìm thấy, thêm mới bản ghi
       state.hachToan.data.push(newRecord)
     }
   },
@@ -141,89 +193,46 @@ const actions = {
     commit('SET_TAB_TYPE', tabtype)
   },
   async togglePopup({ commit }, type) {
-    console.log('togglePopup: ' + type)
-    if (type === 'TAIKHOAN') {
+    if (type === 'POPUP_TAIKHOAN') {
       commit('TOGGLE_POPUP', {
         title: 'DANH MỤC TÀI KHOẢN',
         showPopup: true,
-        popupCode: 'DM_TAIKHOAN',
+        popupCode: type,
         width: '95%',
         fullscreen: false,
+        columns: state.columnTaiKhoanPopupTable,
         data: [
           { id: 1, name: 'Alice', age: 25 },
           { id: 2, name: 'Bob', age: 30 }
         ],
-        columns: [
-          { prop: 'id', label: 'ID' },
-          { prop: 'name', label: 'Name' },
-          { prop: 'age', label: 'Age' }
-        ],
         selectedRow: {
         }
       })
-    } else if (type === 'KHACHHANG') {
+    } else if (type === 'POPUP_KHACHHANG') {
       commit('TOGGLE_POPUP', {
         title: 'DANH MỤC KHÁCH HÀNG',
         showPopup: true,
-        popupCode: 'DM_KHACHHANG',
+        popupCode: type,
         width: '95%',
         fullscreen: false,
+        columns: state.columnKhachHangPopupTable,
         data: state.lstNhaCungCap,
-        columns: [
-          { prop: 'id', label: 'ID', width: '120px' },
-          { prop: 'cap', label: 'Cấp', width: '80px', align: 'center' },
-          { prop: 'mst', label: 'Mã số thuế', width: '100px' },
-          { prop: 'tenDonVi', label: 'Tên đơn vị', width: '250px' },
-          { prop: 'duNo', label: 'Dư nợ', width: '150px', align: 'right', format: 'currency' },
-          { prop: 'duCo', label: 'Dư có', width: '150px', align: 'right', format: 'currency' },
-          { prop: 'diaChi', label: 'Địa chỉ', width: '250px', wrapText: true },
-          { prop: 'huyen', label: 'Huyện', width: '150px' },
-          { prop: 'tinh', label: 'Tỉnh', width: '150px' },
-          { prop: 'dienThoai', label: 'Điện thoại', width: '120px' },
-          { prop: 'tenGiamDoc', label: 'Tên giám đốc', width: '180px' },
-          { prop: 'tenKeToan', label: 'Tên kế toán', width: '180px' },
-          { prop: 'linhVucKd', label: 'Lĩnh vực DK', width: '150px' },
-          { prop: 'khachHang', label: 'Khách hàng', width: '180px' },
-          { prop: 'nhaCungCap', label: 'Nhà cung cấp', width: '180px' },
-          { prop: 'taiKhoan', label: 'Tài khoản', width: '120px' },
-          { prop: 'nganHang', label: 'Ngân hàng', width: '200px' },
-          { prop: 'email', label: 'Địa chỉ Email', width: '200px' }
-        ],
         selectedRow: {
         }
       })
-    } else if (type === 'NHACUNGCAP') {
+    } else if (type === 'POPUP_NHACUNGCAP') {
       commit('TOGGLE_POPUP', {
         title: 'DANH MỤC NHÀ CUNG CẤP',
         showPopup: true,
-        popupCode: 'DM_NHACUNGCAP',
+        popupCode: type,
         width: '95%',
         fullscreen: false,
+        columns: state.columnNhaCungCapPopupTable,
         data: state.lstNhaCungCap,
-        columns: [
-          { prop: 'id', label: 'ID', width: '120px' },
-          { prop: 'cap', label: 'Cấp', width: '80px', align: 'center' },
-          { prop: 'mst', label: 'Mã số thuế', width: '100px' },
-          { prop: 'tenDonVi', label: 'Tên đơn vị', width: '250px' },
-          { prop: 'duNo', label: 'Dư nợ', width: '150px', align: 'right', format: 'currency' },
-          { prop: 'duCo', label: 'Dư có', width: '150px', align: 'right', format: 'currency' },
-          { prop: 'diaChi', label: 'Địa chỉ', width: '250px', wrapText: true },
-          { prop: 'huyen', label: 'Huyện', width: '150px' },
-          { prop: 'tinh', label: 'Tỉnh', width: '150px' },
-          { prop: 'dienThoai', label: 'Điện thoại', width: '120px' },
-          { prop: 'tenGiamDoc', label: 'Tên giám đốc', width: '180px' },
-          { prop: 'tenKeToan', label: 'Tên kế toán', width: '180px' },
-          { prop: 'linhVucKd', label: 'Lĩnh vực DK', width: '150px' },
-          { prop: 'khachHang', label: 'Khách hàng', width: '180px' },
-          { prop: 'nhaCungCap', label: 'Nhà cung cấp', width: '180px' },
-          { prop: 'taiKhoan', label: 'Tài khoản', width: '120px' },
-          { prop: 'nganHang', label: 'Ngân hàng', width: '200px' },
-          { prop: 'email', label: 'Địa chỉ Email', width: '200px' }
-        ],
         selectedRow: {
         }
       })
-    } else if (type === 'NGUOIGIAODICH') {
+    } else if (type === 'POPUP_NGUOIGIAODICH') {
       try {
         const mst = state.nhatKyChung.thongTinKhachHang.maSoThue // Mã số thuế cần tìm
         const response = await axios.get(`http://localhost:8080/api/nguoi-giao-dich/mst/${mst}`)
@@ -235,14 +244,11 @@ const actions = {
       commit('TOGGLE_POPUP', {
         title: 'DANH MỤC NGƯỜI GIAO DỊCH',
         showPopup: true,
-        popupCode: 'DM_NGUOIGIAODICH',
+        popupCode: type,
         width: '40%',
         fullscreen: false,
+        columns: state.columnNguoiGiaoDichPopupTable,
         data: state.lstNguoiGiaoDich,
-        columns: [
-          { prop: 'maNguoiGd', label: 'Mã người giao dịch', width: '100px' },
-          { prop: 'tenNguoiGd', label: 'Tên người giao dịch', width: '180px' }
-        ],
         selectedRow: {
         }
       })
@@ -286,16 +292,16 @@ const actions = {
   },
   async handleRowSelected({ commit }, payload) {
     try {
-      if (state.popup.popupCode === 'DM_NHACUNGCAP') {
+      if (state.popup.popupCode === 'POPUP_NHACUNGCAP') {
         // thay đổi giá trị cho ô input abc
         commit('UPDATE_NHAT_KY_CHUNG', payload)
         commit('CLOSE_POPUP')
-      } else if (state.popup.popupCode === 'DM_TAIKHOAN') {
+      } else if (state.popup.popupCode === 'POPUP_TAIKHOAN') {
         // thay đổi giá trị cho ô input abc
-      } else if (state.popup.popupCode === 'DM_KHACHHANG') {
+      } else if (state.popup.popupCode === 'POPUP_KHACHHANG') {
         commit('UPDATE_NHAT_KY_CHUNG', payload)
         commit('CLOSE_POPUP')
-      } else if (state.popup.popupCode === 'DM_NGUOIGIAODICH') {
+      } else if (state.popup.popupCode === 'POPUP_NGUOIGIAODICH') {
         commit('UPDATE_NGUOI_GIAO_DICH', payload)
         commit('CLOSE_POPUP')
       }

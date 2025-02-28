@@ -44,7 +44,7 @@
             <el-form-item class="center-btn" label-width="20px">
               <el-button
                 type="primary"
-                @click="togglePopup('KHACHHANG')"
+                @click="togglePopup('POPUP_KHACHHANG')"
               >...</el-button>
             </el-form-item>
           </div>
@@ -103,7 +103,7 @@
               <el-form-item class="center-btn" label-width="20px">
                 <el-button
                   type="primary"
-                  @click="togglePopup('TAIKHOAN')"
+                  @click="togglePopup('POPUP_TAIKHOAN')"
                 >...</el-button>
               </el-form-item>
               <el-form-item label="Ngân hàng" style="flex-grow: 1">
@@ -140,7 +140,7 @@
               <el-form-item class="center-btn" label-width="20px">
                 <el-button
                   type="primary"
-                  @click="togglePopup('NGUOIGIAODICH')"
+                  @click="togglePopup('POPUP_NGUOIGIAODICH')"
                 >...</el-button>
               </el-form-item>
             </div>
@@ -159,7 +159,7 @@
               <el-form-item class="center-btn" label-width="20px">
                 <el-button
                   type="primary"
-                  @click="togglePopup('NHACUNGCAP')"
+                  @click="togglePopup('POPUP_NHACUNGCAP')"
                 >...</el-button>
               </el-form-item>
             </div>
