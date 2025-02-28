@@ -35,9 +35,9 @@
 
 <script>
 import NhatKyChung from './NhatKyChung'
-import HachToan from '../../components/HachToan'
-import NhapVatTu from '../../components/NhapVatTu'
-import HoaDonMuaVao from '../../components/HoaDonMuaVao'
+import HachToan from './HachToan'
+import NhapVatTu from './NhapVatTu'
+import HoaDonMuaVao from './HoaDonMuaVao'
 import { mapState, mapActions } from 'vuex'
 import VuePopupTable from '@/components/VuePopupTable'
 
@@ -92,9 +92,17 @@ export default {
     // },
     showPopup(show) {
       this.togglePopup(show)
+    },
+    getLoaiChungTu() {
+      const path = this.$route.path // Lấy đường dẫn hiện tại, ví dụ: /nhap/phieuchitienmat/index
+      const parts = path.split('/') // Tách đường dẫn thành các phần
+      if (parts.length >= 3) {
+        this.loaiChungTu = parts[2] // Lấy phần tử thứ 2 (phieuchitienmat)
+      }
     }
   },
   mounted() {
+    this.getLoaiChungTu()
     // this.loadKhachHang()
     this.loadNhaCungCap()
     // this.loadTaiKhoan()
