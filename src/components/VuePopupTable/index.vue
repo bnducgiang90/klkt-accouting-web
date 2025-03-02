@@ -96,7 +96,7 @@ export default {
       this.$emit('row-selected', row)
     },
     closeDialog() {
-      this.$emit('update:visible', false)
+      this.$emit('close-popup', false)
     },
     handleMouseEnter(row) {
       this.hoveredRow = row

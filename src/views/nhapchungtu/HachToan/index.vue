@@ -1,10 +1,10 @@
 <template>
   <div>
     <TableData
-      :columns="hachToan.columns"
-      :data="hachToan.data"
-      @update-data="updateTableData"
+      :columns="columns"
+      :data="hachToanData"
       @space-key-pressed="handlePressSpaceKey"
+      @handle-row="handleRow"
     />
   </div>
 </template>
@@ -17,41 +17,55 @@ export default {
   components: {
     TableData
   },
+  props: ['popupRef'],
   data() {
     return {
+      columnTaiKhoanPopupTable: [
+        { prop: 'soHieuTK', label: 'Số hiệu tài khoản' },
+        { prop: 'tenTK', label: 'Tên tài khoản' }
+      ],
+      columns: [
+        { prop: 'dongChungTu', label: 'Dòng chứng từ', minWidth: '110px', align: 'center', disableEditing: true, identity: true },
+        { prop: 'tkNo', label: 'TK Nợ', minWidth: '100px', align: 'center', onSpaceKey: true },
+        { prop: 'chiTietNo', label: 'Chi tiết nợ', minWidth: '120px', align: 'center' },
+        { prop: 'tkCo', label: 'TK Có', minWidth: '100px', align: 'center', onSpaceKey: true },
+        { prop: 'chiTietCo', label: 'Chi tiết có', minWidth: '120px', align: 'center' },
+        { prop: 'soTien', label: 'Số tiền', minWidth: '180px', align: 'right', format: 'currency' },
+        { prop: 'thoiHanThanhToan', label: 'Thời hạn thanh toán', minWidth: '200px', align: 'right', format: 'date' },
+        { prop: 'thoiHanChietKhau', label: 'Thời hạn chiết khấu', minWidth: '200px', align: 'right', format: 'date' },
+        { prop: 'kyHieuSoHoaDon', label: 'Ký hiệu số Hóa đơn', minWidth: '180px' }
+      ]
     }
   },
   computed: {
-    ...mapState('nhapchungtu', ['popup', 'hachToan'])
+    ...mapState('nhapchungtu', ['hachToanData', 'lstTaiKhoan'])
   },
   methods: {
-    ...mapActions('nhapchungtu', ['togglePopup', 'upsertHachToan', 'deleteHachToan']),
-    handlePressSpaceKey(data) {
-      console.log('truyen vao', data)
-      alert(`Space pressed in ${data.col.label}: ${data.row[data.col.prop]}`)
+    ...mapActions('nhapchungtu', ['setRowFlag', 'updateHachToanCell']), // 'upsertHachToan', 'deleteHachToan',
+    handleRow(type, row) {
+      console.log('handle', type, row)
+      this.setRowFlag({ stateName: 'hachToanData', key: 'dongChungTu', value: row.dongChungTu, flagName: type, row: row })
     },
-    updateTableData(newData) {
-      console.log('updateTableData', newData)
-      if (newData.inserting) {
-        // Xóa các thuộc tính không cần thiết trước khi cập nhật
-        const cleanedRow = Object.fromEntries(
-          Object.entries(newData).filter(([key]) => !['editing', 'inserting', 'updating', 'deleting', 'originalData'].includes(key))
-        )
-        console.log('Clean row: ', cleanedRow)
-        this.upsertHachToan(cleanedRow)
-      }
-      if (newData.updating) {
-        // Xóa các thuộc tính không cần thiết trước khi cập nhật
-        const cleanedRow = Object.fromEntries(
-          Object.entries(newData).filter(([key]) => !['editing', 'inserting', 'updating', 'deleting', 'originalData'].includes(key))
-        )
-        console.log('Clean row: ', cleanedRow)
-        this.upsertHachToan(cleanedRow)
-      }
-      if (newData.deleting) {
-        console.log('Thuc hien delete')
-
-        this.deleteHachToan(newData.dongChungTu)
+    async handlePressSpaceKey(data) {
+      console.log('truyen vao', data)
+      alert(`Space pressed in ${data.col.prop}: ${data.row[data.col.prop]} : ${data.row.dongChungTu}`)
+      if (data.col.prop === 'tkNo' || data.col.prop === 'tkCo') {
+        if (this.popupRef) {
+          const result = await this.popupRef.openPopup({
+            title: 'DANH MỤC TÀI KHOẢN',
+            width: '50%',
+            columns: this.columnTaiKhoanPopupTable,
+            data: this.lstTaiKhoan
+          })
+          if (result) {
+            this.selectedRow = result
+            this.updateHachToanCell({
+              dongChungTu: data.row.dongChungTu, // Số dòng cần update
+              column: data.col.prop, // Cột cần update
+              value: result.soHieuTK // Giá trị mới
+            })
+          }
+        }
       }
     },
     deleteTableData(id) {

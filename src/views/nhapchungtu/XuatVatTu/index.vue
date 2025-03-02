@@ -2,7 +2,7 @@
   <div>
     <TableData
       :columns="columns"
-      :data="nhapVatTuData"
+      :data="xuatVatTuData"
       @space-key-pressed="handlePressSpaceKey"
       @handle-row="handleRow"
     />
@@ -40,8 +40,8 @@ export default {
       ],
       columns: [
         { prop: 'id', label: 'ID', minWidth: '110px', hidden: true },
-        { prop: 'tkNhap', label: 'TK Nhập', minWidth: '110px', onSpaceKey: true },
-        { prop: 'maKhoNhap', label: 'Mã Kho nhập', minWidth: '100px', align: 'center', onSpaceKey: true },
+        { prop: 'tkXuat', label: 'TK Xuất', minWidth: '110px', onSpaceKey: true },
+        { prop: 'maKhoXuat', label: 'Mã Kho xuất', minWidth: '100px', align: 'center', onSpaceKey: true },
         { prop: 'maVatTu', label: 'Mã vật tư', minWidth: '120px', align: 'center', onSpaceKey: true },
         { prop: 'tenVatTu', label: 'Tên Vật tư', minWidth: '250px', align: 'left', onSpaceKey: true },
         { prop: 'dvt', label: 'ĐVT', minWidth: '120px', align: 'center' },
@@ -58,7 +58,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('nhapchungtu', ['popup', 'lstTaiKhoan', 'lstKhoHang', 'lstVatTu', 'nhapVatTuData'])
+    ...mapState('nhapchungtu', ['popup', 'lstTaiKhoan', 'lstKhoHang', 'lstVatTu', 'xuatVatTuData'])
   },
   methods: {
     ...mapActions('nhapchungtu', ['setRowFlag', 'updateXuatVatTuCell']),
@@ -69,7 +69,7 @@ export default {
     async handlePressSpaceKey(data) {
       console.log('truyen vao', data)
       alert(`Space pressed in ${data.col.prop}: ${data.row[data.col.prop]}`)
-      if (data.col.prop === 'tkNhap') {
+      if (data.col.prop === 'tkXuat') {
         if (this.popupRef) {
           const result = await this.popupRef.openPopup({
             title: 'DANH MỤC TÀI KHOẢN',
@@ -86,7 +86,7 @@ export default {
             })
           }
         }
-      } else if (data.col.prop === 'maKhoNhap') {
+      } else if (data.col.prop === 'maKhoXuat') {
         if (this.popupRef) {
           const result = await this.popupRef.openPopup({
             title: 'DANH MỤC KHO HÀNG',

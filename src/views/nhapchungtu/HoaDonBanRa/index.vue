@@ -2,7 +2,7 @@
   <div>
     <TableData
       :columns="columns"
-      :data="nhapVatTuData"
+      :data="hoaDonBanRaData"
       @space-key-pressed="handlePressSpaceKey"
       @handle-row="handleRow"
     />
@@ -39,37 +39,35 @@ export default {
         { prop: 'nam', label: 'Năm', width: '180px' }
       ],
       columns: [
-        { prop: 'id', label: 'ID', minWidth: '110px', hidden: true },
-        { prop: 'tkNhap', label: 'TK Nhập', minWidth: '110px', onSpaceKey: true },
-        { prop: 'maKhoNhap', label: 'Mã Kho nhập', minWidth: '100px', align: 'center', onSpaceKey: true },
-        { prop: 'maVatTu', label: 'Mã vật tư', minWidth: '120px', align: 'center', onSpaceKey: true },
-        { prop: 'tenVatTu', label: 'Tên Vật tư', minWidth: '250px', align: 'left', onSpaceKey: true },
-        { prop: 'dvt', label: 'ĐVT', minWidth: '120px', align: 'center' },
-        { prop: 'soLuong', label: 'Số lượng', minWidth: '180px', align: 'right', format: 'currency' },
-        { prop: 'soLuongTheoChungTu', label: 'Số lượng theo C.Từ', minWidth: '200px', align: 'right' },
-        { prop: 'donGiaBan', label: 'Đơn giá Bán', minWidth: '200px', align: 'right' },
-        { prop: 'thanhTien', label: 'Thành tiền', minWidth: '180px', align: 'right  ' },
-        { prop: 'khuyenMai', label: 'Khuyến mại', minWidth: '180px', align: 'center', type: 'boolean' },
-        { prop: 'chietKhau', label: 'Chiết khấu', minWidth: '180px' },
-        { prop: 'thanhToan', label: 'Thanh toán', minWidth: '180px' },
-        { prop: 'ghiChu', label: 'Ghi chú', minWidth: '180px' },
-        { prop: 'dongHachToan', label: 'Dòng hoạch toán', minWidth: '180px' }
+        { prop: 'id', label: 'ID', minWidth: '100px', align: 'center', disableEditing: true, identity: true },
+        { prop: 'tkThueDauRa', label: 'TK Thuế đầu ra', minWidth: '110px' },
+        { prop: 'hoaDonDt', label: 'Hóa đơn ĐT', minWidth: '100px', align: 'center', type: 'boolean' },
+        { prop: 'soHoaDon', label: 'Số hóa đơn', minWidth: '120px', align: 'center' },
+        { prop: 'ngayHoaDon', label: 'Ngày hóa đơn', minWidth: '120px', align: 'left', format: 'date' },
+        { prop: 'nguoiMuaBan', label: 'Người mua/bán', minWidth: '180px', align: 'left' },
+        { prop: 'hangHoaChiuThue', label: 'Hàng hóa chịu thuế', minWidth: '250px', align: 'left' },
+        { prop: 'maSoThue', label: 'Mã số thuế', minWidth: '200px', align: 'right' },
+        { prop: 'tienHang', label: 'Tiền hàng', minWidth: '200px', align: 'right', format: 'currency' },
+        { prop: 'thueSuat', label: 'Thuế suất', minWidth: '180px', align: 'right  ' },
+        { prop: 'tienThue', label: 'Tiền thuế', minWidth: '180px', align: 'center', format: 'currency' },
+        { prop: 'tongTien', label: 'Tổng tiền', minWidth: '180px', format: 'currency' },
+        { prop: 'ghiChu', label: 'Ghi chú', minWidth: '250px' }
       ]
     }
   },
   computed: {
-    ...mapState('nhapchungtu', ['popup', 'lstTaiKhoan', 'lstKhoHang', 'lstVatTu', 'nhapVatTuData'])
+    ...mapState('nhapchungtu', ['popup', 'lstTaiKhoan', 'lstKhoHang', 'lstVatTu', 'hoaDonBanRaData'])
   },
   methods: {
     ...mapActions('nhapchungtu', ['setRowFlag', 'updateXuatVatTuCell']),
     handleRow(type, row) {
       console.log('handle', type, row)
-      this.setRowFlag({ stateName: 'xuatVatTuData', key: 'dongHachToan', value: row.dongHachToan, flagName: type, row: row })
+      this.setRowFlag({ stateName: 'hoaDonBanRaData', key: 'id', value: row.id, flagName: type, row: row })
     },
     async handlePressSpaceKey(data) {
       console.log('truyen vao', data)
       alert(`Space pressed in ${data.col.prop}: ${data.row[data.col.prop]}`)
-      if (data.col.prop === 'tkNhap') {
+      if (data.col.prop === 'tkXuat') {
         if (this.popupRef) {
           const result = await this.popupRef.openPopup({
             title: 'DANH MỤC TÀI KHOẢN',
@@ -86,7 +84,7 @@ export default {
             })
           }
         }
-      } else if (data.col.prop === 'maKhoNhap') {
+      } else if (data.col.prop === 'maKhoXuat') {
         if (this.popupRef) {
           const result = await this.popupRef.openPopup({
             title: 'DANH MỤC KHO HÀNG',

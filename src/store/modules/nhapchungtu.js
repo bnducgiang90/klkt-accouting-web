@@ -3,79 +3,22 @@ import axios from 'axios'
 const state = {
   loaiChungTu: '',
   tabtype: 'TAB_NHAT_KY_CHUNG',
-  popup: {
-    showPopup: false,
-    popupCode: '',
-    data: [
-      { id: 1, name: 'Alice', age: 25 },
-      { id: 2, name: 'Bob', age: 30 }
-    ],
-    columns: [
-      { prop: 'id', label: 'ID' },
-      { prop: 'name', label: 'Name' },
-      { prop: 'age', label: 'Age' }
-    ],
-    selectedRow: {
-    }
-  },
-  columnKhachHangPopupTable: [
-    { prop: 'id', label: 'ID', width: '120px' },
-    { prop: 'cap', label: 'Cấp', width: '80px', align: 'center' },
-    { prop: 'mst', label: 'Mã số thuế', width: '100px' },
-    { prop: 'tenDonVi', label: 'Tên đơn vị', width: '250px' },
-    { prop: 'duNo', label: 'Dư nợ', width: '150px', align: 'right', format: 'currency' },
-    { prop: 'duCo', label: 'Dư có', width: '150px', align: 'right', format: 'currency' },
-    { prop: 'diaChi', label: 'Địa chỉ', width: '250px', wrapText: true },
-    { prop: 'huyen', label: 'Huyện', width: '150px' },
-    { prop: 'tinh', label: 'Tỉnh', width: '150px' },
-    { prop: 'dienThoai', label: 'Điện thoại', width: '120px' },
-    { prop: 'tenGiamDoc', label: 'Tên giám đốc', width: '180px' },
-    { prop: 'tenKeToan', label: 'Tên kế toán', width: '180px' },
-    { prop: 'linhVucKd', label: 'Lĩnh vực DK', width: '150px' },
-    { prop: 'khachHang', label: 'Khách hàng', width: '180px' },
-    { prop: 'nhaCungCap', label: 'Nhà cung cấp', width: '180px' },
-    { prop: 'taiKhoan', label: 'Tài khoản', width: '120px' },
-    { prop: 'nganHang', label: 'Ngân hàng', width: '200px' },
-    { prop: 'email', label: 'Địa chỉ Email', width: '200px' }
-  ],
-  lstKhachHang: [],
 
-  columnNhaCungCapPopupTable: [
-    { prop: 'id', label: 'ID', width: '120px' },
-    { prop: 'cap', label: 'Cấp', width: '80px', align: 'center' },
-    { prop: 'mst', label: 'Mã số thuế', width: '100px' },
-    { prop: 'tenDonVi', label: 'Tên đơn vị', width: '250px' },
-    { prop: 'duNo', label: 'Dư nợ', width: '150px', align: 'right', format: 'currency' },
-    { prop: 'duCo', label: 'Dư có', width: '150px', align: 'right', format: 'currency' },
-    { prop: 'diaChi', label: 'Địa chỉ', width: '250px', wrapText: true },
-    { prop: 'huyen', label: 'Huyện', width: '150px' },
-    { prop: 'tinh', label: 'Tỉnh', width: '150px' },
-    { prop: 'dienThoai', label: 'Điện thoại', width: '120px' },
-    { prop: 'tenGiamDoc', label: 'Tên giám đốc', width: '180px' },
-    { prop: 'tenKeToan', label: 'Tên kế toán', width: '180px' },
-    { prop: 'linhVucKd', label: 'Lĩnh vực DK', width: '150px' },
-    { prop: 'khachHang', label: 'Khách hàng', width: '180px' },
-    { prop: 'nhaCungCap', label: 'Nhà cung cấp', width: '180px' },
-    { prop: 'taiKhoan', label: 'Tài khoản', width: '120px' },
-    { prop: 'nganHang', label: 'Ngân hàng', width: '200px' },
-    { prop: 'email', label: 'Địa chỉ Email', width: '200px' }
-  ],
+  lstKhachHang: [],
   lstNhaCungCap: [],
 
   columnTaiKhoanPopupTable: [
-    { prop: 'id', label: 'ID' },
-    { prop: 'name', label: 'Name' },
-    { prop: 'age', label: 'Age' }
+    { prop: 'soHieuTK', label: 'Số hiệu tài khoản' },
+    { prop: 'tenTK', label: 'Tên tài khoản' }
   ],
+  lstTaiKhoanNganHang: [],
+  lstHinhThucTT: [],
+  lstNguoiGiaoDich: [],
   lstTaiKhoan: [],
 
-  lstHinhThucTT: [],
+  lstVatTu: [],
 
-  columnNguoiGiaoDichPopupTable: [
-    { prop: 'maNguoiGd', label: 'Mã người giao dịch', width: '100px' },
-    { prop: 'tenNguoiGd', label: 'Tên người giao dịch', width: '180px' }
-  ],
-  lstNguoiGiaoDich: [],
+  lstKhoHang: [],
 
   nhatKyChung: {
     chungTu: {
@@ -94,171 +37,164 @@ const state = {
       soTaiKhoan: '222',
       nganHang: 'ngan hang test',
       hinhThucTT: 'hinh thuc tt test',
-      nguoiGiaoDich: 'nguoi giao dic',
+      maNguoiGiaoDich: '',
+      tenNguoiGiaoDich: '',
       nhaCungCap: 'nha cung cap test',
       hachToanNgoaiTe: true
     }
   },
-  hachToan: {
-    data: [
-      { dongChungTu: 1, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '01/02/2023', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1 },
-      { dongChungTu: 2, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '15/02/2024', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1 },
-      { dongChungTu: 3, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '09/10/2024', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1 }
-    ],
-    columns: [
-      { prop: 'dongChungTu', label: 'Dòng chứng từ', minWidth: '110px', align: 'center', disableEditing: true, identity: true },
-      { prop: 'tkNo', label: 'TK Nợ', minWidth: '100px', align: 'center', onSpaceKey: true },
-      { prop: 'chiTietNo', label: 'Chi tiết nợ', minWidth: '120px', align: 'center' },
-      { prop: 'tkCo', label: 'TK Có', minWidth: '100px', align: 'center' },
-      { prop: 'chiTietCo', label: 'Chi tiết có', minWidth: '120px', align: 'center' },
-      { prop: 'soTien', label: 'Số tiền', minWidth: '180px', align: 'right', format: 'currency' },
-      { prop: 'thoiHanThanhToan', label: 'Thời hạn thanh toán', minWidth: '200px', align: 'right', format: 'date' },
-      { prop: 'thoiHanChietKhau', label: 'Thời hạn chiết khấu', minWidth: '200px', align: 'right', format: 'date' },
-      { prop: 'kyHieuSoHoaDon', label: 'Ký hiệu số Hóa đơn', minWidth: '180px' }
-    ]
-  }
+  hachToanData: [
+    // { dongChungTu: 1, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '01/02/2023', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' },
+    // { dongChungTu: 2, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '15/02/2024', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' },
+    // { dongChungTu: 3, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '09/10/2024', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' }
+  ],
+  nhapVatTuData: [
+    { id: 1, tkNhap: 1, maKhoNhap: 112, maVatTu: 12345, tenVatTu: 234, dvt: 2345, soLuong: 2332432432, soLuongTheoChungTu: 'sàdsf', donGiaBan: '2 thang', thanhTien: 1, khuyenMai: true, chietKhau: 1, thanhToan: 1, ghiChu: 1, dongHachToan: 1, editType: 'raw' },
+    { id: 2, tkNhap: 2, maKhoNhap: 112, maVatTu: 12345, tenVatTu: 234, dvt: 2345, soLuong: 2332432432, soLuongTheoChungTu: 'sàdsf', donGiaBan: '2 thang', thanhTien: 1, khuyenMai: false, chietKhau: 1, thanhToan: 1, ghiChu: 1, dongHachToan: 2, editType: 'raw' },
+    { id: 3, tkNhap: 3, maKhoNhap: 112, maVatTu: 12345, tenVatTu: 234, dvt: 2345, soLuong: 2332432432, soLuongTheoChungTu: 'sàdsf', donGiaBan: '2 thang', thanhTien: 1, khuyenMai: true, chietKhau: 1, thanhToan: 1, ghiChu: 1, dongHachToan: 3, editType: 'raw' }
+  ],
+  xuatVatTuData: [
+    { id: 1, tkXuat: 1, maKhoXuat: 112, maVatTu: 12345, tenVatTu: 234, dvt: 2345, soLuong: 2332432432, soLuongTheoChungTu: 'sàdsf', donGiaBan: '2 thang', thanhTien: 1, khuyenMai: true, chietKhau: 1, thanhToan: 1, ghiChu: 1, dongHachToan: 1, editType: 'raw' },
+    { id: 2, tkXuat: 2, maKhoXuat: 112, maVatTu: 12345, tenVatTu: 234, dvt: 2345, soLuong: 2332432432, soLuongTheoChungTu: 'sàdsf', donGiaBan: '2 thang', thanhTien: 1, khuyenMai: false, chietKhau: 1, thanhToan: 1, ghiChu: 1, dongHachToan: 2, editType: 'raw' },
+    { id: 3, tkXuat: 3, maKhoXuat: 112, maVatTu: 12345, tenVatTu: 234, dvt: 2345, soLuong: 2332432432, soLuongTheoChungTu: 'sàdsf', donGiaBan: '2 thang', thanhTien: 1, khuyenMai: true, chietKhau: 1, thanhToan: 1, ghiChu: 1, dongHachToan: 3, editType: 'raw' }
+  ],
+  hoaDonBanRaData: [
+    { id: 1, tkThueDauRa: '33311', hoaDonDt: true, soHoaDon: 'HD001', ngayHoaDon: '2024-02-29', nguoiMuaBan: 'Công ty TNHH ABC', hangHoaChiuThue: 'Laptop Dell XPS 15', maSoThue: '0101234567', tienHang: 30000000, thueSuat: '10%', tienThue: 3000000, tongTien: 33000000, ghiChu: 'Thanh toán chuyển khoản', editType: 'raw' },
+    { id: 2, tkThueDauRa: '33312', hoaDonDt: false, soHoaDon: 'HD002', ngayHoaDon: '2024-03-01', nguoiMuaBan: 'Công ty CP XYZ', hangHoaChiuThue: 'Điện thoại iPhone 15 Pro Max', maSoThue: '0307654321', tienHang: 25000000, thueSuat: '8%', tienThue: 2000000, tongTien: 27000000, ghiChu: 'Đã xuất kho', editType: 'raw' },
+    { id: 3, tkThueDauRa: '33313', hoaDonDt: true, soHoaDon: 'HD003', ngayHoaDon: '2024-03-02', nguoiMuaBan: 'Công ty TNHH DEF', hangHoaChiuThue: 'Máy in Canon LBP2900', maSoThue: '0409988776', tienHang: 5000000, thueSuat: '5%', tienThue: 250000, tongTien: 5250000, ghiChu: 'Khách hàng thanh toán tiền mặt', editType: 'raw' }
+  ]
 }
 
 const mutations = {
-  SET_LOAI_CHUNG_TU(state, loaiChungTu) {
-    state.loaiChungTu = loaiChungTu
-  },
-  SET_TAB_TYPE(state, tabtype) {
-    state.tabtype = tabtype
-  },
-  TOGGLE_POPUP(state, popupData) {
-    state.popup = popupData
-  },
-  CLOSE_POPUP(state) {
-    state.popup.showPopup = false
-  },
-  SET_LST_KHACH_HANG(state, data) {
-    state.lstKhachHang = data
-  },
-  SET_LST_NHA_CUNG_CAP(state, data) {
-    state.lstNhaCungCap = data
-  },
-  SET_LST_TAI_KHOAN(state, data) {
-    state.lstTaiKhoan = data
-  },
-  SET_LST_HINH_THUC_TT(state, data) {
-    state.lstHinhThucTT = data
-  },
-  SET_LST_NGUOI_GIAO_DICH(state, data) {
-    state.lstNguoiGiaoDich = data
-  },
-  UPDATE_NHAT_KY_CHUNG(state, data) {
-    if (state.popup.popupCode === 'POPUP_NHACUNGCAP') {
-      state.nhatKyChung.thongTinKhachHang.nhaCungCap = data.id
-    } else if (state.popup.popupCode === 'POPUP_KHACHHANG') {
-      state.nhatKyChung.chungTu.khachHang = data.id
-    }
-
-    state.nhatKyChung.chungTu.khachHang = data.id
-    state.nhatKyChung.thongTinKhachHang.maSoThue = data.mst
-    state.nhatKyChung.thongTinKhachHang.tenDonVi = data.tenDonVi
-    state.nhatKyChung.thongTinKhachHang.diaChi = data.diaChi
-    state.nhatKyChung.thongTinKhachHang.dienThoai = data.dienThoai
-    state.nhatKyChung.thongTinKhachHang.email = data.email
-  },
-  UPDATE_NGUOI_GIAO_DICH(state, data) {
-    state.nhatKyChung.thongTinKhachHang.nguoiGiaoDich = data.maNguoiGd
-  },
-  SET_INPUT_NHA_CUNG_CAP(state, data) {
-    state.nhatKyChung.thongTinKhachHang.nhaCungCap = data
-  },
-  SET_INPUT_KHACH_HANG(state, data) {
-    state.nhatKyChung.thongTinKhachHang.khachHang = data
-  },
-  UPSERT_HACH_TOAN(state, newRecord) {
-    // Tìm xem có bản ghi nào trùng `dongChungTu` hay không
-    const existingRecord = state.hachToan.data.find(item => item.dongChungTu === newRecord.dongChungTu)
-
-    if (existingRecord) {
-      Object.assign(existingRecord, newRecord)
+  SET_STATE(state, { key, value }) {
+    if (key in state) {
+      state[key] = value
     } else {
-      state.hachToan.data.push(newRecord)
+      console.warn(`Key "${key}" không tồn tại trong state`)
     }
   },
-  DELETE_HACH_TOAN(state, dongChungTu) {
-    state.hachToan.data = state.hachToan.data.filter(item => item.dongChungTu !== dongChungTu)
+  UPDATE_MULTIPLE_FIELDS_NHAT_KY_CHUNG(state, updates) {
+    updates.forEach(({ path, value }) => {
+      const keys = path.split('.') // Chuyển đường dẫn thành mảng
+      let obj = state.nhatKyChung
+
+      // Duyệt qua các key để truy cập đến thuộc tính cuối cùng
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!obj[keys[i]]) {
+          console.warn(`Đường dẫn '${path}' không tồn tại`)
+          return
+        }
+        obj = obj[keys[i]]
+      }
+
+      // Cập nhật giá trị
+      obj[keys[keys.length - 1]] = value
+    })
+  },
+  UPDATE_HACH_TOAN_CELL(state, { dongChungTu, column, value }) {
+    const row = state.hachToanData.find(item => item.dongChungTu === dongChungTu)
+    if (row && Object.prototype.hasOwnProperty.call(row, column)) {
+      row[column] = value
+    }
+  },
+  UPDATE_XUAT_VAT_TU_CELL(state, { dongHachToan, column, value }) {
+    const row = state.xuatVatTuData.find(item => item.dongHachToan === dongHachToan)
+    if (row && Object.prototype.hasOwnProperty.call(row, column)) {
+      row[column] = value
+    }
+  },
+  UPDATE_NHAP_VAT_TU_CELL(state, { dongHachToan, column, value }) {
+    const row = state.nhapVatTuData.find(item => item.dongHachToan === dongHachToan)
+    if (row && Object.prototype.hasOwnProperty.call(row, column)) {
+      row[column] = value
+    }
+  },
+  UPDATE_ROW_ACTION(state, { stateName, key, value, flagName, row }) {
+    console.log('UPDATE_ROW_ACTION: stateName, key, value, flagName: ', stateName, key, value, flagName, row)
+    // Kiểm tra stateName có tồn tại hay không
+    if (!state[stateName] || !Array.isArray(state[stateName])) {
+      console.error(`State "${stateName}" không tồn tại hoặc không phải là một mảng.`)
+      return
+    }
+
+    let item = null
+
+    if (flagName === 'inserting') {
+      // Kiểm tra nếu row hợp lệ thì thêm vào danh sách
+      if (row && typeof row === 'object') {
+        state[stateName].push(row)
+      } else {
+        console.error('Dữ liệu row không hợp lệ để insert.')
+      }
+    } else {
+      // Tìm bản ghi cần cập nhật
+      item = state[stateName].find(record => record[key] === value)
+      if (!item) {
+        console.error(`Không tìm thấy bản ghi có ${key} = ${value} trong state "${stateName}".`)
+        return
+      }
+      // Xử lý theo flagName
+      switch (flagName) {
+        case 'updating':
+        case 'deleting':
+
+          if (!item.originalData) {
+          // Lưu trạng thái ban đầu trước khi chỉnh sửa hoặc xóa
+            item.originalData = { ...item }
+          }
+          item['editType'] = flagName
+
+          break
+
+        case 'canceling':
+          if (row.editType === 'inserting') {
+            // Nếu là bản ghi đang được thêm mới thì xóa khỏi state
+            state[stateName] = state[stateName].filter(record => record[key] !== value)
+          } else {
+            if (item.originalData) {
+              // Phục hồi dữ liệu cũ từ originalData
+              Object.keys(item.originalData).forEach(prop => {
+                item[prop] = item.originalData[prop]
+              })
+              // Xóa thuộc tính originalData
+              delete item.originalData
+            }
+          }
+
+          break
+
+        case 'saving':
+          if (item.editType === 'inserting') {
+            item.editType = 'inserted'
+          } else if (item.editType === 'updating') {
+            item.editType = 'updated'
+          } else if (item.editType === 'deleting') {
+            item.editType = 'deleted'
+          }
+          delete item.originalData // Xóa dữ liệu gốc sau khi lưu
+
+          break
+
+        default:
+          console.error(`flagName "${flagName}" không hợp lệ.`)
+      }
+    }
   }
 }
 
 const actions = {
   async updateLoaiChungTu({ commit }, loaiChungTu) {
-    commit('SET_LOAI_CHUNG_TU', loaiChungTu)
+    commit('SET_STATE', { key: 'loaiChungTu', value: loaiChungTu })
   },
   async updateTabType({ commit }, tabtype) {
-    commit('SET_TAB_TYPE', tabtype)
+    commit('SET_STATE', { key: 'tabtype', value: tabtype })
   },
-  async togglePopup({ commit }, type) {
-    if (type === 'POPUP_TAIKHOAN') {
-      commit('TOGGLE_POPUP', {
-        title: 'DANH MỤC TÀI KHOẢN',
-        showPopup: true,
-        popupCode: type,
-        width: '95%',
-        fullscreen: false,
-        columns: state.columnTaiKhoanPopupTable,
-        data: [
-          { id: 1, name: 'Alice', age: 25 },
-          { id: 2, name: 'Bob', age: 30 }
-        ],
-        selectedRow: {
-        }
-      })
-    } else if (type === 'POPUP_KHACHHANG') {
-      commit('TOGGLE_POPUP', {
-        title: 'DANH MỤC KHÁCH HÀNG',
-        showPopup: true,
-        popupCode: type,
-        width: '95%',
-        fullscreen: false,
-        columns: state.columnKhachHangPopupTable,
-        data: state.lstNhaCungCap,
-        selectedRow: {
-        }
-      })
-    } else if (type === 'POPUP_NHACUNGCAP') {
-      commit('TOGGLE_POPUP', {
-        title: 'DANH MỤC NHÀ CUNG CẤP',
-        showPopup: true,
-        popupCode: type,
-        width: '95%',
-        fullscreen: false,
-        columns: state.columnNhaCungCapPopupTable,
-        data: state.lstNhaCungCap,
-        selectedRow: {
-        }
-      })
-    } else if (type === 'POPUP_NGUOIGIAODICH') {
-      try {
-        const mst = state.nhatKyChung.thongTinKhachHang.maSoThue // Mã số thuế cần tìm
-        const response = await axios.get(`http://localhost:8080/api/nguoi-giao-dich/mst/${mst}`)
-        const data = response.data
-        commit('SET_LST_NGUOI_GIAO_DICH', data)
-      } catch (error) {
-        console.error('Lỗi khi tải danh sách người giao dịch:', error)
-      }
-      commit('TOGGLE_POPUP', {
-        title: 'DANH MỤC NGƯỜI GIAO DỊCH',
-        showPopup: true,
-        popupCode: type,
-        width: '40%',
-        fullscreen: false,
-        columns: state.columnNguoiGiaoDichPopupTable,
-        data: state.lstNguoiGiaoDich,
-        selectedRow: {
-        }
-      })
-    }
-  },
+
   async loadKhachHang({ commit }) {
     try {
       const response = await axios.get('http://localhost:8080/api/khachhang')
       const data = response.data
-      commit('SET_LST_KHACH_HANG', data)
+      commit('SET_STATE', { key: 'lstKhachHang', value: data })
     } catch (error) {
       console.error('Lỗi khi tải danh sách khách hàng:', error)
     }
@@ -267,67 +203,71 @@ const actions = {
     try {
       const response = await axios.get('http://localhost:8080/api/nhacungcap')
       const data = response.data
-      commit('SET_LST_NHA_CUNG_CAP', data)
+      commit('SET_STATE', { key: 'lstNhaCungCap', value: data })
     } catch (error) {
       console.error('Lỗi khi tải danh sách nhà cung cấp:', error)
     }
   },
   async loadTaiKhoan({ commit }) {
     try {
-      const response = await fetch('/api/taikhoan')
-      const data = await response.json()
-      commit('SET_LST_TAI_KHOAN', data)
+      const response = await axios.get('http://localhost:8080/api/taikhoan')
+      const data = response.data
+      commit('SET_STATE', { key: 'lstTaiKhoan', value: data })
     } catch (error) {
       console.error('Lỗi khi tải danh sách tài khoản:', error)
+    }
+  },
+  async loadNguoiGiaoDich({ commit }) {
+    try {
+      const response = await axios.get('http://localhost:8080/api/nguoi-giao-dich')
+      const data = response.data
+      commit('SET_STATE', { key: 'lstNguoiGiaoDich', value: data })
+    } catch (error) {
+      console.error('Lỗi khi tải danh sách người giao dịch:', error)
     }
   },
   async loadHinhThucTT({ commit }) {
     try {
       const response = await axios.get('http://localhost:8080/api/hinhthuctt')
       const data = response.data
-      commit('SET_LST_HINH_THUC_TT', data)
+      commit('SET_STATE', { key: 'lstHinhThucTT', value: data })
     } catch (error) {
-      console.error('Lỗi khi tải danh sách tài khoản:', error)
+      console.error('Lỗi khi tải danh sách hình thức thanh toán:', error)
     }
   },
-  async handleRowSelected({ commit }, payload) {
+  async loadVatTu({ commit }) {
     try {
-      if (state.popup.popupCode === 'POPUP_NHACUNGCAP') {
-        // thay đổi giá trị cho ô input abc
-        commit('UPDATE_NHAT_KY_CHUNG', payload)
-        commit('CLOSE_POPUP')
-      } else if (state.popup.popupCode === 'POPUP_TAIKHOAN') {
-        // thay đổi giá trị cho ô input abc
-      } else if (state.popup.popupCode === 'POPUP_KHACHHANG') {
-        commit('UPDATE_NHAT_KY_CHUNG', payload)
-        commit('CLOSE_POPUP')
-      } else if (state.popup.popupCode === 'POPUP_NGUOIGIAODICH') {
-        commit('UPDATE_NGUOI_GIAO_DICH', payload)
-        commit('CLOSE_POPUP')
-      }
-      // commit('SET_LST_TAI_KHOAN', data)
+      const response = await axios.get('http://localhost:8080/api/vat-tu-hang-hoa')
+      const data = response.data
+      commit('SET_STATE', { key: 'lstVatTu', value: data })
     } catch (error) {
-      console.error('Lỗi khi handleRowSelected', error)
+      console.error('Lỗi khi tải danh sách vật tư:', error)
     }
   },
-  async upsertHachToan({ commit }, newRecord) {
+  async loadKhoHang({ commit }) {
     try {
-      // Gọi mutation để cập nhật dữ liệu
-      commit('UPSERT_HACH_TOAN', newRecord)
-
-      // Giả sử có thể cần thực hiện một số tác vụ bất đồng bộ (VD: lưu vào server)
-      return Promise.resolve('Success')
+      const response = await axios.get('http://localhost:8080/api/khohang')
+      const data = response.data
+      commit('SET_STATE', { key: 'lstKhoHang', value: data })
     } catch (error) {
-      return Promise.reject('Failed to update hachToan')
+      console.error('Lỗi khi tải danh sách kho hàng:', error)
     }
   },
-  async deleteHachToan({ commit }, dongChungTu) {
-    try {
-      commit('DELETE_HACH_TOAN', dongChungTu)
-      return Promise.resolve('Success')
-    } catch (error) {
-      return Promise.reject('Failed to delete hachToan')
-    }
+  async updateHachToanCell({ commit }, payload) {
+    commit('UPDATE_HACH_TOAN_CELL', payload)
+  },
+  async updateXuatVatTuCell({ commit }, payload) {
+    commit('UPDATE_XUAT_VAT_TU_CELL', payload)
+  },
+  async updateNhapVatTuCell({ commit }, payload) {
+    commit('UPDATE_NHAP_VAT_TU_CELL', payload)
+  },
+  setRowFlag({ commit }, payload) {
+    console.log('setRowFlag', payload)
+    commit('UPDATE_ROW_ACTION', payload)
+  },
+  updateMultipleNhatKyChung({ commit }, updates) {
+    commit('UPDATE_MULTIPLE_FIELDS_NHAT_KY_CHUNG', updates)
   }
 }
 

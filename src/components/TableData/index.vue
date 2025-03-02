@@ -2,15 +2,16 @@
   <div class="table-container">
     <el-table
       ref="table"
-      :data="editableData"
+      :data="filteredData"
       border
       class="custom-table"
       style="width: 100%"
       height="500"
       :header-cell-style="{ textAlign: 'center' }"
+      :row-class-name="tableRowClass"
     >
       <el-table-column
-        v-for="col in columns"
+        v-for="col in visibleColumns"
         :key="col.prop"
         :prop="col.prop"
         :label="col.label"
@@ -18,9 +19,12 @@
         :align="col.align"
       >
         <template slot-scope="scope">
-          <div v-if="scope.row.editing">
+          <div v-if="scope.row.editType === 'inserting' || scope.row.editType === 'updating' || scope.row.editType === 'saving'">
+            <!-- Hiển thị checkbox cho kiểu boolean -->
+            <el-checkbox v-if="col.type === 'boolean'" v-model="scope.row[col.prop]" />
+
             <el-input
-              v-if="col.format === 'date'"
+              v-else-if="col.format === 'date'"
               v-model="scope.row[col.prop]"
               :disabled="col.disableEditing"
               @blur="validateAndFormatDate(scope.row, col.prop)"
@@ -40,17 +44,20 @@
             />
           </div>
           <div v-else :class="{ 'wrap-text': col.wrapText }">
-            {{ col.format === 'currency' ? formatDisplayCurrency(scope.row[col.prop]) : col.format === 'date' ? formatDateDisplay(scope.row[col.prop]) : scope.row[col.prop] }}
+            <!-- Hiển thị dạng checkbox nếu là kiểu boolean -->
+            <el-checkbox v-if="col.type === 'boolean'" v-model="scope.row[col.prop]" disabled />
+            <template v-else>
+              {{ col.format === 'currency' ? formatDisplayCurrency(scope.row[col.prop]) : col.format === 'date' ? formatDateDisplay(scope.row[col.prop]) : scope.row[col.prop] }}
+            </template>
           </div>
         </template>
-
       </el-table-column>
 
       <el-table-column label="Action" min-width="200" fixed="right" align="center">
         <template slot-scope="scope">
-          <template v-if="!scope.row.editing">
-            <el-button v-if="!scope.row.editing" type="primary" @click="editRow(scope.row)">Sửa</el-button>
-            <el-button v-if="!scope.row.editing" type="danger" @click="deleteRow(scope.row)">Xóa</el-button>
+          <template v-if="!(scope.row.editType === 'inserting' || scope.row.editType === 'updating' || scope.row.editType === 'deleting' || scope.row.editType === 'saving')">
+            <el-button type="primary" @click="editRow(scope.row)">Sửa</el-button>
+            <el-button type="danger" @click="deleteRow(scope.row)">Xóa</el-button>
           </template>
           <template v-else>
             <el-button type="success" @click="saveRow(scope.row)">Lưu</el-button>
@@ -64,70 +71,46 @@
 </template>
 
 <script>
+import { logger } from 'runjs/lib/common'
 export default {
   props: {
     columns: { type: Array, required: true },
     data: { type: Array, required: true }
   },
-  data() {
-    return {
-    }
-  },
   computed: {
-    editableData() {
-      return this.data.map(row => ({
-        ...row,
-        editing: false,
-        updating: false,
-        deleting: false,
-        originalData: { ...row }
-      }))
+    filteredData() {
+      return this.data.filter(item => item.editType !== 'deleted')
+    },
+    visibleColumns() {
+      return this.columns.filter(col => !col.hidden)
     }
   },
   methods: {
     editRow(row) {
-      this.$set(row, 'editing', true)
-      this.$set(row, 'inserting', false)
-      this.$set(row, 'updating', true)
-      this.$set(row, 'deleting', false)
+      this.$emit('handle-row', 'updating', row)
     },
     deleteRow(row) {
-      this.$set(row, 'editing', true)
-      this.$set(row, 'inserting', false)
-      this.$set(row, 'updating', false)
-      this.$set(row, 'deleting', true)
-      console.log('click delete', row)
+      this.$emit('handle-row', 'deleting', row)
     },
     saveRow(row) {
-      this.$emit('update-data', row) // Emit sự kiện để cập nhật dữ liệu
-      this.$set(row, 'editing', false)
-      this.$set(row, 'inserting', false)
-      this.$set(row, 'updating', false)
-      this.$set(row, 'deleting', false)
-    },
-    rejectRow(row) {
-      Object.assign(row, row.originalData)
-      row.editing = false
-    },
-    addRow() {
-      // Xác định cột nào có `identity: true`
-      const identityColumn = this.columns.find(col => col.identity)
-
-      // Tìm giá trị lớn nhất của cột identity
-      const newRow = { editing: true, inserting: true, updating: false, deleting: false, originalData: {}}
-      if (identityColumn) {
-        const identityProp = identityColumn.prop
-        const maxId = Math.max(0, ...this.editableData.map(row => row[identityProp] || 0))
-        newRow[identityProp] = maxId + 1
-      }
-
-      this.editableData.push(newRow)
+      this.$emit('handle-row', 'saving', row)
     },
     cancel(row) {
-      this.$set(row, 'editing', false)
-      this.$set(row, 'inserting', false)
-      this.$set(row, 'deleting', false)
-      this.$set(row, 'updating', false)
+      this.$emit('handle-row', 'canceling', row)
+    },
+    addRow() {
+      const identityColumn = this.columns.find(col => col.identity)
+      let newRow = this.createEmptyRow(this.columns) // Tạo row trống với các giá trị null
+
+      newRow = { ...newRow, editType: 'inserting', originalData: {}}
+
+      if (identityColumn) {
+        const identityProp = identityColumn.prop
+        const maxId = Math.max(0, ...this.data.map(row => row[identityProp] || 0)) // Tìm giá trị ID lớn nhất
+        newRow[identityProp] = maxId + 1 // Gán ID mới
+      }
+
+      this.$emit('handle-row', 'inserting', newRow)
     },
     formatCurrency(row, prop) {
       row[prop] = row[prop].replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
@@ -136,7 +119,7 @@ export default {
       return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0)
     },
     handleSpaceKey(row, col) {
-      this.$emit('space-key-pressed', { row, col }) // Emit sự kiện
+      this.$emit('space-key-pressed', { row, col })
     },
     validateAndFormatDate(row, prop) {
       const value = row[prop]
@@ -158,6 +141,15 @@ export default {
       if (!value) return ''
       const parts = value.split('/')
       return parts.length === 3 ? `${parts[0]}/${parts[1]}/${parts[2]}` : value
+    },
+    tableRowClass({ row }) {
+      return row.editType === 'deleting' ? 'row-deleting' : ''
+    },
+    createEmptyRow(columns) {
+      return columns.reduce((row, col) => {
+        row[col.prop] = null
+        return row
+      }, {})
     }
   }
 }
@@ -177,4 +169,12 @@ export default {
 .el-table--medium th, .el-table--medium td {
     padding: 1px 0;
 }
+/deep/ .row-deleting {
+  background-color: #ffcccc !important; /* Màu đỏ nhạt */
+}
+
+/deep/ .el-table__row.row-deleting td {
+  background-color: #ffcccc !important; /* Đảm bảo tất cả ô trong hàng được tô màu */
+}
+
 </style>

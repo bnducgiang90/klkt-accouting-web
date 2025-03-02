@@ -44,7 +44,7 @@
             <el-form-item class="center-btn" label-width="20px">
               <el-button
                 type="primary"
-                @click="togglePopup('POPUP_KHACHHANG')"
+                @click="openPopupKhachHang"
               >...</el-button>
             </el-form-item>
           </div>
@@ -103,7 +103,7 @@
               <el-form-item class="center-btn" label-width="20px">
                 <el-button
                   type="primary"
-                  @click="togglePopup('POPUP_TAIKHOAN')"
+                  @click="openPopupTaiKhoanNganHang"
                 >...</el-button>
               </el-form-item>
               <el-form-item label="Ngân hàng" style="flex-grow: 1">
@@ -133,14 +133,14 @@
               </el-form-item>
               <el-form-item label="Người giao dịch" style="flex-grow: 1">
                 <el-input
-                  v-model="nhatKyChung.thongTinKhachHang.nguoiGiaoDich"
+                  v-model="nhatKyChung.thongTinKhachHang.tenNguoiGiaoDich"
                   placeholder="Điền vào người giao dịch"
                 />
               </el-form-item>
               <el-form-item class="center-btn" label-width="20px">
                 <el-button
                   type="primary"
-                  @click="togglePopup('POPUP_NGUOIGIAODICH')"
+                  @click="openPopupNguoiGiaoDich"
                 >...</el-button>
               </el-form-item>
             </div>
@@ -159,7 +159,7 @@
               <el-form-item class="center-btn" label-width="20px">
                 <el-button
                   type="primary"
-                  @click="togglePopup('POPUP_NHACUNGCAP')"
+                  @click="openPopupNhaCungCap"
                 >...</el-button>
               </el-form-item>
             </div>
@@ -181,20 +181,148 @@ import { mapState, mapActions } from 'vuex'
 export default {
   name: 'NhatKyChung',
   components: { },
-  props: {
-    name: String
-  },
+  props: ['popupRef'],
   data() {
     return {
+      selectedRow: null,
+      columnKhachHangPopupTable: [
+        { prop: 'id', label: 'ID', width: '120px' },
+        { prop: 'cap', label: 'Cấp', width: '80px', align: 'center' },
+        { prop: 'mst', label: 'Mã số thuế', width: '100px' },
+        { prop: 'tenDonVi', label: 'Tên đơn vị', width: '250px' },
+        { prop: 'duNo', label: 'Dư nợ', width: '150px', align: 'right', format: 'currency' },
+        { prop: 'duCo', label: 'Dư có', width: '150px', align: 'right', format: 'currency' },
+        { prop: 'diaChi', label: 'Địa chỉ', width: '250px', wrapText: true },
+        { prop: 'huyen', label: 'Huyện', width: '150px' },
+        { prop: 'tinh', label: 'Tỉnh', width: '150px' },
+        { prop: 'dienThoai', label: 'Điện thoại', width: '120px' },
+        { prop: 'tenGiamDoc', label: 'Tên giám đốc', width: '180px' },
+        { prop: 'tenKeToan', label: 'Tên kế toán', width: '180px' },
+        { prop: 'linhVucKd', label: 'Lĩnh vực DK', width: '150px' },
+        { prop: 'khachHang', label: 'Khách hàng', width: '180px' },
+        { prop: 'nhaCungCap', label: 'Nhà cung cấp', width: '180px' },
+        { prop: 'taiKhoan', label: 'Tài khoản', width: '120px' },
+        { prop: 'nganHang', label: 'Ngân hàng', width: '200px' },
+        { prop: 'email', label: 'Địa chỉ Email', width: '200px' }
+      ],
+      columnNhaCungCapPopupTable: [
+        { prop: 'id', label: 'ID', minWidth: '120px' },
+        { prop: 'cap', label: 'Cấp', minWidth: '80px', align: 'center' },
+        { prop: 'mst', label: 'Mã số thuế', minWidth: '100px' },
+        { prop: 'tenDonVi', label: 'Tên đơn vị', minWidth: '200px', maxWidth: '250px', wrapText: true },
+        { prop: 'duNo', label: 'Dư nợ', minWidth: '150px', align: 'right', format: 'currency' },
+        { prop: 'duCo', label: 'Dư có', minWidth: '150px', align: 'right', format: 'currency' },
+        { prop: 'diaChi', label: 'Địa chỉ', minWidth: '250px', wrapText: true },
+        { prop: 'huyen', label: 'Huyện', minWidth: '150px' },
+        { prop: 'tinh', label: 'Tỉnh', minWidth: '150px' },
+        { prop: 'dienThoai', label: 'Điện thoại', minWidth: '120px' },
+        { prop: 'tenGiamDoc', label: 'Tên giám đốc', minWidth: '180px' },
+        { prop: 'tenKeToan', label: 'Tên kế toán', minWidth: '180px' },
+        { prop: 'linhVucKd', label: 'Lĩnh vực DK', minWidth: '150px' },
+        { prop: 'khachHang', label: 'Khách hàng', minWidth: '180px' },
+        { prop: 'nhaCungCap', label: 'Nhà cung cấp', minWidth: '180px' },
+        { prop: 'taiKhoan', label: 'Tài khoản', minWidth: '120px' },
+        { prop: 'nganHang', label: 'Ngân hàng', minWidth: '200px' },
+        { prop: 'email', label: 'Địa chỉ Email', minWidth: '200px' }
+      ],
+      columnNguoiGiaoDichPopupTable: [
+        { prop: 'maNguoiGd', label: 'Mã người giao dịch', width: '100px' },
+        { prop: 'tenNguoiGd', label: 'Tên người giao dịch', width: '180px' }
+      ],
+      columnTaiKhoanNganHangPopupTable: [
+        { prop: 'id', label: 'ID' },
+        { prop: 'name', label: 'Name' },
+        { prop: 'age', label: 'Age' }
+      ]
     }
   },
   computed: {
-    ...mapState('nhapchungtu', ['nhatKyChung', 'lstHinhThucTT'])
+    ...mapState('nhapchungtu', ['nhatKyChung', 'lstHinhThucTT', 'lstKhachHang', 'lstNhaCungCap', 'lstNguoiGiaoDich', 'lstTaiKhoanNganHang'])
   },
   methods: {
-    ...mapActions('nhapchungtu', ['togglePopup']),
+    ...mapActions('nhapchungtu', ['updateMultipleNhatKyChung']),
     handleSelect(row) {
       console.log(row)
+    },
+    async openPopupKhachHang() {
+      if (this.popupRef) {
+        const result = await this.popupRef.openPopup({
+          title: 'DANH MỤC KHÁCH HÀNG',
+          width: '90%',
+          columns: this.columnKhachHangPopupTable,
+          data: this.lstNhaCungCap
+        })
+        if (result) {
+          this.selectedRow = result
+          console.log(result)
+          this.updateMultipleNhatKyChung([
+            { path: 'chungTu.khachHang', value: result.id },
+            { path: 'thongTinKhachHang.maSoThue', value: result.mstKhNcc },
+            { path: 'thongTinKhachHang.tenDonVi', value: result.tenDonVi },
+            { path: 'thongTinKhachHang.diaChi', value: result.diaChi },
+            { path: 'thongTinKhachHang.dienThoai', value: result.dienThoai },
+            { path: 'thongTinKhachHang.email', value: result.email }
+          ])
+        }
+      }
+    },
+    async openPopupNhaCungCap() {
+      if (this.popupRef) {
+        const result = await this.popupRef.openPopup({
+          title: 'DANH MỤC NHÀ CUNG CẤP',
+          width: '90%',
+          columns: this.columnNhaCungCapPopupTable,
+          data: this.lstNhaCungCap
+        })
+        if (result) {
+          this.selectedRow = result
+          console.log(result)
+          this.updateMultipleNhatKyChung([
+            { path: 'chungTu.khachHang', value: result.id },
+            { path: 'thongTinKhachHang.maSoThue', value: result.mstKhNcc },
+            { path: 'thongTinKhachHang.tenDonVi', value: result.tenDonVi },
+            { path: 'thongTinKhachHang.diaChi', value: result.diaChi },
+            { path: 'thongTinKhachHang.dienThoai', value: result.dienThoai },
+            { path: 'thongTinKhachHang.email', value: result.email }
+          ])
+        }
+      }
+    },
+    async openPopupNguoiGiaoDich() {
+      if (this.popupRef) {
+        const result = await this.popupRef.openPopup({
+          title: 'DANH MỤC NGƯỜI GIAO DỊCH',
+          width: '50%',
+          columns: this.columnNguoiGiaoDichPopupTable,
+          data: this.lstNguoiGiaoDich
+        })
+        if (result) {
+          this.selectedRow = result
+          console.log(result)
+          this.updateMultipleNhatKyChung([
+            { path: 'thongTinKhachHang.maNguoiGiaoDich', value: result.maNguoiGd },
+            { path: 'thongTinKhachHang.tenNguoiGiaoDich', value: result.tenNguoiGd }
+          ])
+        }
+      }
+    },
+    async openPopupTaiKhoanNganHang() {
+      if (this.popupRef) {
+        const result = await this.popupRef.openPopup({
+          title: 'DANH MỤC TÀI KHOẢN NGÂN HÀNG',
+          width: '50%',
+          columns: this.columnNguoiGiaoDichPopupTable,
+          data: this.lstNguoiGiaoDich
+        })
+        if (result) {
+          this.selectedRow = result
+          console.log(result)
+          // this.updateMultipleNhatKyChung([
+          //   { path: 'thongTinKhachHang.maNguoiGiaoDich', value: result.maNguoiGd },
+          //   { path: 'thongTinKhachHang.tenNguoiGiaoDich', value: result.tenNguoiGd }
+          // ])
+        }
+      }
     }
   }
 }

@@ -2,16 +2,22 @@
   <div id="page-container">
     <el-tabs id="content-box" v-model="activeTab" type="border-card" @tab-click="handleTabClick">
       <el-tab-pane label="Nhật ký chung" name="TAB_NHAT_KY_CHUNG">
-        <NhatKyChung />
+        <NhatKyChung :popup-ref="popupRef" />
       </el-tab-pane>
-      <el-tab-pane label="Hạch toán" name="TAB_HACH_TOAN">
-        <HachToan />
+      <el-tab-pane v-if="isHachToan" label="Hạch toán" name="TAB_HACH_TOAN">
+        <HachToan :popup-ref="popupRef" />
       </el-tab-pane>
-      <el-tab-pane label="Nhập vật tư" name="TAB_VAT_TU">
-        <NhapVatTu />
+      <el-tab-pane v-if="isNhapVatTu" label="Nhập vật tư" name="TAB_NHAP_VAT_TU">
+        <NhapVatTu :popup-ref="popupRef" />
       </el-tab-pane>
-      <el-tab-pane label="Hóa đơn mua vào" name="TAB_HOA_DON_MUA_VAO">
+      <el-tab-pane v-if="isXuatVatTu" label="Xuất vật tư" name="TAB_XUAT_VAT_TU">
+        <XuatVatTu :popup-ref="popupRef" />
+      </el-tab-pane>
+      <el-tab-pane v-if="isHoaDonMuaVao" label="Hóa đơn mua vào" name="TAB_HOA_DON_MUA_VAO">
         <HoaDonMuaVao />
+      </el-tab-pane>
+      <el-tab-pane v-if="isHoaDonBanRa" label="Hóa đơn bán ra" name="TAB_HOA_DON_BAN_RA">
+        <HoaDonBanRa />
       </el-tab-pane>
     </el-tabs>
     <el-card id="control-box" class="border-card">
@@ -21,51 +27,45 @@
         <el-button>Ghi</el-button>
       </div>
     </el-card>
-    <VuePopupTable
-      :title="popupTitle"
-      :visible.sync="popupVisible"
-      :width="popupWidth"
-      :fullscreen="popupFullscreen"
-      :table-data="popupData"
-      :columns="popupColumns"
-      @row-selected="handleRowSelected"
-    />
+    <TablePopup ref="popupRef" />
   </div>
+
 </template>
 
 <script>
 import NhatKyChung from './NhatKyChung'
 import HachToan from './HachToan'
 import NhapVatTu from './NhapVatTu'
+import XuatVatTu from './XuatVatTu'
 import HoaDonMuaVao from './HoaDonMuaVao'
+import HoaDonBanRa from './HoaDonBanRa'
 import { mapState, mapActions } from 'vuex'
-import VuePopupTable from '@/components/VuePopupTable'
+import TablePopup from '@/components/TablePopup'
 
 export default {
   components: {
     NhatKyChung,
     HachToan,
     NhapVatTu,
+    XuatVatTu,
     HoaDonMuaVao,
-    VuePopupTable
+    HoaDonBanRa,
+    TablePopup
   },
-
   data() {
     return {
-      activeTab: 'TAB_NHAT_KY_CHUNG' // Tab mặc định khi load trang
+      popupRef: null, // Lưu reference của popup
+      activeTab: 'TAB_NHAT_KY_CHUNG', // Tab mặc định khi load trang
+      isHachToan: false,
+      isNhapVatTu: false,
+      isXuatVatTu: false,
+      isHoaDonMuaVao: false,
+      isHoaDonBanRa: false
     }
   },
 
   computed: {
-    ...mapState('nhapchungtu', ['popup', 'lstKhachHang', 'lstNhaCungCap', 'lstTaiKhoan']),
-    popupVisible: {
-      get() {
-        return this.popup.showPopup
-      },
-      set(value) {
-        this.showPopup(value)
-      }
-    },
+    ...mapState('nhapchungtu', ['lstKhachHang', 'lstNhaCungCap', 'lstTaiKhoan']),
     popupData() {
       return this.popup.data
     },
@@ -84,35 +84,48 @@ export default {
   },
 
   methods: {
-    ...mapActions('nhapchungtu', ['togglePopup', 'loadKhachHang', 'loadNhaCungCap', 'loadTaiKhoan', 'loadHinhThucTT', 'handleRowSelected', 'updateLoaiChungTu', 'updateTabType']),
+    ...mapActions('nhapchungtu', ['loaiChungTu', 'loadKhachHang', 'loadNhaCungCap', 'loadNguoiGiaoDich', 'loadTaiKhoan', 'loadHinhThucTT', 'loadVatTu', 'loadKhoHang', 'handleRowSelected', 'updateLoaiChungTu', 'updateTabType']),
     onSubmit() {
       console.log('submit!')
     },
-    // handleRowSelected(row) {
-    //   console.log('Dòng được chọn:', row)
-    // },
-    showPopup(show) {
-      this.togglePopup(show)
-    },
     getLoaiChungTu() {
-      const path = this.$route.path // Lấy đường dẫn hiện tại, ví dụ: /nhap/phieuchitienmat/index
-      const parts = path.split('/') // Tách đường dẫn thành các phần
-      console.log(path)
+      const path = this.$route.path // Lấy đường dẫn hiện tại
+      const parts = path.split('/') // Tách đường dẫn thành mảng
 
-      if (parts.length >= 3) {
-        this.updateLoaiChungTu(parts[2]) // Cập nhật vào Vuex store
+      if (parts.length < 3) return
+
+      const loaiChungTu = parts[2]
+      this.updateLoaiChungTu(loaiChungTu) // Cập nhật vào Vuex store
+
+      // Mapping loại chứng từ với cấu hình tương ứng
+      const configMap = {
+        'phieuthutienmat': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: true, isHoaDonMuaVao: false, isHoaDonBanRa: true },
+        'phieuxuatvattucongcu': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: true, isHoaDonMuaVao: false, isHoaDonBanRa: true },
+        'banhangthutiensau': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: true, isHoaDonMuaVao: false, isHoaDonBanRa: true },
+        'phieuchitienmat': { isHachToan: true, isNhapVatTu: true, isXuatVatTu: false, isHoaDonMuaVao: true, isHoaDonBanRa: false },
+        'phieunhapvattucongcu': { isHachToan: true, isNhapVatTu: true, isXuatVatTu: false, isHoaDonMuaVao: true, isHoaDonBanRa: false },
+        'chungtunganhang': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: false, isHoaDonMuaVao: true, isHoaDonBanRa: false },
+        'chungtughiso': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: false, isHoaDonMuaVao: false, isHoaDonBanRa: false },
+        'chungtuluuchuyennoibo': { isHachToan: true, isNhapVatTu: true, isXuatVatTu: true, isHoaDonMuaVao: false, isHoaDonBanRa: false }
       }
+
+      // Gán giá trị từ mapping, nếu không tìm thấy thì giữ nguyên giá trị hiện tại
+      Object.assign(this, configMap[loaiChungTu] || {})
     },
     handleTabClick(tab) {
       this.updateTabType(tab.name) // Cập nhật state tabtype với giá trị tab hiện tại
     }
   },
   mounted() {
+    this.popupRef = this.$refs.popupRef // Gán reference cho popup
     this.getLoaiChungTu()
     // this.loadKhachHang()
     this.loadNhaCungCap()
-    // this.loadTaiKhoan()
+    this.loadTaiKhoan()
     this.loadHinhThucTT()
+    this.loadVatTu()
+    this.loadNguoiGiaoDich()
+    this.loadKhoHang()
   }
 }
 </script>
