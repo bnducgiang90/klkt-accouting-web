@@ -44,9 +44,9 @@ const state = {
     }
   },
   hachToanData: [
-    // { dongChungTu: 1, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '01/02/2023', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' },
-    // { dongChungTu: 2, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '15/02/2024', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' },
-    // { dongChungTu: 3, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '09/10/2024', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' }
+    { dongChungTu: 1, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '01/02/2023', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' },
+    { dongChungTu: 2, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '15/02/2024', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' },
+    { dongChungTu: 3, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '09/10/2024', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' }
   ],
   nhapVatTuData: [
     { id: 1, tkNhap: 1, maKhoNhap: 112, maVatTu: 12345, tenVatTu: 234, dvt: 2345, soLuong: 2332432432, soLuongTheoChungTu: 'sàdsf', donGiaBan: '2 thang', thanhTien: 1, khuyenMai: true, chietKhau: 1, thanhToan: 1, ghiChu: 1, dongHachToan: 1, editType: 'raw' },

@@ -40,7 +40,9 @@
               v-else
               v-model="scope.row[col.prop]"
               :disabled="col.disableEditing"
+              :class="{ 'error-input': scope.row.errors && scope.row.errors[col.prop] }"
               @keydown.native.space.prevent="col.onSpaceKey ? handleSpaceKey(scope.row, col) : null"
+              @blur="handleValidation(scope.row, col, $event)"
             />
           </div>
           <div v-else :class="{ 'wrap-text': col.wrapText }">
@@ -71,7 +73,6 @@
 </template>
 
 <script>
-import { logger } from 'runjs/lib/common'
 export default {
   props: {
     columns: { type: Array, required: true },
@@ -150,6 +151,46 @@ export default {
         row[col.prop] = null
         return row
       }, {})
+    },
+    handleValidation(row, col, event) {
+      const error = this.validateInput(row[col.prop], col)
+      if (error) {
+        this.$message.error(error)
+        // row[col.prop] = '' // Xóa giá trị nếu sai
+
+        // Đánh dấu lỗi cho ô input
+        if (!row.errors) {
+          this.$set(row, 'errors', {}) // Khởi tạo errors nếu chưa có
+        }
+        this.$set(row.errors, col.prop, true) // Đánh dấu lỗi cho cột này
+
+        // Focus lại vào ô input bị lỗi
+        this.$nextTick(() => {
+          event.target.focus() // Đặt lại focus vào ô input
+          event.target.select() // Chọn toàn bộ nội dung nhập sai
+        })
+      } else {
+        if (row.errors) {
+          this.$set(row.errors, col.prop, false) // Xóa lỗi nếu nhập đúng
+        }
+      }
+    },
+    validateInput(value, column) {
+      if (!value) return '' // Không kiểm tra nếu giá trị rỗng
+
+      let error = ''
+
+      // Kiểm tra bằng regex nếu có
+      if (column.regexPattern && !new RegExp(column.regexPattern).test(value)) {
+        error = column.errorMessage || 'Giá trị nhập vào không hợp lệ!'
+      }
+
+      // Kiểm tra độ dài tối đa
+      if (column.maxLength && value.length > column.maxLength) {
+        error = `Không được nhập quá ${column.maxLength} ký tự!`
+      }
+
+      return error
     }
   }
 }
@@ -175,6 +216,11 @@ export default {
 
 /deep/ .el-table__row.row-deleting td {
   background-color: #ffcccc !important; /* Đảm bảo tất cả ô trong hàng được tô màu */
+}
+
+.error-input {
+  border: 1px solid red !important;
+  background-color: #ffe6e6 !important; /* Màu nền nhạt để dễ nhận diện */
 }
 
 </style>
