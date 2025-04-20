@@ -26,9 +26,9 @@
               >
                 <el-option
                   v-for="option in tables"
-                  :key="option.tableName"
-                  :label="option.tableDesc"
-                  :value="option.tableName"
+                  :key="option.table_name"
+                  :label="option.table_desc"
+                  :value="option.table_name"
                 />
               </el-select>
             </el-form-item>
@@ -85,11 +85,11 @@
         >
           <template slot-scope="scope">
             <el-tooltip content="Click to view" placement="top">
-              <span v-if="metadata.columnTypes[field] === 'dropdown'">
+              <span v-if="metadata.column_types[field] === 'dropdown'">
                 {{ getDropdownLabel(field, scope.row[field]) }}
               </span>
               <!-- Nếu cột là date, format ngày -->
-              <span v-else-if="metadata.columnTypes[field] === 'date'">
+              <span v-else-if="metadata.column_types[field] === 'date'">
                 {{ formatDate(scope.row[field]) }}
               </span>
               <span v-else>
@@ -155,7 +155,7 @@
             <!-- Kiểm tra kiểu dữ liệu để chọn component nhập liệu -->
             <!-- Dropdown -->
             <el-select
-              v-if="metadata.columnTypes[field] === 'dropdown'"
+              v-if="metadata.column_types[field] === 'dropdown'"
               v-model="formData[field]"
               placeholder="Chọn một giá trị"
             >
@@ -169,19 +169,19 @@
 
             <!-- Text input -->
             <el-input
-              v-else-if="metadata.columnTypes[field] === 'text'"
+              v-else-if="metadata.column_types[field] === 'text'"
               v-model="formData[field]"
             />
 
             <!-- Number input -->
             <el-input-number
-              v-else-if="metadata.columnTypes[field] === 'number'"
+              v-else-if="metadata.column_types[field] === 'number'"
               v-model="formData[field]"
             />
 
             <!-- Date input -->
             <el-date-picker
-              v-else-if="metadata.columnTypes[field] === 'date'"
+              v-else-if="metadata.column_types[field] === 'date'"
               v-model="formData[field]"
               type="date"
               :format="'dd/MM/yyyy'"
@@ -298,7 +298,7 @@ export default {
       this.isActive = true
       // Lấy danh sách các bảng danh mục từ server
       axios
-        .get(`${baseUrl}/categories/get-tables`)
+        .get(`${baseUrl}/cate/get-tables`)
         .then(async(response) => {
           this.tables = response.data
           console.log(this.tables)
@@ -319,18 +319,18 @@ export default {
       if (this.selectedTable) {
         this.isActive = true
         axios
-          .get(`${baseUrl}/categories/metadata/${this.selectedTable}`)
+          .get(`${baseUrl}/cate/metadata/${this.selectedTable}`)
           .then((response) => {
             this.metadata = response.data.metadata
             this.searchData = {}
             this.dropdownOptions = response.data.dropdownValues // Lấy dữ liệu cho dropdowns
             console.log(
               'response.data.columnValidations:',
-              response.data.metadata.columnValidations
+              response.data.metadata.column_validations
             )
 
             this.buildFormValidationRules(
-              response.data.metadata.columnValidations
+              response.data.metadata.column_validations
             ) // Gọi hàm tạo form rules
             this.resetForm()
             this.isActive = false
@@ -349,7 +349,7 @@ export default {
       if (this.selectedTable) {
         this.isActive = true
         axios
-          .post(`${baseUrl}/categories/search/${this.selectedTable}`, {
+          .post(`${baseUrl}/cate/search/${this.selectedTable}`, {
             query: this.searchText
           })
           .then(async(response) => {
@@ -373,11 +373,11 @@ export default {
           cancelButtonText: 'Cancel',
           type: 'warning'
         }).then(() => {
-          //const primaryKeys = this.metadata.primary_columns
+          // const primaryKeys = this.metadata.primary_columns
 
           this.isActive = true
           axios
-            .delete(`${baseUrl}/categories/delete/${this.selectedTable}/${id}`)
+            .delete(`${baseUrl}/cate/delete/${this.selectedTable}/${id}`)
             .then(async() => {
               this.searchRecords()
               this.$notify({
@@ -408,11 +408,11 @@ export default {
           cancelButtonText: 'Cancel',
           type: 'warning'
         }).then(() => {
-          const primaryKeys = this.metadata.columnPrimarys
+          const primaryKeys = this.metadata.column_primarys
 
           this.isActive = true
           axios
-            .delete(`${baseUrl}/categories/remove/${this.selectedTable}`, {
+            .delete(`${baseUrl}/cate/remove/${this.selectedTable}`, {
               data: primaryKeys.reduce((acc, key) => {
                 acc[key] = record[key]
                 return acc
@@ -462,7 +462,7 @@ export default {
       this.formData = {}
       // Nếu cột có giá trị mặc định là dropdown thì đặt giá trị mặc định là rỗng
       for (const field in this.metadata.columns) {
-        if (this.metadata.columnTypes[field].type === 'dropdown') {
+        if (this.metadata.column_types[field].type === 'dropdown') {
           this.formData[field] = null // Đặt giá trị ban đầu của dropdown là null
         }
       }
@@ -474,7 +474,7 @@ export default {
           if (this.dialogType === 'create') {
             axios
               .post(
-                `${baseUrl}/categories/create/${this.selectedTable}`,
+                `${baseUrl}/cate/create/${this.selectedTable}`,
                 this.formData
               )
               .then(async() => {
@@ -499,12 +499,12 @@ export default {
                 console.error(err)
               })
           } else if (this.dialogType === 'update') {
-            const primaryKeys = this.metadata.columnPrimarys // Lấy primary keys từ metadata
+            const primaryKeys = this.metadata.column_primarys // Lấy primary keys từ metadata
             const recordData = { ...this.formData }
 
             this.isActive = true
             axios
-              .put(`${baseUrl}/categories/edit/${this.selectedTable}`, {
+              .put(`${baseUrl}/cate/edit/${this.selectedTable}`, {
                 ...recordData,
                 primaryKeys: primaryKeys.reduce((acc, key) => {
                   acc[key] = recordData[key]
