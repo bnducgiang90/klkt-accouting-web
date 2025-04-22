@@ -82,11 +82,11 @@ export default {
   components: { SocialSign },
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
+      // if (!validUsername(value)) {
+      //   callback(new Error('Please enter the correct user name'))
+      // } else {
+      callback()
+      // }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
@@ -158,10 +158,16 @@ export default {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm)
             .then(() => {
+              console.log('login success')
               this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
               this.loading = false
             })
-            .catch(() => {
+            .catch(error => {
+              // Xử lý lỗi (ví dụ: hiển thị thông báo lỗi)
+              console.error('Login failed:', error)
+              // this.$message.error('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
+
+              // Dừng loading
               this.loading = false
             })
         } else {
