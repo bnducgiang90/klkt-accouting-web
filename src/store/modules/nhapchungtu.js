@@ -1,4 +1,5 @@
 import axios from 'axios'
+import request from '@/utils/request'
 
 const state = {
   loaiChungTu: '',
@@ -201,13 +202,28 @@ const actions = {
   },
   async loadNhaCungCap({ commit }) {
     try {
-      const response = await axios.get('http://localhost:8080/api/nhacungcap')
+      const response = await axios.get('http://localhost:8080/api/core/get-list-data')
       const data = response.data
       commit('SET_STATE', { key: 'lstNhaCungCap', value: data })
     } catch (error) {
       console.error('Lỗi khi tải danh sách nhà cung cấp:', error)
     }
   },
+  async loadNhaCungCap2({ commit }) {
+      try {
+        const response = await request.post('/core/get-list-data', {
+          table_code: 'tbldmnhacungcap',
+          size: 25,
+          page: 1
+        })
+
+        // Nếu bạn đã xử lý response interceptor, response sẽ là response.data rồi
+        commit('SET_STATE', { key: 'lstNhaCungCap', value: response })
+      } catch (error) {
+        console.error('Lỗi khi tải danh sách nhà cung cấp:', error)
+        // Có thể không cần Message ở đây nếu bạn xử lý ở interceptor rồi
+      }
+    },
   async loadTaiKhoan({ commit }) {
     try {
       const response = await axios.get('http://localhost:8080/api/taikhoan')
