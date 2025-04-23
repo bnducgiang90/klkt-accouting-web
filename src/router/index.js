@@ -83,7 +83,7 @@ export const constantRoutes = [
       }
     ]
   },
-  
+
   {
     path: '/profile',
     component: Layout,
