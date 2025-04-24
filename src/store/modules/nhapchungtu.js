@@ -1,4 +1,4 @@
-import axios from 'axios'
+// import axios from 'axios'
 import request from '@/utils/request'
 
 const state = {
@@ -191,84 +191,151 @@ const actions = {
     commit('SET_STATE', { key: 'tabtype', value: tabtype })
   },
 
+  // async loadKhachHang({ commit }) {
+  //   try {
+  //     const response = await axios.get('http://localhost:8080/api/khachhang')
+  //     const data = response.data
+  //     commit('SET_STATE', { key: 'lstKhachHang', value: data })
+  //   } catch (error) {
+  //     console.error('Lỗi khi tải danh sách khách hàng:', error)
+  //   }
+  // },
   async loadKhachHang({ commit }) {
-    try {
-      const response = await axios.get('http://localhost:8080/api/khachhang')
-      const data = response.data
-      commit('SET_STATE', { key: 'lstKhachHang', value: data })
-    } catch (error) {
-      console.error('Lỗi khi tải danh sách khách hàng:', error)
-    }
-  },
-  async loadNhaCungCap({ commit }) {
-    try {
-      const response = await axios.get('http://localhost:8080/api/core/get-list-data')
-      const data = response.data
-      commit('SET_STATE', { key: 'lstNhaCungCap', value: data })
-    } catch (error) {
-      console.error('Lỗi khi tải danh sách nhà cung cấp:', error)
-    }
-  },
-  async loadNhaCungCap2({ commit }) {
       try {
         const response = await request.post('/core/get-list-data', {
-          table_code: 'tbldmnhacungcap',
-          size: 25,
+          table_code: 'tbldmkhachhang',
+          size: 200,
           page: 1
         })
 
-        // Nếu bạn đã xử lý response interceptor, response sẽ là response.data rồi
-        commit('SET_STATE', { key: 'lstNhaCungCap', value: response })
+        commit('SET_STATE', { key: 'lstKhachHang', value: response })
       } catch (error) {
-        console.error('Lỗi khi tải danh sách nhà cung cấp:', error)
-        // Có thể không cần Message ở đây nếu bạn xử lý ở interceptor rồi
+        console.error('Lỗi khi tải danh sách khách hàng:', error)
       }
     },
+  async loadNhaCungCap({ commit }) {
+      try {
+        const response = await request.post('/core/get-list-data', {
+          table_code: 'tbldmnhacungcap',
+          size: 5000,
+          page: 1
+        })
+
+        commit('SET_STATE', { key: 'lstNhaCungCap', value: response })
+      } catch (error) {
+        console.error('Lỗi khi tải danh sách nhà cung cấp 2:', error)
+      }
+    },
+  // async loadTaiKhoan({ commit }) {
+  //   try {
+  //     const response = await axios.get('http://localhost:8080/api/taikhoan')
+  //     const data = response.data
+  //     commit('SET_STATE', { key: 'lstTaiKhoan', value: data })
+  //   } catch (error) {
+  //     console.error('Lỗi khi tải danh sách tài khoản:', error)
+  //   }
+  // },
   async loadTaiKhoan({ commit }) {
-    try {
-      const response = await axios.get('http://localhost:8080/api/taikhoan')
-      const data = response.data
-      commit('SET_STATE', { key: 'lstTaiKhoan', value: data })
-    } catch (error) {
-      console.error('Lỗi khi tải danh sách tài khoản:', error)
-    }
-  },
+      try {
+        const response = await request.post('/core/get-list-data', {
+          table_code: 'tbldmtaikhoan',
+          size: 5000,
+          page: 1
+        })
+
+        commit('SET_STATE', { key: 'lstTaiKhoan', value: response })
+      } catch (error) {
+        console.error('Lỗi khi tải danh sách tài khoản:', error)
+      }
+    },
+  // async loadNguoiGiaoDich({ commit }) {
+  //   try {
+  //     const response = await axios.get('http://localhost:8080/api/nguoi-giao-dich')
+  //     const data = response.data
+  //     commit('SET_STATE', { key: 'lstNguoiGiaoDich', value: data })
+  //   } catch (error) {
+  //     console.error('Lỗi khi tải danh sách người giao dịch:', error)
+  //   }
+  // },
   async loadNguoiGiaoDich({ commit }) {
-    try {
-      const response = await axios.get('http://localhost:8080/api/nguoi-giao-dich')
-      const data = response.data
-      commit('SET_STATE', { key: 'lstNguoiGiaoDich', value: data })
-    } catch (error) {
-      console.error('Lỗi khi tải danh sách người giao dịch:', error)
-    }
-  },
+      try {
+        const response = await request.post('/core/get-list-data', {
+          table_code: 'tbldmnguoi_giaodich',
+          size: 5000,
+          page: 1
+        })
+
+        commit('SET_STATE', { key: 'lstNguoiGiaoDich', value: response })
+      } catch (error) {
+        console.error('Lỗi khi tải danh sách người giao dịch:', error)
+      }
+    },
+  // async loadHinhThucTT({ commit }) {
+  //   try {
+  //     const response = await axios.get('http://localhost:8080/api/hinhthuctt')
+  //     const data = response.data
+  //     commit('SET_STATE', { key: 'lstHinhThucTT', value: data })
+  //   } catch (error) {
+  //     console.error('Lỗi khi tải danh sách hình thức thanh toán:', error)
+  //   }
+  // },
   async loadHinhThucTT({ commit }) {
-    try {
-      const response = await axios.get('http://localhost:8080/api/hinhthuctt')
-      const data = response.data
-      commit('SET_STATE', { key: 'lstHinhThucTT', value: data })
-    } catch (error) {
-      console.error('Lỗi khi tải danh sách hình thức thanh toán:', error)
-    }
-  },
+      try {
+        const response = await request.post('/core/get-list-data', {
+          table_code: 'tbldmhinhthuctt',
+          size: 5000,
+          page: 1
+        })
+
+        commit('SET_STATE', { key: 'lstHinhThucTT', value: response })
+      } catch (error) {
+        console.error('Lỗi khi tải danh sách hình thức thanh toán:', error)
+      }
+    },
+  // async loadVatTu({ commit }) {
+  //   try {
+  //     const response = await axios.get('http://localhost:8080/api/vat-tu-hang-hoa')
+  //     const data = response.data
+  //     commit('SET_STATE', { key: 'lstVatTu', value: data })
+  //   } catch (error) {
+  //     console.error('Lỗi khi tải danh sách vật tư:', error)
+  //   }
+  // },
   async loadVatTu({ commit }) {
-    try {
-      const response = await axios.get('http://localhost:8080/api/vat-tu-hang-hoa')
-      const data = response.data
-      commit('SET_STATE', { key: 'lstVatTu', value: data })
-    } catch (error) {
-      console.error('Lỗi khi tải danh sách vật tư:', error)
-    }
-  },
+      try {
+        const response = await request.post('/core/get-list-data', {
+          table_code: 'tbldmvattu_hanghoa',
+          size: 5000,
+          page: 1
+        })
+
+        commit('SET_STATE', { key: 'lstVatTu', value: response })
+      } catch (error) {
+        console.error('Lỗi khi tải danh sách vật tư:', error)
+      }
+    },
+  // async loadKhoHang({ commit }) {
+  //   try {
+  //     const response = await axios.get('http://localhost:8080/api/khohang')
+  //     const data = response.data
+  //     commit('SET_STATE', { key: 'lstKhoHang', value: data })
+  //   } catch (error) {
+  //     console.error('Lỗi khi tải danh sách kho hàng:', error)
+  //   }
+  // },
   async loadKhoHang({ commit }) {
-    try {
-      const response = await axios.get('http://localhost:8080/api/khohang')
-      const data = response.data
-      commit('SET_STATE', { key: 'lstKhoHang', value: data })
-    } catch (error) {
-      console.error('Lỗi khi tải danh sách kho hàng:', error)
-    }
-  },
+      try {
+        const response = await request.post('/core/get-list-data', {
+          table_code: 'tbldmkhohang',
+          size: 5000,
+          page: 1
+        })
+
+        commit('SET_STATE', { key: 'lstKhoHang', value: response })
+      } catch (error) {
+        console.error('Lỗi khi tải danh sách kho hàng:', error)
+      }
+    },
   async updateHachToanCell({ commit }, payload) {
     commit('UPDATE_HACH_TOAN_CELL', payload)
   },

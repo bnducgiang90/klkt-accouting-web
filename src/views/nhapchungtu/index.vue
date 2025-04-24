@@ -119,7 +119,7 @@ export default {
   mounted() {
     this.popupRef = this.$refs.popupRef // Gán reference cho popup
     this.getLoaiChungTu()
-    // this.loadKhachHang()
+    this.loadKhachHang()
     this.loadNhaCungCap()
     this.loadTaiKhoan()
     this.loadHinhThucTT()
