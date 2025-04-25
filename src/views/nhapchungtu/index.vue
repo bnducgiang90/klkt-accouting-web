@@ -84,7 +84,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('nhapchungtu', ['loaiChungTu', 'loadKhachHang', 'loadNhaCungCap', 'loadNguoiGiaoDich', 'loadTaiKhoan', 'loadHinhThucTT', 'loadVatTu', 'loadKhoHang', 'handleRowSelected', 'updateLoaiChungTu', 'updateTabType']),
+    ...mapActions('nhapchungtu', ['loaiChungTu', 'loadKhachHang', 'loadNhaCungCap', 'loadNguoiGiaoDich', 'loadTaiKhoan', 'loadHinhThucTT', 'loadVatTu', 'loadKhoHang', 'loadTaiKhoanNganHang', 'loadCanBo141', 'handleRowSelected', 'updateLoaiChungTu', 'updateTabType']),
     onSubmit() {
       console.log('submit!')
     },
@@ -126,6 +126,8 @@ export default {
     this.loadVatTu()
     this.loadNguoiGiaoDich()
     this.loadKhoHang()
+    this.loadTaiKhoanNganHang()
+    this.loadCanBo141()
   }
 }
 </script>

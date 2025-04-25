@@ -16,9 +16,9 @@ const state = {
   lstHinhThucTT: [],
   lstNguoiGiaoDich: [],
   lstTaiKhoan: [],
-
+  lstTaiKhoanNganHang: [],
   lstVatTu: [],
-
+  lstCanBo141: [],
   lstKhoHang: [],
 
   nhatKyChung: {
@@ -305,10 +305,10 @@ const actions = {
       try {
         const response = await request.post('/core/get-list-data', {
           table_code: 'tbldmvattu_hanghoa',
-          size: 5000,
+          size: 100,
           page: 1
         })
-
+        console.log(response)
         commit('SET_STATE', { key: 'lstVatTu', value: response })
       } catch (error) {
         console.error('Lỗi khi tải danh sách vật tư:', error)
@@ -334,6 +334,32 @@ const actions = {
         commit('SET_STATE', { key: 'lstKhoHang', value: response })
       } catch (error) {
         console.error('Lỗi khi tải danh sách kho hàng:', error)
+      }
+    },
+  async loadTaiKhoanNganHang({ commit }) {
+      try {
+        const response = await request.post('/core/get-list-data', {
+          table_code: 'tbldm_taikhoan_nganhang_donvi_sudung',
+          size: 5000,
+          page: 1
+        })
+
+        commit('SET_STATE', { key: 'lstTaiKhoanNganHang', value: response })
+      } catch (error) {
+        console.error('Lỗi khi tải danh sách tài khoản ngân hàng:', error)
+      }
+    },
+  async loadCanBo141({ commit }) {
+      try {
+        const response = await request.post('/core/get-list-data', {
+          table_code: 'tbldmcanbo_141',
+          size: 5000,
+          page: 1
+        })
+
+        commit('SET_STATE', { key: 'lstCanBo141', value: response })
+      } catch (error) {
+        console.error('Lỗi khi tải danh sách cán bộ:', error)
       }
     },
   async updateHachToanCell({ commit }, payload) {

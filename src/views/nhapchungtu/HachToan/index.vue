@@ -24,6 +24,11 @@ export default {
         { prop: 'soHieuTK', label: 'Số hiệu tài khoản' },
         { prop: 'tenTK', label: 'Tên tài khoản' }
       ],
+      columnVatTuPopupTable: [
+        { prop: 'soHieuTK', label: 'Mã nhóm hàng' },
+        { prop: 'tenTK', label: 'Mã vật tư' },
+        { prop: 'tenTK', label: 'Tên vật tư' }
+      ],
       columns: [
         { prop: 'dongChungTu', label: 'Dòng chứng từ', minWidth: '110px', align: 'center', disableEditing: true, identity: true },
         { prop: 'tkNo', label: 'TK Nợ', minWidth: '100px', align: 'center', onSpaceKey: true, regexPattern: '^[0-9]*$', maxLength: 10, errorMessage: 'Chỉ được nhập số!' },
@@ -38,7 +43,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('nhapchungtu', ['hachToanData', 'lstTaiKhoan'])
+    ...mapState('nhapchungtu', ['nhatKyChung','hachToanData', 'lstTaiKhoan'])
   },
   methods: {
     ...mapActions('nhapchungtu', ['setRowFlag', 'updateHachToanCell']), // 'upsertHachToan', 'deleteHachToan',
@@ -50,30 +55,70 @@ export default {
       console.log('truyen vao', data)
       alert(`Space pressed in ${data.col.prop}: ${data.row[data.col.prop]} : ${data.row.dongChungTu}`)
       if (data.col.prop === 'tkNo' || data.col.prop === 'tkCo') {
+        alert(`vao xxx`)
         if (this.popupRef) {
           // nếu tk nợ hoặc tài khoản có = 131  -> lấy mã khach hàng bên trên điền xuống
-
-          // nếu tk nợ hoặc tk có = 331 -> lấy mã nhà cung cấp bên trên điều xuống
-
-          // nếu tk nợ hoặc tk có = 141 hoặc 334 -> show popup là danh mục cán bộ 141
-
-          // nếu tk nợ hoặc tk có = 154 -> show popup là danh mục vật tư
-
-          // nếu khác show popup danh mục tài khoản chi tiết
-
-          const result = await this.popupRef.openPopup({
-            title: 'DANH MỤC TÀI KHOẢN',
-            width: '50%',
-            columns: this.columnTaiKhoanPopupTable,
-            data: this.lstTaiKhoan
-          })
-          if (result) {
-            this.selectedRow = result
-            this.updateHachToanCell({
-              dongChungTu: data.row.dongChungTu, // Số dòng cần update
-              column: data.col.prop, // Cột cần update
-              value: result.soHieuTK // Giá trị mới
+          if (data.row[data.col.prop] === '131') {
+            if (this.nhatKyChung.chungTu.khachHang) {
+              this.updateHachToanCell({
+                dongChungTu: data.row.dongChungTu, // Số dòng cần update
+                column: data.col.prop === 'tkNo' ? 'chiTietNo' : 'chiTietCo' , // Cột cần update
+                value: this.nhatKyChung.chungTu.khachHang // Giá trị mới
+              })
+            }
+          } else if (data.row[data.col.prop] === '331') { // nếu tk nợ hoặc tk có = 331 -> lấy mã nhà cung cấp bên trên điều xuống
+            if (this.nhatKyChung.thongTinKhachHang.nhaCungCap) {
+              this.updateHachToanCell({
+                dongChungTu: data.row.dongChungTu, // Số dòng cần update
+                column: data.col.prop === 'tkNo' ? 'chiTietNo' : 'chiTietCo' , // Cột cần update
+                value: this.nhatKyChung.thongTinKhachHang.nhaCungCap // Giá trị mới
+              })
+            }
+          } else if (data.row[data.col.prop] === '141' || data.row[data.col.prop] === '334') { // nếu tk nợ hoặc tk có = 141 hoặc 334 -> show popup là danh mục cán bộ 141
+            const result = await this.popupRef.openPopup({
+              title: 'DANH MỤC CÁN BỘ',
+              width: '50%',
+              columns: this.columnTaiKhoanPopupTable,
+              data: this.lstTaiKhoan
             })
+            if (result) {
+              this.selectedRow = result
+              this.updateHachToanCell({
+                dongChungTu: data.row.dongChungTu, // Số dòng cần update
+                column: data.col.prop, // Cột cần update
+                value: result.soHieuTK // Giá trị mới
+              })
+            }
+          } else if (data.row[data.col.prop] === '154') { // nếu tk nợ hoặc tk có = 154 -> show popup là danh mục vật tư
+            const result = await this.popupRef.openPopup({
+              title: 'DANH MỤC VẬT TƯ',
+              width: '50%',
+              columns: this.columnTaiKhoanPopupTable,
+              data: this.lstTaiKhoan
+            })
+            if (result) {
+              this.selectedRow = result
+              this.updateHachToanCell({
+                dongChungTu: data.row.dongChungTu, // Số dòng cần update
+                column: data.col.prop, // Cột cần update
+                value: result.soHieuTK // Giá trị mới
+              })
+            }
+          } else { // nếu khác show popup danh mục tài khoản chi tiết
+            const result = await this.popupRef.openPopup({
+              title: 'DANH MỤC TÀI KHOẢN',
+              width: '50%',
+              columns: this.columnTaiKhoanPopupTable,
+              data: this.lstTaiKhoan
+            })
+            if (result) {
+              this.selectedRow = result
+              this.updateHachToanCell({
+                dongChungTu: data.row.dongChungTu, // Số dòng cần update
+                column: data.col.prop, // Cột cần update
+                value: result.soHieuTK // Giá trị mới
+              })
+            }
           }
         }
       }
