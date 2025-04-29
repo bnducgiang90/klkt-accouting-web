@@ -5,6 +5,7 @@
       :data="xuatVatTuData"
       @space-key-pressed="handlePressSpaceKey"
       @handle-row="handleRow"
+      @change-value="handleChangeValue"
     />
   </div>
 </template>
@@ -21,39 +22,39 @@ export default {
   data() {
     return {
       columnTaiKhoanPopupTable: [
-        { prop: 'soHieuTK', label: 'Số hiệu tài khoản' },
-        { prop: 'tenTK', label: 'Tên tài khoản' }
+        { prop: 'sohieutk', label: 'Số hiệu tài khoản' },
+        { prop: 'ten_tk', label: 'Tên tài khoản' }
       ],
       columnKhoHangPopupTable: [
-        { prop: 'maKho', label: 'Mã kho hàng' },
-        { prop: 'tenKho', label: 'Tên kho hàng' }
+        { prop: 'ma_kho', label: 'Mã kho hàng' },
+        { prop: 'ten_kho', label: 'Tên kho hàng' }
       ],
       columnVatTuPopupTable: [
-        { prop: 'maNhom', label: 'Mã nhóm hàng', width: '100px' },
-        { prop: 'maVattu', label: 'Mã vật tư', width: '180px' },
-        { prop: 'tenVattu', label: 'tên vật tư', width: '180px' },
+        { prop: 'ma_nhom', label: 'Mã nhóm hàng', width: '100px' },
+        { prop: 'ma_vattu', label: 'Mã vật tư', width: '180px' },
+        { prop: 'ten_vattu', label: 'tên vật tư', width: '180px' },
         { prop: 'dvt', label: 'ĐVT', width: '180px' },
-        { prop: 'heSoQuyDoi', label: 'H.Số quy đổi', width: '180px' },
-        { prop: 'maDonViQuyDoi', label: 'ĐVT quy đổi', width: '180px' },
-        { prop: 'viTriLuuTru', label: 'Vị trí lưu trữ', width: '180px' },
+        { prop: 'he_so_quy_doi', label: 'H.Số quy đổi', width: '180px' },
+        { prop: 'ma_don_vi_quy_doi', label: 'ĐVT quy đổi', width: '180px' },
+        { prop: 'vi_tri_luu_tru', label: 'Vị trí lưu trữ', width: '180px' },
         { prop: 'nam', label: 'Năm', width: '180px' }
       ],
       columns: [
         { prop: 'id', label: 'ID', minWidth: '110px', hidden: true },
-        { prop: 'tkXuat', label: 'TK Xuất', minWidth: '110px', onSpaceKey: true },
+        { prop: 'tkXuat', label: 'TK xuất', minWidth: '110px', onSpaceKey: true },
         { prop: 'maKhoXuat', label: 'Mã Kho xuất', minWidth: '100px', align: 'center', onSpaceKey: true },
         { prop: 'maVatTu', label: 'Mã vật tư', minWidth: '120px', align: 'center', onSpaceKey: true },
         { prop: 'tenVatTu', label: 'Tên Vật tư', minWidth: '250px', align: 'left', onSpaceKey: true },
         { prop: 'dvt', label: 'ĐVT', minWidth: '120px', align: 'center' },
-        { prop: 'soLuong', label: 'Số lượng', minWidth: '180px', align: 'right', format: 'currency' },
+        { prop: 'soLuong', label: 'Số lượng', minWidth: '180px', align: 'right', format: 'currency', onChangeValue: true, regexPattern: '^[0-9]*$', maxLength: 20, errorMessage: 'Chỉ được nhập số!' },
         { prop: 'soLuongTheoChungTu', label: 'Số lượng theo C.Từ', minWidth: '200px', align: 'right' },
-        { prop: 'donGiaBan', label: 'Đơn giá Bán', minWidth: '200px', align: 'right' },
+        { prop: 'donGiaBan', label: 'Đơn giá Bán', minWidth: '200px', align: 'right', onChangeValue: true },
         { prop: 'thanhTien', label: 'Thành tiền', minWidth: '180px', align: 'right  ' },
         { prop: 'khuyenMai', label: 'Khuyến mại', minWidth: '180px', align: 'center', type: 'boolean' },
         { prop: 'chietKhau', label: 'Chiết khấu', minWidth: '180px' },
         { prop: 'thanhToan', label: 'Thanh toán', minWidth: '180px' },
         { prop: 'ghiChu', label: 'Ghi chú', minWidth: '180px' },
-        { prop: 'dongHachToan', label: 'Dòng hoạch toán', minWidth: '180px' }
+        { prop: 'dongHachToan', label: 'Dòng hoạch toán', minWidth: '180px', regexPattern: '^[0-9]*$', maxLength: 15, errorMessage: 'Chỉ được nhập số!'}
       ]
     }
   },
@@ -82,7 +83,7 @@ export default {
             this.updateXuatVatTuCell({
               dongHachToan: data.row.dongHachToan, // Số dòng cần update
               column: data.col.prop, // Cột cần update
-              value: result.soHieuTK // Giá trị mới
+              value: result.sohieutk // Giá trị mới
             })
           }
         }
@@ -99,7 +100,7 @@ export default {
             this.updateXuatVatTuCell({
               dongHachToan: data.row.dongHachToan, // Số dòng cần update
               column: data.col.prop, // Cột cần update
-              value: result.maKho // Giá trị mới
+              value: result.ma_kho // Giá trị mới
             })
           }
         }
@@ -116,17 +117,37 @@ export default {
             this.updateXuatVatTuCell({
               dongHachToan: data.row.dongHachToan, // Số dòng cần update
               column: 'maVatTu', // Cột cần update
-              value: result.maVattu // Giá trị mới
+              value: result.ma_vattu // Giá trị mới
             })
             this.updateXuatVatTuCell({
               dongHachToan: data.row.dongHachToan, // Số dòng cần update
               column: 'tenVatTu', // Cột cần update
-              value: result.tenVattu // Giá trị mới
+              value: result.ten_vattu // Giá trị mới
             })
           }
         }
       }
-    }
+    },
+    async handleChangeValue(data) {
+      console.log('truyen vao', data)
+      alert(`Space pressed in ${data.col.prop}: ${data.row[data.col.prop]}`)
+      if (data.col.prop === 'soLuong') {
+        this.updateXuatVatTuCell({
+            dongHachToan: data.row.dongHachToan, // Số dòng cần update
+            column: 'soLuongTheoChungTu', // Cột cần update
+            value: data.row['soLuong'] // Giá trị mới
+          })
+      }
+      if (data.col.prop === 'soLuong' || data.col.prop === 'donGiaBan' ) {
+        if (data.row['soLuong'] && data.row['donGiaBan']) {
+          this.updateXuatVatTuCell({
+            dongHachToan: data.row.dongHachToan, // Số dòng cần update
+            column: 'thanhTien', // Cột cần update
+            value: data.row['soLuong'] * data.row['donGiaBan'] // Giá trị mới
+          })
+        }
+      }
+    },
   }
 }
 </script>

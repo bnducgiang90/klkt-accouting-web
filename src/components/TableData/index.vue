@@ -35,6 +35,7 @@
               :disabled="col.disableEditing"
               @input="formatCurrency(scope.row, col.prop)"
               @keydown.native.space.prevent="col.onSpaceKey ? handleSpaceKey(scope.row, col) : null"
+              @change="handleValidation(scope.row, col, $event) && col.onChangeValue ? handleChangeValue(scope.row, col) : null "
             />
             <el-input
               v-else
@@ -42,7 +43,7 @@
               :disabled="col.disableEditing"
               :class="{ 'error-input': scope.row.errors && scope.row.errors[col.prop] }"
               @keydown.native.space.prevent="col.onSpaceKey ? handleSpaceKey(scope.row, col) : null"
-              @blur="handleValidation(scope.row, col, $event)"
+              @change="handleValidation(scope.row, col, $event) && col.onChangeValue ? handleChangeValue(scope.row, col) : null "
             />
           </div>
           <div v-else :class="{ 'wrap-text': col.wrapText }">
@@ -122,6 +123,9 @@ export default {
     handleSpaceKey(row, col) {
       this.$emit('space-key-pressed', { row, col })
     },
+    handleChangeValue(row, col) {
+      this.$emit('change-value', { row, col })
+    },
     validateAndFormatDate(row, prop) {
       const value = row[prop]
       if (/^\d{6,8}$/.test(value)) {
@@ -169,10 +173,13 @@ export default {
           event.target.focus() // Đặt lại focus vào ô input
           event.target.select() // Chọn toàn bộ nội dung nhập sai
         })
+
+        return false; // <== Nếu có lỗi
       } else {
         if (row.errors) {
           this.$set(row.errors, col.prop, false) // Xóa lỗi nếu nhập đúng
         }
+        return true; // <== Nếu không lỗi
       }
     },
     validateInput(value, column) {

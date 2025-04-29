@@ -184,11 +184,11 @@ export default {
   props: ['popupRef'],
   data() {
     return {
-      selectedRow: null,
+      // selectedRow: null,
       columnKhachHangPopupTable: [
         { prop: 'id', label: 'ID', width: '120px' },
         { prop: 'cap', label: 'Cấp', width: '80px', align: 'center' },
-        { prop: 'mst', label: 'Mã số thuế', width: '100px' },
+        { prop: 'mst_kh_ncc', label: 'Mã số thuế', width: '100px' },
         { prop: 'ten_congty', label: 'Tên đơn vị', width: '250px' },
         { prop: 'du_no', label: 'Dư nợ', width: '150px', align: 'right', format: 'currency' },
         { prop: 'du_co', label: 'Dư có', width: '150px', align: 'right', format: 'currency' },
@@ -208,7 +208,7 @@ export default {
       columnNhaCungCapPopupTable: [
         { prop: 'id', label: 'ID', minWidth: '120px' },
         { prop: 'cap', label: 'Cấp', minWidth: '80px', align: 'center' },
-        { prop: 'mst', label: 'Mã số thuế', minWidth: '100px' },
+        { prop: 'mst_kh_ncc', label: 'Mã số thuế', minWidth: '100px' },
         { prop: 'ten_congty', label: 'Tên đơn vị', minWidth: '200px', maxWidth: '250px', wrapText: true },
         { prop: 'du_no', label: 'Dư nợ', minWidth: '150px', align: 'right', format: 'currency' },
         { prop: 'du_co', label: 'Dư có', minWidth: '150px', align: 'right', format: 'currency' },
@@ -250,10 +250,10 @@ export default {
           title: 'DANH MỤC KHÁCH HÀNG',
           width: '90%',
           columns: this.columnKhachHangPopupTable,
-          data: this.lstNhaCungCap
+          data: this.lstKhachHang
         })
         if (result) {
-          this.selectedRow = result
+          // this.selectedRow = result
           console.log(result)
           this.updateMultipleNhatKyChung([
             { path: 'chungTu.khachHang', value: result.id },
@@ -275,7 +275,7 @@ export default {
           data: this.lstNhaCungCap
         })
         if (result) {
-          this.selectedRow = result
+          // this.selectedRow = result
           console.log(result)
           this.updateMultipleNhatKyChung([
             { path: 'thongTinKhachHang.nhaCungCap', value: result.id },
@@ -297,7 +297,7 @@ export default {
           data: this.lstNguoiGiaoDich
         })
         if (result) {
-          this.selectedRow = result
+          // this.selectedRow = result
           console.log(result)
           this.updateMultipleNhatKyChung([
             { path: 'thongTinKhachHang.maNguoiGiaoDich', value: result.ma_nguoi_gd },
@@ -315,7 +315,7 @@ export default {
           data: this.lstTaiKhoanNganHang
         })
         if (result) {
-          this.selectedRow = result
+          // this.selectedRow = result
           console.log(result)
           this.updateMultipleNhatKyChung([
             { path: 'thongTinKhachHang.soTaiKhoan', value: result.so_tk_nh },
