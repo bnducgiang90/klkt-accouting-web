@@ -237,7 +237,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('nhapchungtu', ['nhatKyChung', 'lstHinhThucTT', 'lstKhachHang', 'lstNhaCungCap', 'lstNguoiGiaoDich', 'lstTaiKhoanNganHang'])
+    ...mapState('nhapchungtu', ['nhatKyChung','lstHinhThucTT', 'lstKhachHang', 'lstNhaCungCap', 'lstNguoiGiaoDich', 'lstTaiKhoanNganHang','chungTu', 'loaiChungTu'])
   },
   methods: {
     ...mapActions('nhapchungtu', ['updateMultipleNhatKyChung']),

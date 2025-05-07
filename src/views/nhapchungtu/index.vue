@@ -14,16 +14,15 @@
         <XuatVatTu :popup-ref="popupRef" />
       </el-tab-pane>
       <el-tab-pane v-if="isHoaDonMuaVao" label="Hóa đơn mua vào" name="TAB_HOA_DON_MUA_VAO">
-        <HoaDonMuaVao />
+        <HoaDonMuaVao :popup-ref="popupRef" />
       </el-tab-pane>
       <el-tab-pane v-if="isHoaDonBanRa" label="Hóa đơn bán ra" name="TAB_HOA_DON_BAN_RA">
-        <HoaDonBanRa />
+        <HoaDonBanRa :popup-ref="popupRef" />
       </el-tab-pane>
     </el-tabs>
     <el-card id="control-box" class="border-card">
       <div class="button-container">
         <el-button>In chứng từ</el-button>
-        <el-button>Thêm mới</el-button>
         <el-button>Ghi</el-button>
       </div>
     </el-card>

@@ -20,8 +20,25 @@
       >
         <template slot-scope="scope">
           <div v-if="scope.row.editType === 'inserting' || scope.row.editType === 'updating' || scope.row.editType === 'saving'">
+
+            <!-- Hiển thị checkbox cho kiểu combobox -->
+            <el-select
+              v-if="col.type === 'combobox'"
+              v-model="scope.row[col.prop]"
+              placeholder="Chọn"
+              filterable
+              clearable
+            >
+              <el-option
+                v-for="item in col.combodata"
+                :key="item.code"
+                :label="item.name"
+                :value="item.code"
+              />
+            </el-select>
+
             <!-- Hiển thị checkbox cho kiểu boolean -->
-            <el-checkbox v-if="col.type === 'boolean'" v-model="scope.row[col.prop]" />
+            <el-checkbox v-else-if="col.type === 'boolean'" v-model="scope.row[col.prop]" />
 
             <el-input
               v-else-if="col.format === 'date'"
@@ -47,8 +64,12 @@
             />
           </div>
           <div v-else :class="{ 'wrap-text': col.wrapText }">
+            <!-- Hiển thị tên nếu là combobox -->
+            <span v-if="col.type === 'combobox'">
+              {{ getComboLabel(col.combodata, scope.row[col.prop]) }}
+            </span>
             <!-- Hiển thị dạng checkbox nếu là kiểu boolean -->
-            <el-checkbox v-if="col.type === 'boolean'" v-model="scope.row[col.prop]" disabled />
+            <el-checkbox v-else-if="col.type === 'boolean'" v-model="scope.row[col.prop]" disabled />
             <template v-else>
               {{ col.format === 'currency' ? formatDisplayCurrency(scope.row[col.prop]) : col.format === 'date' ? formatDateDisplay(scope.row[col.prop]) : scope.row[col.prop] }}
             </template>
@@ -88,6 +109,10 @@ export default {
     }
   },
   methods: {
+    getComboLabel(comboData, value) {
+      const found = comboData?.find(item => item.code === value);
+      return found ? found.name : '';
+    },
     editRow(row) {
       this.$emit('handle-row', 'updating', row)
     },
