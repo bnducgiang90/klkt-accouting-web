@@ -24,9 +24,9 @@
                   placeholder="Chọn ngày"
                 />
               </el-form-item>
-              <el-checkbox
-                v-model="nhatKyChung.chungTu.hienSoChungTu"
-              >Hiện số chứng từ</el-checkbox>
+              <el-checkbox v-model="nhatKyChung.chungTu.hienSoChungTu"
+                >Hiện số chứng từ</el-checkbox
+              >
             </div>
             <div id="nhatkychung-chungtu-body-left-line2">
               <el-form-item label="Nội dung" style="flex: 1">
@@ -42,10 +42,9 @@
               <el-input v-model="nhatKyChung.chungTu.khachHang" />
             </el-form-item>
             <el-form-item class="center-btn" label-width="20px">
-              <el-button
-                type="primary"
-                @click="openPopupKhachHang"
-              >...</el-button>
+              <el-button type="primary" @click="openPopupKhachHang"
+                >...</el-button
+              >
             </el-form-item>
           </div>
         </div>
@@ -101,10 +100,9 @@
                 />
               </el-form-item>
               <el-form-item class="center-btn" label-width="20px">
-                <el-button
-                  type="primary"
-                  @click="openPopupTaiKhoanNganHang"
-                >...</el-button>
+                <el-button type="primary" @click="openPopupTaiKhoanNganHang"
+                  >...</el-button
+                >
               </el-form-item>
               <el-form-item label="Ngân hàng" style="flex-grow: 1">
                 <el-input
@@ -138,10 +136,9 @@
                 />
               </el-form-item>
               <el-form-item class="center-btn" label-width="20px">
-                <el-button
-                  type="primary"
-                  @click="openPopupNguoiGiaoDich"
-                >...</el-button>
+                <el-button type="primary" @click="openPopupNguoiGiaoDich"
+                  >...</el-button
+                >
               </el-form-item>
             </div>
           </div>
@@ -157,16 +154,16 @@
                 />
               </el-form-item>
               <el-form-item class="center-btn" label-width="20px">
-                <el-button
-                  type="primary"
-                  @click="openPopupNhaCungCap"
-                >...</el-button>
+                <el-button type="primary" @click="openPopupNhaCungCap"
+                  >...</el-button
+                >
               </el-form-item>
             </div>
             <div id="nhatkychung-thongtinkhachhang-body-right-line2">
               <el-checkbox
                 v-model="nhatKyChung.thongTinKhachHang.hachToanNgoaiTe"
-              >Hạch toán ngoại tệ</el-checkbox>
+                >Hạch toán ngoại tệ</el-checkbox
+              >
             </div>
           </div>
         </div>
@@ -176,156 +173,204 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions } from "vuex";
 
 export default {
-  name: 'NhatKyChung',
-  components: { },
-  props: ['popupRef'],
+  name: "NhatKyChung",
+  components: {},
+  props: ["popupRef"],
   data() {
     return {
       // selectedRow: null,
       columnKhachHangPopupTable: [
-        { prop: 'id', label: 'ID', width: '120px' },
-        { prop: 'cap', label: 'Cấp', width: '80px', align: 'center' },
-        { prop: 'mst_kh_ncc', label: 'Mã số thuế', width: '100px' },
-        { prop: 'ten_congty', label: 'Tên đơn vị', width: '250px' },
-        { prop: 'du_no', label: 'Dư nợ', width: '150px', align: 'right', format: 'currency' },
-        { prop: 'du_co', label: 'Dư có', width: '150px', align: 'right', format: 'currency' },
-        { prop: 'dia_chi', label: 'Địa chỉ', width: '250px', wrapText: true },
-        { prop: 'huyen', label: 'Huyện', width: '150px' },
-        { prop: 'tinh', label: 'Tỉnh', width: '150px' },
-        { prop: 'dien_thoai', label: 'Điện thoại', width: '120px' },
-        { prop: 'ten_giamdoc', label: 'Tên giám đốc', width: '180px' },
-        { prop: 'ten_ketoan', label: 'Tên kế toán', width: '180px' },
-        { prop: 'linh_vuc_kd', label: 'Lĩnh vực DK', width: '150px' },
-        { prop: 'khach_hang', label: 'Khách hàng', width: '180px' },
-        { prop: 'nha_cungcap', label: 'Nhà cung cấp', width: '180px' },
-        { prop: 'tai_khoan', label: 'Tài khoản', width: '120px' },
-        { prop: 'ngan_hang', label: 'Ngân hàng', width: '200px' },
-        { prop: 'email', label: 'Địa chỉ Email', width: '200px' }
+        { prop: "id", label: "ID", width: "120px" },
+        { prop: "cap", label: "Cấp", width: "80px", align: "center" },
+        { prop: "mst_kh_ncc", label: "Mã số thuế", width: "100px" },
+        { prop: "ten_congty", label: "Tên đơn vị", width: "250px" },
+        {
+          prop: "du_no",
+          label: "Dư nợ",
+          width: "150px",
+          align: "right",
+          format: "currency",
+        },
+        {
+          prop: "du_co",
+          label: "Dư có",
+          width: "150px",
+          align: "right",
+          format: "currency",
+        },
+        { prop: "dia_chi", label: "Địa chỉ", width: "250px", wrapText: true },
+        { prop: "huyen", label: "Huyện", width: "150px" },
+        { prop: "tinh", label: "Tỉnh", width: "150px" },
+        { prop: "dien_thoai", label: "Điện thoại", width: "120px" },
+        { prop: "ten_giamdoc", label: "Tên giám đốc", width: "180px" },
+        { prop: "ten_ketoan", label: "Tên kế toán", width: "180px" },
+        { prop: "linh_vuc_kd", label: "Lĩnh vực DK", width: "150px" },
+        { prop: "khach_hang", label: "Khách hàng", width: "180px" },
+        { prop: "nha_cungcap", label: "Nhà cung cấp", width: "180px" },
+        { prop: "tai_khoan", label: "Tài khoản", width: "120px" },
+        { prop: "ngan_hang", label: "Ngân hàng", width: "200px" },
+        { prop: "email", label: "Địa chỉ Email", width: "200px" },
       ],
       columnNhaCungCapPopupTable: [
-        { prop: 'id', label: 'ID', minWidth: '120px' },
-        { prop: 'cap', label: 'Cấp', minWidth: '80px', align: 'center' },
-        { prop: 'mst_kh_ncc', label: 'Mã số thuế', minWidth: '100px' },
-        { prop: 'ten_congty', label: 'Tên đơn vị', minWidth: '200px', maxWidth: '250px', wrapText: true },
-        { prop: 'du_no', label: 'Dư nợ', minWidth: '150px', align: 'right', format: 'currency' },
-        { prop: 'du_co', label: 'Dư có', minWidth: '150px', align: 'right', format: 'currency' },
-        { prop: 'dia_chi', label: 'Địa chỉ', minWidth: '250px', wrapText: true },
-        { prop: 'huyen', label: 'Huyện', minWidth: '150px' },
-        { prop: 'tinh', label: 'Tỉnh', minWidth: '150px' },
-        { prop: 'dien_thoai', label: 'Điện thoại', minWidth: '120px' },
-        { prop: 'ten_giamdoc', label: 'Tên giám đốc', minWidth: '180px' },
-        { prop: 'ten_ketoan', label: 'Tên kế toán', minWidth: '180px' },
-        { prop: 'linh_vuc_kd', label: 'Lĩnh vực DK', minWidth: '150px' },
-        { prop: 'khach_hang', label: 'Khách hàng', minWidth: '180px' },
-        { prop: 'nha_cungcap', label: 'Nhà cung cấp', minWidth: '180px' },
-        { prop: 'tai_khoan', label: 'Tài khoản', minWidth: '120px' },
-        { prop: 'ngan_hang', label: 'Ngân hàng', minWidth: '200px' },
-        { prop: 'email', label: 'Địa chỉ Email', minWidth: '200px' }
+        { prop: "id", label: "ID", minWidth: "120px" },
+        { prop: "cap", label: "Cấp", minWidth: "80px", align: "center" },
+        { prop: "mst_kh_ncc", label: "Mã số thuế", minWidth: "100px" },
+        {
+          prop: "ten_congty",
+          label: "Tên đơn vị",
+          minWidth: "200px",
+          maxWidth: "250px",
+          wrapText: true,
+        },
+        {
+          prop: "du_no",
+          label: "Dư nợ",
+          minWidth: "150px",
+          align: "right",
+          format: "currency",
+        },
+        {
+          prop: "du_co",
+          label: "Dư có",
+          minWidth: "150px",
+          align: "right",
+          format: "currency",
+        },
+        {
+          prop: "dia_chi",
+          label: "Địa chỉ",
+          minWidth: "250px",
+          wrapText: true,
+        },
+        { prop: "huyen", label: "Huyện", minWidth: "150px" },
+        { prop: "tinh", label: "Tỉnh", minWidth: "150px" },
+        { prop: "dien_thoai", label: "Điện thoại", minWidth: "120px" },
+        { prop: "ten_giamdoc", label: "Tên giám đốc", minWidth: "180px" },
+        { prop: "ten_ketoan", label: "Tên kế toán", minWidth: "180px" },
+        { prop: "linh_vuc_kd", label: "Lĩnh vực DK", minWidth: "150px" },
+        { prop: "khach_hang", label: "Khách hàng", minWidth: "180px" },
+        { prop: "nha_cungcap", label: "Nhà cung cấp", minWidth: "180px" },
+        { prop: "tai_khoan", label: "Tài khoản", minWidth: "120px" },
+        { prop: "ngan_hang", label: "Ngân hàng", minWidth: "200px" },
+        { prop: "email", label: "Địa chỉ Email", minWidth: "200px" },
       ],
       columnNguoiGiaoDichPopupTable: [
-        { prop: 'ma_nguoi_gd', label: 'Mã người giao dịch', width: '100px' },
-        { prop: 'ten_nguoi_gd', label: 'Tên người giao dịch', width: '180px' }
+        { prop: "ma_nguoi_gd", label: "Mã người giao dịch", width: "100px" },
+        { prop: "ten_nguoi_gd", label: "Tên người giao dịch", width: "180px" },
       ],
       columnTaiKhoanNganHangPopupTable: [
-        { prop: 'mst', label: 'Mã số thuế' },
-        { prop: 'so_tk_nh', label: 'Số tài khoản' },
-        { prop: 'ten_nh', label: 'Tên ngân hàng' }
-      ]
-    }
+        { prop: "mst", label: "Mã số thuế" },
+        { prop: "so_tk_nh", label: "Số tài khoản" },
+        { prop: "ten_nh", label: "Tên ngân hàng" },
+      ],
+    };
   },
   computed: {
-    ...mapState('nhapchungtu', ['nhatKyChung','lstHinhThucTT', 'lstKhachHang', 'lstNhaCungCap', 'lstNguoiGiaoDich', 'lstTaiKhoanNganHang'])
+    ...mapState("nhapchungtu", [
+      "nhatKyChung",
+      "lstHinhThucTT",
+      "lstKhachHang",
+      "lstNhaCungCap",
+      "lstNguoiGiaoDich",
+      "lstTaiKhoanNganHang",
+    ]),
   },
   methods: {
-    ...mapActions('nhapchungtu', ['updateMultipleNhatKyChung']),
+    ...mapActions("nhapchungtu", ["updateMultipleNhatKyChung"]),
     handleSelect(row) {
-      console.log(row)
+      console.log(row);
     },
     async openPopupKhachHang() {
       if (this.popupRef) {
         const result = await this.popupRef.openPopup({
-          title: 'DANH MỤC KHÁCH HÀNG',
-          width: '90%',
+          title: "DANH MỤC KHÁCH HÀNG",
+          width: "90%",
           columns: this.columnKhachHangPopupTable,
-          data: this.lstKhachHang
-        })
+          data: this.lstKhachHang,
+        });
         if (result) {
           // this.selectedRow = result
-          console.log(result)
+          console.log(result);
           this.updateMultipleNhatKyChung([
-            { path: 'chungTu.khachHang', value: result.id },
-            { path: 'thongTinKhachHang.maSoThue', value: result.mst_kh_ncc },
-            { path: 'thongTinKhachHang.tenDonVi', value: result.ten_congty },
-            { path: 'thongTinKhachHang.diaChi', value: result.dia_chi },
-            { path: 'thongTinKhachHang.dienThoai', value: result.dien_thoai },
-            { path: 'thongTinKhachHang.email', value: result.email }
-          ])
+            { path: "chungTu.khachHang", value: result.id },
+            { path: "thongTinKhachHang.maSoThue", value: result.mst_kh_ncc },
+            { path: "thongTinKhachHang.tenDonVi", value: result.ten_congty },
+            { path: "thongTinKhachHang.diaChi", value: result.dia_chi },
+            { path: "thongTinKhachHang.dienThoai", value: result.dien_thoai },
+            { path: "thongTinKhachHang.email", value: result.email },
+          ]);
         }
       }
     },
     async openPopupNhaCungCap() {
       if (this.popupRef) {
         const result = await this.popupRef.openPopup({
-          title: 'DANH MỤC NHÀ CUNG CẤP',
-          width: '90%',
+          title: "DANH MỤC NHÀ CUNG CẤP",
+          width: "90%",
           columns: this.columnNhaCungCapPopupTable,
-          data: this.lstNhaCungCap
-        })
+          data: this.lstNhaCungCap,
+        });
         if (result) {
           // this.selectedRow = result
-          console.log(result)
+          console.log(result);
           this.updateMultipleNhatKyChung([
-            { path: 'thongTinKhachHang.nhaCungCap', value: result.id },
-            { path: 'thongTinKhachHang.maSoThue', value: result.mst_kh_ncc },
-            { path: 'thongTinKhachHang.tenDonVi', value: result.ten_congty },
-            { path: 'thongTinKhachHang.diaChi', value: result.dia_chi },
-            { path: 'thongTinKhachHang.dienThoai', value: result.dien_thoai },
-            { path: 'thongTinKhachHang.email', value: result.email }
-          ])
+            { path: "thongTinKhachHang.nhaCungCap", value: result.id },
+            { path: "thongTinKhachHang.maSoThue", value: result.mst_kh_ncc },
+            { path: "thongTinKhachHang.tenDonVi", value: result.ten_congty },
+            { path: "thongTinKhachHang.diaChi", value: result.dia_chi },
+            { path: "thongTinKhachHang.dienThoai", value: result.dien_thoai },
+            { path: "thongTinKhachHang.email", value: result.email },
+          ]);
         }
       }
     },
     async openPopupNguoiGiaoDich() {
       if (this.popupRef) {
         const result = await this.popupRef.openPopup({
-          title: 'DANH MỤC NGƯỜI GIAO DỊCH',
-          width: '50%',
+          title: "DANH MỤC NGƯỜI GIAO DỊCH",
+          width: "50%",
           columns: this.columnNguoiGiaoDichPopupTable,
-          data: this.lstNguoiGiaoDich
-        })
+          data: this.lstNguoiGiaoDich,
+        });
         if (result) {
           // this.selectedRow = result
-          console.log(result)
+          console.log(result);
           this.updateMultipleNhatKyChung([
-            { path: 'thongTinKhachHang.maNguoiGiaoDich', value: result.ma_nguoi_gd },
-            { path: 'thongTinKhachHang.tenNguoiGiaoDich', value: result.ten_nguoi_gd }
-          ])
+            {
+              path: "thongTinKhachHang.maNguoiGiaoDich",
+              value: result.ma_nguoi_gd,
+            },
+            {
+              path: "thongTinKhachHang.tenNguoiGiaoDich",
+              value: result.ten_nguoi_gd,
+            },
+          ]);
         }
       }
     },
     async openPopupTaiKhoanNganHang() {
       if (this.popupRef) {
         const result = await this.popupRef.openPopup({
-          title: 'DANH MỤC TÀI KHOẢN NGÂN HÀNG',
-          width: '50%',
+          title: "DANH MỤC TÀI KHOẢN NGÂN HÀNG",
+          width: "50%",
           columns: this.columnTaiKhoanNganHangPopupTable,
-          data: this.lstTaiKhoanNganHang
-        })
+          data: this.lstTaiKhoanNganHang,
+        });
         if (result) {
           // this.selectedRow = result
-          console.log(result)
+          console.log(result);
           this.updateMultipleNhatKyChung([
-            { path: 'thongTinKhachHang.soTaiKhoan', value: result.so_tk_nh },
-            { path: 'thongTinKhachHang.nganHang', value: result.ten_nh }
-          ])
+            { path: "thongTinKhachHang.soTaiKhoan", value: result.so_tk_nh },
+            { path: "thongTinKhachHang.nganHang", value: result.ten_nh },
+          ]);
         }
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style>
@@ -346,7 +391,7 @@ export default {
   display: flex;
   flex: 3; /* Chiếm 30% */
   padding: 10px;
-  border: 1px solid #ccc;  /* Viền màu xám */
+  border: 1px solid #ccc; /* Viền màu xám */
   border-radius: 5px; /* Bo góc nhẹ */
   align-items: center; /* Căn giữa theo chiều dọc */
   justify-content: center; /* Căn giữa theo chiều ngang (nếu cần) */
@@ -376,9 +421,8 @@ export default {
 #nhatkychung-thongtinkhachhang-body-right {
   flex: 3; /* Chiếm 30% */
   padding: 10px;
-  border: 1px solid #ccc;  /* Viền màu xám */
+  border: 1px solid #ccc; /* Viền màu xám */
   border-radius: 5px; /* Bo góc nhẹ */
   align-items: center;
 }
-
 </style>

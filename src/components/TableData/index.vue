@@ -19,8 +19,13 @@
         :align="col.align"
       >
         <template slot-scope="scope">
-          <div v-if="scope.row.editType === 'inserting' || scope.row.editType === 'updating' || scope.row.editType === 'saving'">
-
+          <div
+            v-if="
+              scope.row.editType === 'inserting' ||
+              scope.row.editType === 'updating' ||
+              scope.row.editType === 'saving'
+            "
+          >
             <!-- Hiển thị checkbox cho kiểu combobox -->
             <el-select
               v-if="col.type === 'combobox'"
@@ -38,7 +43,10 @@
             </el-select>
 
             <!-- Hiển thị checkbox cho kiểu boolean -->
-            <el-checkbox v-else-if="col.type === 'boolean'" v-model="scope.row[col.prop]" />
+            <el-checkbox
+              v-else-if="col.type === 'boolean'"
+              v-model="scope.row[col.prop]"
+            />
 
             <el-input
               v-else-if="col.format === 'date'"
@@ -51,16 +59,30 @@
               v-model="scope.row[col.prop]"
               :disabled="col.disableEditing"
               @input="formatCurrency(scope.row, col.prop)"
-              @keydown.native.space.prevent="col.onSpaceKey ? handleSpaceKey(scope.row, col) : null"
-              @change="handleValidation(scope.row, col, $event) && col.onChangeValue ? handleChangeValue(scope.row, col) : null "
+              @keydown.native.space.prevent="
+                col.onSpaceKey ? handleSpaceKey(scope.row, col) : null
+              "
+              @change="
+                handleValidation(scope.row, col, $event) && col.onChangeValue
+                  ? handleChangeValue(scope.row, col)
+                  : null
+              "
             />
             <el-input
               v-else
               v-model="scope.row[col.prop]"
               :disabled="col.disableEditing"
-              :class="{ 'error-input': scope.row.errors && scope.row.errors[col.prop] }"
-              @keydown.native.space.prevent="col.onSpaceKey ? handleSpaceKey(scope.row, col) : null"
-              @change="handleValidation(scope.row, col, $event) && col.onChangeValue ? handleChangeValue(scope.row, col) : null "
+              :class="{
+                'error-input': scope.row.errors && scope.row.errors[col.prop],
+              }"
+              @keydown.native.space.prevent="
+                col.onSpaceKey ? handleSpaceKey(scope.row, col) : null
+              "
+              @change="
+                handleValidation(scope.row, col, $event) && col.onChangeValue
+                  ? handleChangeValue(scope.row, col)
+                  : null
+              "
             />
           </div>
           <div v-else :class="{ 'wrap-text': col.wrapText }">
@@ -69,28 +91,60 @@
               {{ getComboLabel(col.combodata, scope.row[col.prop]) }}
             </span>
             <!-- Hiển thị dạng checkbox nếu là kiểu boolean -->
-            <el-checkbox v-else-if="col.type === 'boolean'" v-model="scope.row[col.prop]" disabled />
+            <el-checkbox
+              v-else-if="col.type === 'boolean'"
+              v-model="scope.row[col.prop]"
+              disabled
+            />
             <template v-else>
-              {{ col.format === 'currency' ? formatDisplayCurrency(scope.row[col.prop]) : col.format === 'date' ? formatDateDisplay(scope.row[col.prop]) : scope.row[col.prop] }}
+              {{
+                col.format === "currency"
+                  ? formatDisplayCurrency(scope.row[col.prop])
+                  : col.format === "date"
+                  ? formatDateDisplay(scope.row[col.prop])
+                  : scope.row[col.prop]
+              }}
             </template>
           </div>
         </template>
       </el-table-column>
 
-      <el-table-column label="Action" min-width="200" fixed="right" align="center">
+      <el-table-column
+        label="Action"
+        min-width="200"
+        fixed="right"
+        align="center"
+      >
         <template slot-scope="scope">
-          <template v-if="!(scope.row.editType === 'inserting' || scope.row.editType === 'updating' || scope.row.editType === 'deleting' || scope.row.editType === 'saving')">
-            <el-button type="primary" @click="editRow(scope.row)">Sửa</el-button>
-            <el-button type="danger" @click="deleteRow(scope.row)">Xóa</el-button>
+          <template
+            v-if="
+              !(
+                scope.row.editType === 'inserting' ||
+                scope.row.editType === 'updating' ||
+                scope.row.editType === 'deleting' ||
+                scope.row.editType === 'saving'
+              )
+            "
+          >
+            <el-button type="primary" @click="editRow(scope.row)"
+              >Sửa</el-button
+            >
+            <el-button type="danger" @click="deleteRow(scope.row)"
+              >Xóa</el-button
+            >
           </template>
           <template v-else>
-            <el-button type="success" @click="saveRow(scope.row)">Lưu</el-button>
+            <el-button type="success" @click="saveRow(scope.row)"
+              >Lưu</el-button
+            >
             <el-button type="danger" @click="cancel(scope.row)">Hủy</el-button>
           </template>
         </template>
       </el-table-column>
     </el-table>
-    <el-button type="primary" class="add-button" @click="addRow">Chèn</el-button>
+    <el-button type="primary" class="add-button" @click="addRow"
+      >Chèn</el-button
+    >
   </div>
 </template>
 
@@ -98,134 +152,143 @@
 export default {
   props: {
     columns: { type: Array, required: true },
-    data: { type: Array, required: true }
+    data: { type: Array, required: true },
   },
   computed: {
     filteredData() {
-      return this.data.filter(item => item.editType !== 'deleted')
+      return this.data.filter((item) => item.editType !== "deleted");
     },
     visibleColumns() {
-      return this.columns.filter(col => !col.hidden)
-    }
+      return this.columns.filter((col) => !col.hidden);
+    },
   },
   methods: {
     getComboLabel(comboData, value) {
-      const found = comboData?.find(item => item.code === value);
-      return found ? found.name : '';
+      const found = comboData?.find((item) => item.code === value);
+      return found ? found.name : "";
     },
     editRow(row) {
-      this.$emit('handle-row', 'updating', row)
+      this.$emit("handle-row", "updating", row);
     },
     deleteRow(row) {
-      this.$emit('handle-row', 'deleting', row)
+      this.$emit("handle-row", "deleting", row);
     },
     saveRow(row) {
-      this.$emit('handle-row', 'saving', row)
+      this.$emit("handle-row", "saving", row);
     },
     cancel(row) {
-      this.$emit('handle-row', 'canceling', row)
+      this.$emit("handle-row", "canceling", row);
     },
     addRow() {
-      const identityColumn = this.columns.find(col => col.identity)
-      let newRow = this.createEmptyRow(this.columns) // Tạo row trống với các giá trị null
+      const identityColumn = this.columns.find((col) => col.identity);
+      let newRow = this.createEmptyRow(this.columns); // Tạo row trống với các giá trị null
 
-      newRow = { ...newRow, editType: 'inserting', originalData: {}}
+      newRow = { ...newRow, editType: "inserting", originalData: {} };
 
       if (identityColumn) {
-        const identityProp = identityColumn.prop
-        const maxId = Math.max(0, ...this.data.map(row => row[identityProp] || 0)) // Tìm giá trị ID lớn nhất
-        newRow[identityProp] = maxId + 1 // Gán ID mới
+        const identityProp = identityColumn.prop;
+        const maxId = Math.max(
+          0,
+          ...this.data.map((row) => row[identityProp] || 0)
+        ); // Tìm giá trị ID lớn nhất
+        newRow[identityProp] = maxId + 1; // Gán ID mới
       }
 
-      this.$emit('handle-row', 'inserting', newRow)
+      this.$emit("handle-row", "inserting", newRow);
     },
     formatCurrency(row, prop) {
-      row[prop] = row[prop].replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+      row[prop] = row[prop]
+        .replace(/\D/g, "")
+        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
     },
     formatDisplayCurrency(value) {
-      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0)
+      return new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      }).format(value || 0);
     },
     handleSpaceKey(row, col) {
-      this.$emit('space-key-pressed', { row, col })
+      this.$emit("space-key-pressed", { row, col });
     },
     handleChangeValue(row, col) {
-      this.$emit('change-value', { row, col })
+      this.$emit("change-value", { row, col });
     },
     validateAndFormatDate(row, prop) {
-      const value = row[prop]
+      const value = row[prop];
       if (/^\d{6,8}$/.test(value)) {
-        const day = value.slice(0, 2)
-        const month = value.slice(2, 4)
-        const year = value.length === 6 ? '20' + value.slice(4, 6) : value.slice(4, 8)
-        const dateStr = `${year}-${month}-${day}`
-        const date = new Date(dateStr)
+        const day = value.slice(0, 2);
+        const month = value.slice(2, 4);
+        const year =
+          value.length === 6 ? "20" + value.slice(4, 6) : value.slice(4, 8);
+        const dateStr = `${year}-${month}-${day}`;
+        const date = new Date(dateStr);
         if (!isNaN(date.getTime())) {
-          row[prop] = `${day}/${month}/${year}`
+          row[prop] = `${day}/${month}/${year}`;
         } else {
-          alert('Ngày nhập không hợp lệ')
-          row[prop] = ''
+          alert("Ngày nhập không hợp lệ");
+          row[prop] = "";
         }
       }
     },
     formatDateDisplay(value) {
-      if (!value) return ''
-      const parts = value.split('/')
-      return parts.length === 3 ? `${parts[0]}/${parts[1]}/${parts[2]}` : value
+      if (!value) return "";
+      const parts = value.split("/");
+      return parts.length === 3 ? `${parts[0]}/${parts[1]}/${parts[2]}` : value;
     },
     tableRowClass({ row }) {
-      return row.editType === 'deleting' ? 'row-deleting' : ''
+      return row.editType === "deleting" ? "row-deleting" : "";
     },
     createEmptyRow(columns) {
       return columns.reduce((row, col) => {
-        row[col.prop] = null
-        return row
-      }, {})
+        row[col.prop] = null;
+        return row;
+      }, {});
     },
     handleValidation(row, col, event) {
-      const error = this.validateInput(row[col.prop], col)
+      const error = this.validateInput(row[col.prop], col);
       if (error) {
-        this.$message.error(error)
+        this.$message.error(error);
         // row[col.prop] = '' // Xóa giá trị nếu sai
 
         // Đánh dấu lỗi cho ô input
         if (!row.errors) {
-          this.$set(row, 'errors', {}) // Khởi tạo errors nếu chưa có
+          this.$set(row, "errors", {}); // Khởi tạo errors nếu chưa có
         }
-        this.$set(row.errors, col.prop, true) // Đánh dấu lỗi cho cột này
+        this.$set(row.errors, col.prop, true); // Đánh dấu lỗi cho cột này
 
         // Focus lại vào ô input bị lỗi
         this.$nextTick(() => {
-          event.target.focus() // Đặt lại focus vào ô input
-          event.target.select() // Chọn toàn bộ nội dung nhập sai
-        })
+          event.target.focus(); // Đặt lại focus vào ô input
+          event.target.select(); // Chọn toàn bộ nội dung nhập sai
+        });
 
         return false; // <== Nếu có lỗi
       } else {
         if (row.errors) {
-          this.$set(row.errors, col.prop, false) // Xóa lỗi nếu nhập đúng
+          this.$set(row.errors, col.prop, false); // Xóa lỗi nếu nhập đúng
         }
         return true; // <== Nếu không lỗi
       }
     },
     validateInput(value, column) {
-      if (!value) return '' // Không kiểm tra nếu giá trị rỗng
+      if (!value) return ""; // Không kiểm tra nếu giá trị rỗng
 
-      let error = ''
+      let error = "";
 
       // Kiểm tra bằng regex nếu có
       if (column.regexPattern && !new RegExp(column.regexPattern).test(value)) {
-        error = column.errorMessage || 'Giá trị nhập vào không hợp lệ!'
+        error = column.errorMessage || "Giá trị nhập vào không hợp lệ!";
       }
 
       // Kiểm tra độ dài tối đa
       if (column.maxLength && value.length > column.maxLength) {
-        error = `Không được nhập quá ${column.maxLength} ký tự!`
+        error = `Không được nhập quá ${column.maxLength} ký tự!`;
       }
 
-      return error
-    }
-  }
-}
+      return error;
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -239,8 +302,9 @@ export default {
 .add-button {
   margin-top: 10px;
 }
-.el-table--medium th, .el-table--medium td {
-    padding: 1px 0;
+.el-table--medium th,
+.el-table--medium td {
+  padding: 1px 0;
 }
 /deep/ .row-deleting {
   background-color: #ffcccc !important; /* Màu đỏ nhạt */
@@ -254,5 +318,4 @@ export default {
   border: 1px solid red !important;
   background-color: #ffe6e6 !important; /* Màu nền nhạt để dễ nhận diện */
 }
-
 </style>

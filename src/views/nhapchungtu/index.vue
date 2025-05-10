@@ -1,22 +1,43 @@
 <template>
   <div id="page-container">
-    <el-tabs id="content-box" v-model="activeTab" type="border-card" @tab-click="handleTabClick">
+    <el-tabs
+      id="content-box"
+      v-model="activeTab"
+      type="border-card"
+      @tab-click="handleTabClick"
+    >
       <el-tab-pane label="Nhật ký chung" name="TAB_NHAT_KY_CHUNG">
         <NhatKyChung :popup-ref="popupRef" />
       </el-tab-pane>
       <el-tab-pane v-if="isHachToan" label="Hạch toán" name="TAB_HACH_TOAN">
         <HachToan :popup-ref="popupRef" />
       </el-tab-pane>
-      <el-tab-pane v-if="isNhapVatTu" label="Nhập vật tư" name="TAB_NHAP_VAT_TU">
+      <el-tab-pane
+        v-if="isNhapVatTu"
+        label="Nhập vật tư"
+        name="TAB_NHAP_VAT_TU"
+      >
         <NhapVatTu :popup-ref="popupRef" />
       </el-tab-pane>
-      <el-tab-pane v-if="isXuatVatTu" label="Xuất vật tư" name="TAB_XUAT_VAT_TU">
+      <el-tab-pane
+        v-if="isXuatVatTu"
+        label="Xuất vật tư"
+        name="TAB_XUAT_VAT_TU"
+      >
         <XuatVatTu :popup-ref="popupRef" />
       </el-tab-pane>
-      <el-tab-pane v-if="isHoaDonMuaVao" label="Hóa đơn mua vào" name="TAB_HOA_DON_MUA_VAO">
+      <el-tab-pane
+        v-if="isHoaDonMuaVao"
+        label="Hóa đơn mua vào"
+        name="TAB_HOA_DON_MUA_VAO"
+      >
         <HoaDonMuaVao :popup-ref="popupRef" />
       </el-tab-pane>
-      <el-tab-pane v-if="isHoaDonBanRa" label="Hóa đơn bán ra" name="TAB_HOA_DON_BAN_RA">
+      <el-tab-pane
+        v-if="isHoaDonBanRa"
+        label="Hóa đơn bán ra"
+        name="TAB_HOA_DON_BAN_RA"
+      >
         <HoaDonBanRa :popup-ref="popupRef" />
       </el-tab-pane>
     </el-tabs>
@@ -28,18 +49,17 @@
     </el-card>
     <TablePopup ref="popupRef" />
   </div>
-
 </template>
 
 <script>
-import NhatKyChung from './NhatKyChung'
-import HachToan from './HachToan'
-import NhapVatTu from './NhapVatTu'
-import XuatVatTu from './XuatVatTu'
-import HoaDonMuaVao from './HoaDonMuaVao'
-import HoaDonBanRa from './HoaDonBanRa'
-import { mapState, mapActions } from 'vuex'
-import TablePopup from '@/components/TablePopup'
+import NhatKyChung from "./NhatKyChung";
+import HachToan from "./HachToan";
+import NhapVatTu from "./NhapVatTu";
+import XuatVatTu from "./XuatVatTu";
+import HoaDonMuaVao from "./HoaDonMuaVao";
+import HoaDonBanRa from "./HoaDonBanRa";
+import { mapState, mapActions } from "vuex";
+import TablePopup from "@/components/TablePopup";
 
 export default {
   components: {
@@ -49,91 +69,157 @@ export default {
     XuatVatTu,
     HoaDonMuaVao,
     HoaDonBanRa,
-    TablePopup
+    TablePopup,
   },
   data() {
     return {
       popupRef: null, // Lưu reference của popup
-      activeTab: 'TAB_NHAT_KY_CHUNG', // Tab mặc định khi load trang
+      activeTab: "TAB_NHAT_KY_CHUNG", // Tab mặc định khi load trang
       isHachToan: false,
       isNhapVatTu: false,
       isXuatVatTu: false,
       isHoaDonMuaVao: false,
-      isHoaDonBanRa: false
-    }
+      isHoaDonBanRa: false,
+    };
   },
 
   computed: {
-    ...mapState('nhapchungtu', ['lstKhachHang', 'lstNhaCungCap', 'lstTaiKhoan']),
+    ...mapState("nhapchungtu", [
+      "lstKhachHang",
+      "lstNhaCungCap",
+      "lstTaiKhoan",
+    ]),
     popupData() {
-      return this.popup.data
+      return this.popup.data;
     },
     popupColumns() {
-      return this.popup.columns
+      return this.popup.columns;
     },
     popupWidth() {
-      return this.popup.width
+      return this.popup.width;
     },
     popupFullscreen() {
-      return this.popup.fullscreen
+      return this.popup.fullscreen;
     },
     popupTitle() {
-      return this.popup.title
-    }
+      return this.popup.title;
+    },
   },
 
   methods: {
-    ...mapActions('nhapchungtu', ['loaiChungTu', 'loadKhachHang', 'loadNhaCungCap', 'loadNguoiGiaoDich', 'loadTaiKhoan','loadHinhThucTT', 'loadVatTu', 'loadKhoHang', 'loadTaiKhoanNganHang', 'loadCanBo141', 'handleRowSelected', 'updateLoaiChungTu', 'updateTabType', 'sendData']),
+    ...mapActions("nhapchungtu", [
+      "loaiChungTu",
+      "loadKhachHang",
+      "loadNhaCungCap",
+      "loadNguoiGiaoDich",
+      "loadTaiKhoan",
+      "loadHinhThucTT",
+      "loadVatTu",
+      "loadKhoHang",
+      "loadTaiKhoanNganHang",
+      "loadCanBo141",
+      "handleRowSelected",
+      "updateLoaiChungTu",
+      "updateTabType",
+      "sendData",
+    ]),
     onSubmit() {
-      console.log('submit!')
+      console.log("submit!");
     },
     getLoaiChungTu() {
-      const path = this.$route.path // Lấy đường dẫn hiện tại
-      const parts = path.split('/') // Tách đường dẫn thành mảng
+      const path = this.$route.path; // Lấy đường dẫn hiện tại
+      const parts = path.split("/"); // Tách đường dẫn thành mảng
 
-      if (parts.length < 3) return
+      if (parts.length < 3) return;
 
-      const loaiChungTu = parts[2]
-      this.updateLoaiChungTu(loaiChungTu) // Cập nhật vào Vuex store
+      const loaiChungTu = parts[2];
+      this.updateLoaiChungTu(loaiChungTu); // Cập nhật vào Vuex store
 
       // Mapping loại chứng từ với cấu hình tương ứng
       const configMap = {
-        'phieuthutienmat': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: true, isHoaDonMuaVao: false, isHoaDonBanRa: true },
-        'phieuchitienmat': { isHachToan: true, isNhapVatTu: true, isXuatVatTu: false, isHoaDonMuaVao: true, isHoaDonBanRa: false },
-        'phieunhapvattucongcu': { isHachToan: true, isNhapVatTu: true, isXuatVatTu: false, isHoaDonMuaVao: true, isHoaDonBanRa: false },
-        'phieuxuatvattucongcu': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: true, isHoaDonMuaVao: false, isHoaDonBanRa: true },
-        'banhangthutiensau': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: true, isHoaDonMuaVao: false, isHoaDonBanRa: true },
-        'chungtunganhang': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: false, isHoaDonMuaVao: true, isHoaDonBanRa: false },
-        'chungtughiso': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: false, isHoaDonMuaVao: false, isHoaDonBanRa: false },
-        'chungtuluuchuyennoibo': { isHachToan: true, isNhapVatTu: true, isXuatVatTu: true, isHoaDonMuaVao: false, isHoaDonBanRa: false }
-      }
+        phieuthutienmat: {
+          isHachToan: true,
+          isNhapVatTu: false,
+          isXuatVatTu: true,
+          isHoaDonMuaVao: false,
+          isHoaDonBanRa: true,
+        },
+        phieuchitienmat: {
+          isHachToan: true,
+          isNhapVatTu: true,
+          isXuatVatTu: false,
+          isHoaDonMuaVao: true,
+          isHoaDonBanRa: false,
+        },
+        phieunhapvattucongcu: {
+          isHachToan: true,
+          isNhapVatTu: true,
+          isXuatVatTu: false,
+          isHoaDonMuaVao: true,
+          isHoaDonBanRa: false,
+        },
+        phieuxuatvattucongcu: {
+          isHachToan: true,
+          isNhapVatTu: false,
+          isXuatVatTu: true,
+          isHoaDonMuaVao: false,
+          isHoaDonBanRa: true,
+        },
+        banhangthutiensau: {
+          isHachToan: true,
+          isNhapVatTu: false,
+          isXuatVatTu: true,
+          isHoaDonMuaVao: false,
+          isHoaDonBanRa: true,
+        },
+        chungtunganhang: {
+          isHachToan: true,
+          isNhapVatTu: false,
+          isXuatVatTu: false,
+          isHoaDonMuaVao: true,
+          isHoaDonBanRa: false,
+        },
+        chungtughiso: {
+          isHachToan: true,
+          isNhapVatTu: false,
+          isXuatVatTu: false,
+          isHoaDonMuaVao: false,
+          isHoaDonBanRa: false,
+        },
+        chungtuluuchuyennoibo: {
+          isHachToan: true,
+          isNhapVatTu: true,
+          isXuatVatTu: true,
+          isHoaDonMuaVao: false,
+          isHoaDonBanRa: false,
+        },
+      };
 
       // Gán giá trị từ mapping, nếu không tìm thấy thì giữ nguyên giá trị hiện tại
-      Object.assign(this, configMap[loaiChungTu] || {})
+      Object.assign(this, configMap[loaiChungTu] || {});
     },
     handleTabClick(tab) {
-      this.updateTabType(tab.name) // Cập nhật state tabtype với giá trị tab hiện tại
-    }
+      this.updateTabType(tab.name); // Cập nhật state tabtype với giá trị tab hiện tại
+    },
   },
   mounted() {
-    this.popupRef = this.$refs.popupRef // Gán reference cho popup
-    this.getLoaiChungTu()
-    this.loadKhachHang()
-    this.loadNhaCungCap()
-    this.loadTaiKhoan()
+    this.popupRef = this.$refs.popupRef; // Gán reference cho popup
+    this.getLoaiChungTu();
+    this.loadKhachHang();
+    this.loadNhaCungCap();
+    this.loadTaiKhoan();
     // this.loadTaiKhoanChiTiet()
-    this.loadHinhThucTT()
-    this.loadVatTu()
-    this.loadNguoiGiaoDich()
-    this.loadKhoHang()
-    this.loadTaiKhoanNganHang()
-    this.loadCanBo141()
-  }
-}
+    this.loadHinhThucTT();
+    this.loadVatTu();
+    this.loadNguoiGiaoDich();
+    this.loadKhoHang();
+    this.loadTaiKhoanNganHang();
+    this.loadCanBo141();
+  },
+};
 </script>
 
 <style>
-
 .header-container {
   display: flex;
   justify-content: space-between;

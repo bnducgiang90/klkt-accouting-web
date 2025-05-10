@@ -22,8 +22,16 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(row, index) in data" :key="index" @dblclick="selectRow(row)">
-              <td v-for="col in columns" :key="col.prop" :style="getColumnStyle(col, true)">
+            <tr
+              v-for="(row, index) in data"
+              :key="index"
+              @dblclick="selectRow(row)"
+            >
+              <td
+                v-for="col in columns"
+                :key="col.prop"
+                :style="getColumnStyle(col, true)"
+              >
                 {{ formatCell(row[col.prop], col) }}
               </td>
             </tr>
@@ -40,51 +48,64 @@ export default {
     return {
       isOpen: false,
       resolve: null,
-      title: '',
-      width: '50%',
+      title: "",
+      width: "50%",
       columns: [],
-      data: []
-    }
+      data: [],
+    };
   },
   methods: {
     openPopup({ title, width, columns, data }) {
-      this.title = title || 'Danh sách'
-      this.width = width || '50%'
-      this.columns = columns || []
-      this.data = data || []
-      this.isOpen = true
-      this.selectedRow = null // Reset selection khi mở popup
+      this.title = title || "Danh sách";
+      this.width = width || "50%";
+      this.columns = columns || [];
+      this.data = data || [];
+      this.isOpen = true;
+      this.selectedRow = null; // Reset selection khi mở popup
       return new Promise((resolve) => {
-        this.resolve = resolve
-      })
+        this.resolve = resolve;
+      });
     },
     selectRow(row) {
-      this.selectedRow = row // Lưu dòng được chọn
-      this.resolve(row)
-      this.isOpen = false
+      this.selectedRow = row; // Lưu dòng được chọn
+      this.resolve(row);
+      this.isOpen = false;
     },
     closePopup() {
-      this.resolve(null)
-      this.isOpen = false
+      this.resolve(null);
+      this.isOpen = false;
     },
     getColumnStyle(col, isCell = false) {
       return {
-        width: col.width ? (typeof col.width === 'number' ? col.width + 'px' : col.width) : 'auto',
-        minWidth: col.minWidth ? (typeof col.minWidth === 'number' ? col.minWidth + 'px' : col.minWidth) : 'auto',
-        maxWidth: col.maxWidth ? (typeof col.maxWidth === 'number' ? col.maxWidth + 'px' : col.maxWidth) : 'auto',
-        textAlign: col.align || 'left',
-        whiteSpace: col.wrapText ? 'normal' : 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis'
-      }
+        width: col.width
+          ? typeof col.width === "number"
+            ? col.width + "px"
+            : col.width
+          : "auto",
+        minWidth: col.minWidth
+          ? typeof col.minWidth === "number"
+            ? col.minWidth + "px"
+            : col.minWidth
+          : "auto",
+        maxWidth: col.maxWidth
+          ? typeof col.maxWidth === "number"
+            ? col.maxWidth + "px"
+            : col.maxWidth
+          : "auto",
+        textAlign: col.align || "left",
+        whiteSpace: col.wrapText ? "normal" : "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      };
     },
     formatCell(value, col) {
-      if (col.format === 'currency') return new Intl.NumberFormat().format(value)
-      if (col.format === 'boolean') return value ? '✔' : '✖'
-      return value
-    }
-  }
-}
+      if (col.format === "currency")
+        return new Intl.NumberFormat().format(value);
+      if (col.format === "boolean") return value ? "✔" : "✖";
+      return value;
+    },
+  },
+};
 </script>
 
 <style>
@@ -154,7 +175,8 @@ export default {
 }
 
 /* Kẻ ô bảng rõ ràng */
-.data-table th, .data-table td {
+.data-table th,
+.data-table td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
@@ -188,5 +210,4 @@ export default {
   background-color: #d1e7fd !important; /* Màu xanh nhạt */
   font-weight: bold;
 }
-
 </style>
