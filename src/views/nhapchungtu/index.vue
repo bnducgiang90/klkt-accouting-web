@@ -23,7 +23,7 @@
     <el-card id="control-box" class="border-card">
       <div class="button-container">
         <el-button>In chứng từ</el-button>
-        <el-button>Ghi</el-button>
+        <el-button @click="sendData">Ghi</el-button>
       </div>
     </el-card>
     <TablePopup ref="popupRef" />
@@ -83,7 +83,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('nhapchungtu', ['loaiChungTu', 'loadKhachHang', 'loadNhaCungCap', 'loadNguoiGiaoDich', 'loadTaiKhoan','loadHinhThucTT', 'loadVatTu', 'loadKhoHang', 'loadTaiKhoanNganHang', 'loadCanBo141', 'handleRowSelected', 'updateLoaiChungTu', 'updateTabType']),
+    ...mapActions('nhapchungtu', ['loaiChungTu', 'loadKhachHang', 'loadNhaCungCap', 'loadNguoiGiaoDich', 'loadTaiKhoan','loadHinhThucTT', 'loadVatTu', 'loadKhoHang', 'loadTaiKhoanNganHang', 'loadCanBo141', 'handleRowSelected', 'updateLoaiChungTu', 'updateTabType', 'sendData']),
     onSubmit() {
       console.log('submit!')
     },
@@ -99,10 +99,10 @@ export default {
       // Mapping loại chứng từ với cấu hình tương ứng
       const configMap = {
         'phieuthutienmat': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: true, isHoaDonMuaVao: false, isHoaDonBanRa: true },
-        'phieuxuatvattucongcu': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: true, isHoaDonMuaVao: false, isHoaDonBanRa: true },
-        'banhangthutiensau': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: true, isHoaDonMuaVao: false, isHoaDonBanRa: true },
         'phieuchitienmat': { isHachToan: true, isNhapVatTu: true, isXuatVatTu: false, isHoaDonMuaVao: true, isHoaDonBanRa: false },
         'phieunhapvattucongcu': { isHachToan: true, isNhapVatTu: true, isXuatVatTu: false, isHoaDonMuaVao: true, isHoaDonBanRa: false },
+        'phieuxuatvattucongcu': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: true, isHoaDonMuaVao: false, isHoaDonBanRa: true },
+        'banhangthutiensau': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: true, isHoaDonMuaVao: false, isHoaDonBanRa: true },
         'chungtunganhang': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: false, isHoaDonMuaVao: true, isHoaDonBanRa: false },
         'chungtughiso': { isHachToan: true, isNhapVatTu: false, isXuatVatTu: false, isHoaDonMuaVao: false, isHoaDonBanRa: false },
         'chungtuluuchuyennoibo': { isHachToan: true, isNhapVatTu: true, isXuatVatTu: true, isHoaDonMuaVao: false, isHoaDonBanRa: false }

@@ -7,7 +7,6 @@
       @handle-row="handleRow"
       @change-value="handleChangeValue"
     />
-    <!-- <div>{{this.chungTu[this.loaiChungTu].hachToan}}</div> -->
   </div>
 </template>
 
@@ -99,40 +98,35 @@ export default {
     }
   },
   computed: {
-    ...mapState('nhapchungtu', ['nhatKyChung','chungTu', 'loaiChungTu', 'lstTaiKhoan', 'lstTaiKhoanChiTiet', 'lstKhachHang', 'lstCanBo141', 'lstNhaCungCap', 'lstVatTu' ]),
-    hachToanData() {
-      return this.chungTu[this.loaiChungTu].hachToan;
-    }
+    ...mapState('nhapchungtu', ['nhatKyChung','hachToanData', 'lstTaiKhoan', 'lstTaiKhoanChiTiet', 'lstKhachHang', 'lstCanBo141', 'lstNhaCungCap', 'lstVatTu' ])
   },
   methods: {
     ...mapActions('nhapchungtu', ['setRowFlag', 'updateHachToanCell', 'updateMultipleNhatKyChung', 'loadTaiKhoanChiTiet']),
     handleRow(type, row) {
       console.log('handle', type, row)
-      this.setRowFlag({ stateName: 'hachToan', key: 'dongChungTu', value: row.dongChungTu, flagName: type, row: row })
+      this.setRowFlag({ stateName: 'hachToanData', key: 'dongChungTu', value: row.dongChungTu, flagName: type, row: row })
     },
     async handlePressSpaceKey(data) {
-      console.log('truyen vao', data)
-      alert(`Space pressed in ${data.col.prop}: ${data.row[data.col.prop]} : ${data.row.dongChungTu}`)
       if (data.col.prop === 'tkNo' || data.col.prop === 'tkCo') {
         if (this.popupRef) {
           // nếu tk nợ hoặc tài khoản có = 131  -> lấy mã khach hàng bên trên điền xuống
           if (data.row[data.col.prop] === '131') {
-            if (!this.chungTu[this.loaiChungTu].nhatKyChung.chungTu.khachHang) {
+            if (!this.nhatKyChung.chungTu.khachHang) {
               await this.openPopupKhachHang()
             }
             this.updateHachToanCell({
               dongChungTu: data.row.dongChungTu, // Số dòng cần update
               column: data.col.prop === 'tkNo' ? 'chiTietNo' : 'chiTietCo' , // Cột cần update
-              value: this.chungTu[this.loaiChungTu].nhatKyChung.chungTu.khachHang // Giá trị mới
+              value: this.nhatKyChung.chungTu.khachHang // Giá trị mới
             })
           } else if (data.row[data.col.prop] === '331') { // nếu tk nợ hoặc tk có = 331 -> lấy mã nhà cung cấp bên trên điều xuống
-            if (!this.chungTu[this.loaiChungTu].nhatKyChung.thongTinKhachHang.nhaCungCap) {
+            if (!this.nhatKyChung.thongTinKhachHang.nhaCungCap) {
               await this.openPopupNhaCungCap()
             } 
             this.updateHachToanCell({
               dongChungTu: data.row.dongChungTu, // Số dòng cần update
               column: data.col.prop === 'tkNo' ? 'chiTietNo' : 'chiTietCo' , // Cột cần update
-              value: this.chungTu[this.loaiChungTu].nhatKyChung.thongTinKhachHang.nhaCungCap // Giá trị mới
+              value: this.nhatKyChung.thongTinKhachHang.nhaCungCap // Giá trị mới
             })
           } else if (data.row[data.col.prop] === '141' || data.row[data.col.prop] === '334') { // nếu tk nợ hoặc tk có = 141 hoặc 334 -> show popup là danh mục cán bộ 141
             const result = await this.popupRef.openPopup({

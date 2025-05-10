@@ -44,10 +44,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('nhapchungtu', ['popup', 'lstTaiKhoan', 'lstKhoHang', 'lstVatTu', 'chungTu', 'loaiChungTu', 'lstNhaCungCap','lstThueSuatBanRa']),
-    hoaDonBanRaData() {
-      return this.chungTu[this.loaiChungTu].hoaDonBanRa;
-    },
+    ...mapState('nhapchungtu', ['popup', 'lstTaiKhoan', 'lstKhoHang', 'lstVatTu', 'hoaDonBanRaData', 'lstNhaCungCap','lstThueSuatBanRa']),
     comboboxDataHangHoa() {
       return this.lstThueSuatBanRa.map(item => ({
         code: item.ma_loai,
@@ -76,7 +73,7 @@ export default {
     ...mapActions('nhapchungtu', ['setRowFlag', 'updateHoaDonBanRaCell', 'loadDmThueSuatBanRa']),
     handleRow(type, row) {
       console.log('handle', type, row)
-      this.setRowFlag({ stateName: 'hoaDonBanRa', key: 'id', value: row.id, flagName: type, row: row })
+      this.setRowFlag({ stateName: 'hoaDonBanRaData', key: 'id', value: row.id, flagName: type, row: row })
     },
     async handlePressSpaceKey(data) {
       console.log('truyen vao', data)

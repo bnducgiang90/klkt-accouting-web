@@ -59,16 +59,13 @@ export default {
     }
   },
   computed: {
-    ...mapState('nhapchungtu', ['popup', 'lstTaiKhoan', 'lstKhoHang', 'lstVatTu', 'chungTu', 'loaiChungTu']),
-    nhapVatTuData() {
-      return this.chungTu[this.loaiChungTu].nhapVatTu;
-    }
+    ...mapState('nhapchungtu', ['popup', 'lstTaiKhoan', 'lstKhoHang', 'lstVatTu', 'nhapVatTuData'])
   },
   methods: {
     ...mapActions('nhapchungtu', ['setRowFlag', 'updateNhapVatTuCell']),
     handleRow(type, row) {
       console.log('handle', type, row)
-      this.setRowFlag({ stateName: 'nhapVatTu', key: 'dongHachToan', value: row.dongHachToan, flagName: type, row: row })
+      this.setRowFlag({ stateName: 'nhapVatTuData', key: 'dongHachToan', value: row.dongHachToan, flagName: type, row: row })
     },
     async handlePressSpaceKey(data) {
       console.log('truyen vao', data)

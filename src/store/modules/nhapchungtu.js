@@ -23,42 +23,6 @@ const state = {
   lstThueSuatBanRa: [],
   lstThueSuatMuaVao: [],
   lstKhoHang: [],
-  chungTu: {
-    phieuthutienmat: {
-      hachToan: [
-        { dongChungTu: 1, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '01/02/2023', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' },
-        { dongChungTu: 2, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '15/02/2024', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' },
-        { dongChungTu: 3, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '09/10/2024', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' }
-      ],
-      xuatVatTu: [
-        {"id":1,"tkXuat":"632","maKhoXuat":"K01","maVatTu":"VT1001","tenVatTu":"Ống thép mạ kẽm phi 21","dvt":"m","soLuong":500,"soLuongTheoChungTu":500,"donGiaBan":12000,"thanhTien":6000000,"khuyenMai":false,"chietKhau":"0%","thanhToan":"Công nợ","ghiChu":"Xuất cho công trình A","dongHachToan":"632", editType: 'raw'},
-        {"id":2,"tkXuat":"156","maKhoXuat":"K02","maVatTu":"VT1002","tenVatTu":"Cáp điện CADIVI 2x2.5mm","dvt":"m","soLuong":300,"soLuongTheoChungTu":290,"donGiaBan":15000,"thanhTien":4500000,"khuyenMai":true,"chietKhau":"3%","thanhToan":"Tiền mặt","ghiChu":"Khuyến mãi tháng 4","dongHachToan":"156", editType: 'raw'},
-        {"id":3,"tkXuat":"155","maKhoXuat":"K03","maVatTu":"VT1003","tenVatTu":"Sơn nước Jotun nội thất","dvt":"Lít","soLuong":200,"soLuongTheoChungTu":200,"donGiaBan":95000,"thanhTien":19000000,"khuyenMai":false,"chietKhau":"2%","thanhToan":"Chuyển khoản","ghiChu":"Khách hàng thân thiết","dongHachToan":"155", editType: 'raw'}
-      ],
-      hoaDonBanRa: [
-        {"id":1,"tkThueDauRa":"1331","hoaDonDt":true,"soHoaDon":"HD00123","ngayHoaDon":"2025-04-01","nguoiMuaBan":"Công ty TNHH ABC","hangHoaChiuThue":"29","maSoThue":"0101234567","tienHang":5000000,"thueSuat":"10%","tienThue":500000,"tongTien":5500000,"ghiChu":"Thanh toán bằng chuyển khoản", editType: 'raw' },
-        {"id":2,"tkThueDauRa":"1332","hoaDonDt":false,"soHoaDon":"HD00124","ngayHoaDon":"2025-04-02","nguoiMuaBan":"Công ty CP XYZ","hangHoaChiuThue":"30","maSoThue":"0309876543","tienHang":1200000,"thueSuat":"8%","tienThue":96000,"tongTien":1296000,"ghiChu":"", editType: 'raw' },
-        {"id":3,"tkThueDauRa":"1331","hoaDonDt":true,"soHoaDon":"HD00125","ngayHoaDon":"2025-04-03","nguoiMuaBan":"Công ty TNHH DEF","hangHoaChiuThue":"32","maSoThue":"0401122334","tienHang":8500000,"thueSuat":"10%","tienThue":850000,"tongTien":9350000,"ghiChu":"Giao hàng kèm hóa đơn", editType: 'raw' }
-      ]
-    },
-    phieuchitienmat: {
-      hachToan: [
-        { dongChungTu: 1, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '01/02/2023', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' },
-        { dongChungTu: 2, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '15/02/2024', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' },
-        { dongChungTu: 3, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '09/10/2024', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' }
-      ],
-      nhapVatTu: [
-        {"id":1,"tkNhap":"152","maKhoNhap":"K01","maVatTu":"VT001","tenVatTu":"Thép hộp 50x50","dvt":"Kg","soLuong":1000,"soLuongTheoChungTu":1000,"donGiaBan":25000,"thanhTien":25000000,"khuyenMai":false,"chietKhau":"0%","thanhToan":"Chuyển khoản","ghiChu":"Nhập kho chính","dongHachToan":"1", editType: 'raw'},
-        {"id":2,"tkNhap":"153","maKhoNhap":"K02","maVatTu":"VT002","tenVatTu":"Xi măng Hà Tiên","dvt":"Bao","soLuong":500,"soLuongTheoChungTu":480,"donGiaBan":80000,"thanhTien":40000000,"khuyenMai":true,"chietKhau":"5%","thanhToan":"Tiền mặt","ghiChu":"","dongHachToan":"2", editType: 'raw'},
-        {"id":3,"tkNhap":"156","maKhoNhap":"K03","maVatTu":"VT003","tenVatTu":"Gạch ống Đồng Tâm","dvt":"Viên","soLuong":10000,"soLuongTheoChungTu":10000,"donGiaBan":1500,"thanhTien":15000000,"khuyenMai":false,"chietKhau":"2%","thanhToan":"Công nợ","ghiChu":"Ưu đãi khách hàng thân thiết","dongHachToan":"3", editType: 'raw'}
-      ],
-      hoaDonMuaVao: [
-        {"id":1,"tkThueDauVao":"1331","hoaDonDt":true,"soHoaDon":"HD00123","ngayHoaDon":"2025-04-01","nguoiMuaBan":"Công ty TNHH ABC","hangHoaChiuThue":"29","maSoThue":"0101234567","tienHang":5000000,"thueSuat":"10%","tienThue":500000,"tongTien":5500000,"ghiChu":"Thanh toán bằng chuyển khoản", editType: 'raw' },
-        {"id":2,"tkThueDauVao":"1332","hoaDonDt":false,"soHoaDon":"HD00124","ngayHoaDon":"2025-04-02","nguoiMuaBan":"Công ty CP XYZ","hangHoaChiuThue":"30","maSoThue":"0309876543","tienHang":1200000,"thueSuat":"8%","tienThue":96000,"tongTien":1296000,"ghiChu":"", editType: 'raw' },
-        {"id":3,"tkThueDauVao":"1331","hoaDonDt":true,"soHoaDon":"HD00125","ngayHoaDon":"2025-04-03","nguoiMuaBan":"Công ty TNHH DEF","hangHoaChiuThue":"32","maSoThue":"0401122334","tienHang":8500000,"thueSuat":"10%","tienThue":850000,"tongTien":9350000,"ghiChu":"Giao hàng kèm hóa đơn", editType: 'raw' }
-      ]
-    }
-  },
   nhatKyChung: {
     chungTu: {
       sttgs: '',
@@ -81,7 +45,32 @@ const state = {
       nhaCungCap: '',
       hachToanNgoaiTe: true
     }
-  }
+  },
+  hachToanData: [
+    { dongChungTu: 1, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '01/02/2023', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' },
+    { dongChungTu: 2, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '15/02/2024', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' },
+    { dongChungTu: 3, tkNo: 112, chiTietNo: 12345, tkCo: 234, chiTietCo: 2345, soTien: 2332432432, thoiHanThanhToan: '09/10/2024', thoiHanChietKhau: '2 thang', kyHieuSoHoaDon: 1, editType: 'raw' }
+  ],
+  xuatVatTuData: [
+    {"id":1,"tkXuat":"632","maKhoXuat":"K01","maVatTu":"VT1001","tenVatTu":"Ống thép mạ kẽm phi 21","dvt":"m","soLuong":500,"soLuongTheoChungTu":500,"donGiaBan":12000,"thanhTien":6000000,"khuyenMai":false,"chietKhau":"0%","thanhToan":"Công nợ","ghiChu":"Xuất cho công trình A","dongHachToan":"632", editType: 'raw'},
+    {"id":2,"tkXuat":"156","maKhoXuat":"K02","maVatTu":"VT1002","tenVatTu":"Cáp điện CADIVI 2x2.5mm","dvt":"m","soLuong":300,"soLuongTheoChungTu":290,"donGiaBan":15000,"thanhTien":4500000,"khuyenMai":true,"chietKhau":"3%","thanhToan":"Tiền mặt","ghiChu":"Khuyến mãi tháng 4","dongHachToan":"156", editType: 'raw'},
+    {"id":3,"tkXuat":"155","maKhoXuat":"K03","maVatTu":"VT1003","tenVatTu":"Sơn nước Jotun nội thất","dvt":"Lít","soLuong":200,"soLuongTheoChungTu":200,"donGiaBan":95000,"thanhTien":19000000,"khuyenMai":false,"chietKhau":"2%","thanhToan":"Chuyển khoản","ghiChu":"Khách hàng thân thiết","dongHachToan":"155", editType: 'raw'}
+  ],
+  hoaDonBanRaData: [
+    {"id":1,"tkThueDauRa":"1331","hoaDonDt":true,"soHoaDon":"HD00123","ngayHoaDon":"2025-04-01","nguoiMuaBan":"Công ty TNHH ABC","hangHoaChiuThue":"29","maSoThue":"0101234567","tienHang":5000000,"thueSuat":"0.1","tienThue":500000,"tongTien":5500000,"ghiChu":"Thanh toán bằng chuyển khoản", editType: 'raw' },
+    {"id":2,"tkThueDauRa":"1332","hoaDonDt":false,"soHoaDon":"HD00124","ngayHoaDon":"2025-04-02","nguoiMuaBan":"Công ty CP XYZ","hangHoaChiuThue":"30","maSoThue":"0309876543","tienHang":1200000,"thueSuat":"0.2","tienThue":96000,"tongTien":1296000,"ghiChu":"", editType: 'raw' },
+    {"id":3,"tkThueDauRa":"1331","hoaDonDt":true,"soHoaDon":"HD00125","ngayHoaDon":"2025-04-03","nguoiMuaBan":"Công ty TNHH DEF","hangHoaChiuThue":"32","maSoThue":"0401122334","tienHang":8500000,"thueSuat":"0.3","tienThue":850000,"tongTien":9350000,"ghiChu":"Giao hàng kèm hóa đơn", editType: 'raw' }
+  ],
+  nhapVatTuData: [
+    {"id":1,"tkNhap":"152","maKhoNhap":"K01","maVatTu":"VT001","tenVatTu":"Thép hộp 50x50","dvt":"Kg","soLuong":1000,"soLuongTheoChungTu":1000,"donGiaBan":25000,"thanhTien":25000000,"khuyenMai":false,"chietKhau":"0.1","thanhToan":"Chuyển khoản","ghiChu":"Nhập kho chính","dongHachToan":"1", editType: 'raw'},
+    {"id":2,"tkNhap":"153","maKhoNhap":"K02","maVatTu":"VT002","tenVatTu":"Xi măng Hà Tiên","dvt":"Bao","soLuong":500,"soLuongTheoChungTu":480,"donGiaBan":80000,"thanhTien":40000000,"khuyenMai":true,"chietKhau":"0.05","thanhToan":"Tiền mặt","ghiChu":"","dongHachToan":"2", editType: 'raw'},
+    {"id":3,"tkNhap":"156","maKhoNhap":"K03","maVatTu":"VT003","tenVatTu":"Gạch ống Đồng Tâm","dvt":"Viên","soLuong":10000,"soLuongTheoChungTu":10000,"donGiaBan":1500,"thanhTien":15000000,"khuyenMai":false,"chietKhau":"0.2","thanhToan":"Công nợ","ghiChu":"Ưu đãi khách hàng thân thiết","dongHachToan":"3", editType: 'raw'}
+  ],
+  hoaDonMuaVaoData: [
+    {"id":1,"tkThueDauVao":"1331","hoaDonDt":true,"soHoaDon":"HD00123","ngayHoaDon":"2025-04-01","nguoiMuaBan":"Công ty TNHH ABC","hangHoaChiuThue":"29","maSoThue":"0101234567","tienHang":5000000,"thueSuat":"10%","tienThue":500000,"tongTien":5500000,"ghiChu":"Thanh toán bằng chuyển khoản", editType: 'raw' },
+    {"id":2,"tkThueDauVao":"1332","hoaDonDt":false,"soHoaDon":"HD00124","ngayHoaDon":"2025-04-02","nguoiMuaBan":"Công ty CP XYZ","hangHoaChiuThue":"30","maSoThue":"0309876543","tienHang":1200000,"thueSuat":"8%","tienThue":96000,"tongTien":1296000,"ghiChu":"", editType: 'raw' },
+    {"id":3,"tkThueDauVao":"1331","hoaDonDt":true,"soHoaDon":"HD00125","ngayHoaDon":"2025-04-03","nguoiMuaBan":"Công ty TNHH DEF","hangHoaChiuThue":"32","maSoThue":"0401122334","tienHang":8500000,"thueSuat":"10%","tienThue":850000,"tongTien":9350000,"ghiChu":"Giao hàng kèm hóa đơn", editType: 'raw' }
+  ]
 }
 
 const mutations = {
@@ -95,7 +84,7 @@ const mutations = {
   UPDATE_MULTIPLE_FIELDS_NHAT_KY_CHUNG(state, updates) {
     updates.forEach(({ path, value }) => {
       const keys = path.split('.') // Chuyển đường dẫn thành mảng
-      let obj = state.chungTu[state.loaiChungTu].thongTinChung
+      let obj = state.nhatKyChung
 
       // Duyệt qua các key để truy cập đến thuộc tính cuối cùng
       for (let i = 0; i < keys.length - 1; i++) {
@@ -111,31 +100,31 @@ const mutations = {
     })
   },
   UPDATE_HACH_TOAN_CELL(state, { dongChungTu, column, value }) {
-    const row = state.chungTu[state.loaiChungTu].hachToan.find(item => item.dongChungTu === dongChungTu)
+    const row = state.hachToanData.find(item => item.dongChungTu === dongChungTu)
     if (row && Object.prototype.hasOwnProperty.call(row, column)) {
       row[column] = value
     }
   },
   UPDATE_XUAT_VAT_TU_CELL(state, { dongHachToan, column, value }) {
-    const row = state.chungTu[state.loaiChungTu].xuatVatTu.find(item => item.dongHachToan === dongHachToan)
+    const row = state.xuatVatTuData.find(item => item.dongHachToan === dongHachToan)
     if (row && Object.prototype.hasOwnProperty.call(row, column)) {
       row[column] = value
     }
   },
   UPDATE_NHAP_VAT_TU_CELL(state, { dongHachToan, column, value }) {
-    const row = state.chungTu[state.loaiChungTu].nhapVatTu.find(item => item.dongHachToan === dongHachToan)
+    const row = state.nhapVatTuData.find(item => item.dongHachToan === dongHachToan)
     if (row && Object.prototype.hasOwnProperty.call(row, column)) {
       row[column] = value
     }
   },
   UPDATE_HOA_DON_BAN_RA_CELL(state, { id, column, value }) {
-    const row = state.chungTu[state.loaiChungTu].hoaDonBanRa.find(item => item.id === id)
+    const row = state.hoaDonBanRaData.find(item => item.id === id)
     if (row && Object.prototype.hasOwnProperty.call(row, column)) {
       row[column] = value
     }
   },
   UPDATE_HOA_DON_MUA_VAO_CELL(state, { id, column, value }) {
-    const row = state.chungTu[state.loaiChungTu].hoaDonMuaVao.find(item => item.id === id)
+    const row = state.hoaDonMuaVaoData.find(item => item.id === id)
     if (row && Object.prototype.hasOwnProperty.call(row, column)) {
       row[column] = value
     }
@@ -143,7 +132,7 @@ const mutations = {
   UPDATE_ROW_ACTION(state, { stateName, key, value, flagName, row }) {
     console.log('UPDATE_ROW_ACTION: stateName, key, value, flagName: ', stateName, key, value, flagName, row)
     // Kiểm tra stateName có tồn tại hay không
-    if (!state.chungTu[state.loaiChungTu][stateName] || !Array.isArray(state.chungTu[state.loaiChungTu][stateName])) {
+    if (!state[stateName] || !Array.isArray(state[stateName])) {
       console.error(`State "${stateName}" không tồn tại hoặc không phải là một mảng.`)
       return
     } 
@@ -153,13 +142,13 @@ const mutations = {
     if (flagName === 'inserting') {
       // Kiểm tra nếu row hợp lệ thì thêm vào danh sách
       if (row && typeof row === 'object') {
-        state.chungTu[state.loaiChungTu][stateName].push(row)
+        state[stateName].push(row)
       } else {
         console.error('Dữ liệu row không hợp lệ để insert.')
       }
     } else {
       // Tìm bản ghi cần cập nhật
-      item = state.chungTu[state.loaiChungTu][stateName].find(record => record[key] === value)
+      item = state[stateName].find(record => record[key] === value)
       if (!item) {
         console.error(`Không tìm thấy bản ghi có ${key} = ${value} trong state "${stateName}".`)
         return
@@ -180,7 +169,7 @@ const mutations = {
         case 'canceling':
           if (row.editType === 'inserting') {
             // Nếu là bản ghi đang được thêm mới thì xóa khỏi state
-            state.chungTu[state.loaiChungTu][stateName] = state.chungTu[state.loaiChungTu][stateName].filter(record => record[key] !== value)
+            state[stateName] = state[stateName].filter(record => record[key] !== value)
           } else {
             if (item.originalData) {
               // Phục hồi dữ liệu cũ từ originalData
@@ -210,6 +199,12 @@ const mutations = {
           console.error(`flagName "${flagName}" không hợp lệ.`)
       }
     }
+  },
+  UPDATE_HACH_TOAN_DATA_EDITTYPE(state) {
+    state.hachToanData = state.hachToanData.map(item => ({
+      ...item,
+      editType: 'raw'
+    }));
   }
 }
 
@@ -220,16 +215,6 @@ const actions = {
   async updateTabType({ commit }, tabtype) {
     commit('SET_STATE', { key: 'tabtype', value: tabtype })
   },
-
-  // async loadKhachHang({ commit }) {
-  //   try {
-  //     const response = await axios.get('http://localhost:8080/api/khachhang')
-  //     const data = response.data
-  //     commit('SET_STATE', { key: 'lstKhachHang', value: data })
-  //   } catch (error) {
-  //     console.error('Lỗi khi tải danh sách khách hàng:', error)
-  //   }
-  // },
   async loadKhachHang({ commit }) {
       try {
         const response = await request.post('/core/get-list-data', {
@@ -256,15 +241,6 @@ const actions = {
         console.error('Lỗi khi tải danh sách nhà cung cấp 2:', error)
       }
     },
-  // async loadTaiKhoan({ commit }) {
-  //   try {
-  //     const response = await axios.get('http://localhost:8080/api/taikhoan')
-  //     const data = response.data
-  //     commit('SET_STATE', { key: 'lstTaiKhoan', value: data })
-  //   } catch (error) {
-  //     console.error('Lỗi khi tải danh sách tài khoản:', error)
-  //   }
-  // },
   async loadTaiKhoan({ commit }) {
       try {
         const response = await request.post('/core/get-list-data', {
@@ -293,15 +269,6 @@ const actions = {
         console.error('Lỗi khi tải danh sách tài khoản chi tiết:', error)
       }
     },
-  // async loadNguoiGiaoDich({ commit }) {
-  //   try {
-  //     const response = await axios.get('http://localhost:8080/api/nguoi-giao-dich')
-  //     const data = response.data
-  //     commit('SET_STATE', { key: 'lstNguoiGiaoDich', value: data })
-  //   } catch (error) {
-  //     console.error('Lỗi khi tải danh sách người giao dịch:', error)
-  //   }
-  // },
   async loadNguoiGiaoDich({ commit }) {
       try {
         const response = await request.post('/core/get-list-data', {
@@ -315,15 +282,6 @@ const actions = {
         console.error('Lỗi khi tải danh sách người giao dịch:', error)
       }
     },
-  // async loadHinhThucTT({ commit }) {
-  //   try {
-  //     const response = await axios.get('http://localhost:8080/api/hinhthuctt')
-  //     const data = response.data
-  //     commit('SET_STATE', { key: 'lstHinhThucTT', value: data })
-  //   } catch (error) {
-  //     console.error('Lỗi khi tải danh sách hình thức thanh toán:', error)
-  //   }
-  // },
   async loadHinhThucTT({ commit }) {
       try {
         const response = await request.post('/core/get-list-data', {
@@ -337,15 +295,6 @@ const actions = {
         console.error('Lỗi khi tải danh sách hình thức thanh toán:', error)
       }
     },
-  // async loadVatTu({ commit }) {
-  //   try {
-  //     const response = await axios.get('http://localhost:8080/api/vat-tu-hang-hoa')
-  //     const data = response.data
-  //     commit('SET_STATE', { key: 'lstVatTu', value: data })
-  //   } catch (error) {
-  //     console.error('Lỗi khi tải danh sách vật tư:', error)
-  //   }
-  // },
   async loadVatTu({ commit }) {
       try {
         const response = await request.post('/core/get-list-data', {
@@ -358,15 +307,6 @@ const actions = {
         console.error('Lỗi khi tải danh sách vật tư:', error)
       }
     },
-  // async loadKhoHang({ commit }) {
-  //   try {
-  //     const response = await axios.get('http://localhost:8080/api/khohang')
-  //     const data = response.data
-  //     commit('SET_STATE', { key: 'lstKhoHang', value: data })
-  //   } catch (error) {
-  //     console.error('Lỗi khi tải danh sách kho hàng:', error)
-  //   }
-  // },
   async loadKhoHang({ commit }) {
       try {
         const response = await request.post('/core/get-list-data', {
@@ -432,6 +372,74 @@ const actions = {
         console.error('Lỗi khi tải danh sách thuế suất mua vào:', error)
       }
     },
+  async sendData({ state, commit }) {
+    try {
+      let payload = {};
+
+      if (state.loaiChungTu === 'phieuthutienmat' || state.loaiChungTu === 'phieuxuatvattucongcu' || state.loaiChungTu === 'banhangthutiensau') {
+        payload = {
+          loaiChungTu: state.loaiChungTu,
+          nhatKyChung: state.nhatKyChung,
+          hachToanData: state.hachToanData,
+          xuatVatTuData: state.xuatVatTuData,
+          hoaDonBanRaData: state.hoaDonBanRaData
+        };
+      } else if (state.loaiChungTu === 'phieuchitienmat' || state.loaiChungTu === 'phieunhapvattucongcu') {
+        payload = {
+          loaiChungTu: state.loaiChungTu,
+          nhatKyChung: state.nhatKyChung,
+          hachToanData: state.hachToanData,
+          nhapVatTuData: state.nhapVatTuData,
+          hoaDonMuaVaoData: state.hoaDonMuaVaoData
+        };
+      } else if (state.loaiChungTu === 'chungtunganhang') {
+        payload = {
+          loaiChungTu: state.loaiChungTu,
+          nhatKyChung: state.nhatKyChung,
+          hachToanData: state.hachToanData,
+          hoaDonMuaVaoData: state.hoaDonMuaVaoData
+        };
+      } else if (state.loaiChungTu === 'chungtughiso') {
+        payload = {
+          loaiChungTu: state.loaiChungTu,
+          nhatKyChung: state.nhatKyChung,
+          hachToanData: state.hachToanData,
+          hoaDonMuaVaoData: state.hoaDonMuaVaoData
+        };
+      } else if (state.loaiChungTu === 'chungtuluuchuyennoibo') {
+        payload = {
+          loaiChungTu: state.loaiChungTu,
+          nhatKyChung: state.nhatKyChung,
+          hachToanData: state.hachToanData,
+          nhapVatTuData: state.nhapVatTuData,
+          xuatVatTuData: state.xuatVatTuData
+        };
+      } else {
+        // Nếu không phải 'a' hoặc 'b', gửi toàn bộ như mặc định (nếu cần)
+        payload = {
+          loaiChungTu: state.loaiChungTu,
+          nhatKyChung: state.nhatKyChung,
+          hachToanData: state.hachToanData
+        };
+      }
+
+      console.log('send data: ', payload)
+      console.log('send data:', JSON.stringify(payload, null, 2));
+
+
+      const response = await request.post('/core/save-data', payload);
+
+      if (response.data?.code === 1) {
+        commit('UPDATE_HACH_TOAN_DATA_EDITTYPE');
+        return { code: 1 };
+      } else {
+        return { code: 0 };
+      }
+    } catch (error) {
+      console.error('Send data failed:', error);
+      return { code: 0 };
+    }
+  },
   async updateHachToanCell({ commit }, payload) {
     commit('UPDATE_HACH_TOAN_CELL', payload)
   },

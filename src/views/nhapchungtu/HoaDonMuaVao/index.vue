@@ -44,10 +44,7 @@ export default {
     }
   },
   computed: {
-    ...mapState('nhapchungtu', ['popup', 'lstTaiKhoan', 'lstKhoHang', 'lstVatTu', 'chungTu', 'loaiChungTu', 'lstNhaCungCap','lstThueSuatMuaVao']),
-    hoaDonMuaVaoData() {
-      return this.chungTu[this.loaiChungTu].hoaDonMuaVao;
-    },
+    ...mapState('nhapchungtu', ['popup', 'lstTaiKhoan', 'lstKhoHang', 'lstVatTu', 'hoaDonMuaVaoData', 'lstNhaCungCap','lstThueSuatMuaVao']),
     comboboxDataHangHoa() {
       return this.lstThueSuatMuaVao.map(item => ({
         code: item.ma_loai,
@@ -76,11 +73,9 @@ export default {
     ...mapActions('nhapchungtu', ['setRowFlag', 'updateHoaDonMuaVaoCell', 'loadDmThueSuatMuaVao']),
     handleRow(type, row) {
       console.log('handle', type, row)
-      this.setRowFlag({ stateName: 'hoaDonMuaVao', key: 'id', value: row.id, flagName: type, row: row })
+      this.setRowFlag({ stateName: 'hoaDonMuaVaoData', key: 'id', value: row.id, flagName: type, row: row })
     },
     async handlePressSpaceKey(data) {
-      console.log('truyen vao', data)
-      alert(`Space pressed in ${data.col.prop}: ${data.row[data.col.prop]}`)
       if (data.col.prop === 'nguoiMuaBan') {
         if (this.popupRef) {
           const result = await this.popupRef.openPopup({
