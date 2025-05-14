@@ -36,6 +36,10 @@
                 <el-checkbox v-model="nhatKyChung.chungTu.hienSoChungTu"
                   >Hiện số chứng từ</el-checkbox
                 >
+                <el-checkbox
+                  v-model="nhatKyChung.thongTinKhachHang.hachToanNgoaiTe"
+                  >Hạch toán ngoại tệ</el-checkbox
+                >
               </div>
               <div id="nkc-container-trai-body-line3" class="container-row">
                 <el-form-item label="Nội dung" style="flex: 1">
