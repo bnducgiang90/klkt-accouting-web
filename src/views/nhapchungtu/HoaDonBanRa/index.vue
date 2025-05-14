@@ -109,7 +109,7 @@ export default {
         {
           prop: "ngayHoaDon",
           label: "Ngày hóa đơn",
-          minWidth: "120px",
+          minWidth: "150px",
           align: "left",
           format: "date",
         },
@@ -183,8 +183,6 @@ export default {
       });
     },
     async handlePressSpaceKey(data) {
-      console.log("truyen vao", data);
-      alert(`Space pressed in ${data.col.prop}: ${data.row[data.col.prop]}`);
       if (data.col.prop === "nguoiMuaBan") {
         if (this.popupRef) {
           const result = await this.popupRef.openPopup({
@@ -210,8 +208,6 @@ export default {
       }
     },
     async handleChangeValue(data) {
-      console.log("truyen vao", data);
-      alert(`Space pressed in ${data.col.prop}: ${data.row[data.col.prop]}`);
       if (data.col.prop === "tienHang" || data.col.prop === "tienThue") {
         if (data.row["tienHang"] && data.row["tienThue"]) {
           this.updateHoaDonBanRaCell({

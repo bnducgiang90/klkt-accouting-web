@@ -1,14 +1,15 @@
 <template>
   <div id="page-container">
+    <NhatKyChung :popup-ref="popupRef" />
     <el-tabs
       id="content-box"
       v-model="activeTab"
       type="border-card"
       @tab-click="handleTabClick"
     >
-      <el-tab-pane label="Nhật ký chung" name="TAB_NHAT_KY_CHUNG">
+      <!-- <el-tab-pane label="Nhật ký chung" name="TAB_NHAT_KY_CHUNG">
         <NhatKyChung :popup-ref="popupRef" />
-      </el-tab-pane>
+      </el-tab-pane> -->
       <el-tab-pane v-if="isHachToan" label="Hạch toán" name="TAB_HACH_TOAN">
         <HachToan :popup-ref="popupRef" />
       </el-tab-pane>
@@ -234,6 +235,8 @@ export default {
 #page-container {
   display: flex;
   flex-direction: column;
+  height: 100%; /* Đảm bảo container chiếm toàn bộ chiều cao của parent */
+  min-height: 100%; /* Đề phòng trường hợp parent không có chiều cao cố định */
 }
 
 #content-box {

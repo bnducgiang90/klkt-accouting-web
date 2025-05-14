@@ -208,8 +208,6 @@ export default {
       }
     },
     async handleChangeValue(data) {
-      console.log("truyen vao", data);
-      alert(`Space pressed in ${data.col.prop}: ${data.row[data.col.prop]}`);
       if (data.col.prop === "tienHang" || data.col.prop === "tienThue") {
         if (data.row["tienHang"] && data.row["tienThue"]) {
           this.updateHoaDonMuaVaoCell({

@@ -118,117 +118,210 @@ export const asyncRoutes = [
     ],
   },
   {
-    path: "/nhap/phieuthutienmat",
+    path: "/test",
     component: Layout,
     children: [
       {
         path: "index",
+        component: () => import("@/views/test/index"),
+        name: "Test",
+        meta: { title: "Test thoi", icon: "documentation", noCache: true },
+      },
+    ],
+  },
+  {
+    path: "/nhap",
+    component: Layout,
+    name: "Nhập chứng từ",
+    meta: {
+      title: "Nhập chứng từ",
+      icon: "el-icon-s-help",
+    },
+    children: [
+      {
+        path: "phieuthutienmat",
         component: () => import("@/views/nhapchungtu/index"),
         name: "nhapphieuthutienmat",
         meta: {
-          title: "Nhập phiếu thu tiền mặt",
+          title: "Phiếu thu tiền mặt",
           icon: "documentation",
           noCache: true,
         },
       },
-    ],
-  },
-  {
-    path: "/nhap/phieuchitienmat",
-    component: Layout,
-    children: [
       {
-        path: "index",
+        path: "/phieuchitienmat",
         component: () => import("@/views/nhapchungtu/index"),
         name: "nhapphieuchitienmat",
         meta: {
-          title: "Nhập phiếu chi tiền mặt",
+          title: "Phiếu chi tiền mặt",
           icon: "documentation",
           noCache: true,
         },
       },
-    ],
-  },
-  {
-    path: "/nhap/phieunhapvattucongcu",
-    component: Layout,
-    children: [
       {
-        path: "index",
+        path: "/nhap/phieunhapvattucongcu",
         component: () => import("@/views/nhapchungtu/index"),
         name: "nhapphieunhapvattucongcu",
         meta: {
-          title: "Nhập phiếu nhập Vật tư - Công cụ",
+          title: "Phiếu nhập Vật tư - Công cụ",
           icon: "documentation",
           noCache: true,
         },
       },
-    ],
-  },
-  {
-    path: "/nhap/banhangthutiensau",
-    component: Layout,
-    children: [
       {
-        path: "index",
+        path: "/nhap/banhangthutiensau",
         component: () => import("@/views/nhapchungtu/index"),
         name: "nhapbanhangthutiensau",
         meta: {
-          title: "Nhập bán hàng thu tiền sau",
+          title: "Bán hàng thu tiền sau",
           icon: "documentation",
           noCache: true,
         },
       },
-    ],
-  },
-  {
-    path: "/nhap/chungtunganhang",
-    component: Layout,
-    children: [
       {
-        path: "index",
+        path: "/nhap/chungtunganhang",
         component: () => import("@/views/nhapchungtu/index"),
         name: "nhapchungtunganhang",
         meta: {
-          title: "Nhập chứng từ ngân hàng",
+          title: "Chứng từ ngân hàng",
           icon: "documentation",
           noCache: true,
         },
       },
-    ],
-  },
-  {
-    path: "/nhap/chungtughiso",
-    component: Layout,
-    children: [
       {
-        path: "index",
+        path: "/nhap/chungtughiso",
         component: () => import("@/views/nhapchungtu/index"),
         name: "nhapchungtughiso",
         meta: {
-          title: "Nhập chứng từ ghi sổ",
+          title: "Chứng từ ghi sổ",
           icon: "documentation",
           noCache: true,
         },
       },
-    ],
-  },
-  {
-    path: "/nhap/chungtuluuchuyennoibo",
-    component: Layout,
-    children: [
       {
-        path: "index",
+        path: "/nhap/chungtuluuchuyennoibo",
         component: () => import("@/views/nhapchungtu/index"),
         name: "nhapchungtuluuchuyennoibo",
         meta: {
-          title: "Nhập chứng từ lưu chuyển nội bộ",
+          title: "Chứng từ lưu chuyển nội bộ",
           icon: "documentation",
           noCache: true,
         },
       },
     ],
   },
+  // {
+  //   path: "/nhap/phieuthutienmat",
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: "index",
+  //       component: () => import("@/views/nhapchungtu/index"),
+  //       name: "nhapphieuthutienmat",
+  //       meta: {
+  //         title: "Nhập phiếu thu tiền mặt",
+  //         icon: "documentation",
+  //         noCache: true,
+  //       },
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: "/nhap/phieuchitienmat",
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: "index",
+  //       component: () => import("@/views/nhapchungtu/index"),
+  //       name: "nhapphieuchitienmat",
+  //       meta: {
+  //         title: "Nhập phiếu chi tiền mặt",
+  //         icon: "documentation",
+  //         noCache: true,
+  //       },
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: "/nhap/phieunhapvattucongcu",
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: "index",
+  //       component: () => import("@/views/nhapchungtu/index"),
+  //       name: "nhapphieunhapvattucongcu",
+  //       meta: {
+  //         title: "Nhập phiếu nhập Vật tư - Công cụ",
+  //         icon: "documentation",
+  //         noCache: true,
+  //       },
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: "/nhap/banhangthutiensau",
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: "index",
+  //       component: () => import("@/views/nhapchungtu/index"),
+  //       name: "nhapbanhangthutiensau",
+  //       meta: {
+  //         title: "Nhập bán hàng thu tiền sau",
+  //         icon: "documentation",
+  //         noCache: true,
+  //       },
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: "/nhap/chungtunganhang",
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: "index",
+  //       component: () => import("@/views/nhapchungtu/index"),
+  //       name: "nhapchungtunganhang",
+  //       meta: {
+  //         title: "Nhập chứng từ ngân hàng",
+  //         icon: "documentation",
+  //         noCache: true,
+  //       },
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: "/nhap/chungtughiso",
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: "index",
+  //       component: () => import("@/views/nhapchungtu/index"),
+  //       name: "nhapchungtughiso",
+  //       meta: {
+  //         title: "Nhập chứng từ ghi sổ",
+  //         icon: "documentation",
+  //         noCache: true,
+  //       },
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: "/nhap/chungtuluuchuyennoibo",
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: "index",
+  //       component: () => import("@/views/nhapchungtu/index"),
+  //       name: "nhapchungtuluuchuyennoibo",
+  //       meta: {
+  //         title: "Nhập chứng từ lưu chuyển nội bộ",
+  //         icon: "documentation",
+  //         noCache: true,
+  //       },
+  //     },
+  //   ],
+  // },
   // {
   //   path: '/permission',
   //   component: Layout,

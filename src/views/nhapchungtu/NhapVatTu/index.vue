@@ -142,8 +142,6 @@ export default {
       });
     },
     async handlePressSpaceKey(data) {
-      console.log("truyen vao", data);
-      alert(`Space pressed in ${data.col.prop}: ${data.row[data.col.prop]}`);
       if (data.col.prop === "tkNhap") {
         if (this.popupRef) {
           const result = await this.popupRef.openPopup({
@@ -198,13 +196,16 @@ export default {
               column: "tenVatTu", // Cột cần update
               value: result.ten_vattu, // Giá trị mới
             });
+            this.updateNhapVatTuCell({
+              dongHachToan: data.row.dongHachToan, // Số dòng cần update
+              column: "dvt", // Cột cần update
+              value: result.dvt, // Giá trị mới
+            });
           }
         }
       }
     },
     async handleChangeValue(data) {
-      console.log("truyen vao", data);
-      alert(`Space pressed in ${data.col.prop}: ${data.row[data.col.prop]}`);
       if (data.col.prop === "soLuong") {
         this.updateNhapVatTuCell({
           dongHachToan: data.row.dongHachToan, // Số dòng cần update
@@ -217,6 +218,11 @@ export default {
           this.updateNhapVatTuCell({
             dongHachToan: data.row.dongHachToan, // Số dòng cần update
             column: "thanhTien", // Cột cần update
+            value: data.row["soLuong"] * data.row["donGiaBan"], // Giá trị mới
+          });
+          this.updateNhapVatTuCell({
+            dongHachToan: data.row.dongHachToan, // Số dòng cần update
+            column: "thanhToan", // Cột cần update
             value: data.row["soLuong"] * data.row["donGiaBan"], // Giá trị mới
           });
         }

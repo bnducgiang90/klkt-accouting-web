@@ -6,7 +6,6 @@
       border
       class="custom-table"
       style="width: 100%"
-      height="500"
       :header-cell-style="{ textAlign: 'center' }"
       :row-class-name="tableRowClass"
     >
@@ -48,12 +47,22 @@
               v-model="scope.row[col.prop]"
             />
 
-            <el-input
+            <!-- <el-input
               v-else-if="col.format === 'date'"
               v-model="scope.row[col.prop]"
               :disabled="col.disableEditing"
               @blur="validateAndFormatDate(scope.row, col.prop)"
+            /> -->
+            <el-date-picker
+              v-else-if="col.format === 'date'"
+              v-model="scope.row[col.prop]"
+              type="date"
+              placeholder="Chọn ngày"
+              format="dd/MM/yyyy"
+              value-format="dd/MM/yyyy"
+              :disabled="col.disableEditing"
             />
+
             <el-input
               v-else-if="col.format === 'currency'"
               v-model="scope.row[col.prop]"
@@ -142,9 +151,11 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-button type="primary" class="add-button" @click="addRow"
-      >Chèn</el-button
-    >
+    <div class="button-container">
+      <el-button type="primary" class="add-button" @click="addRow"
+        >Chèn</el-button
+      >
+    </div>
   </div>
 </template>
 
@@ -298,6 +309,10 @@ export default {
 }
 .wrap-text {
   white-space: pre-wrap;
+}
+.button-container {
+  display: flex;
+  justify-content: flex-end; /* Căn nút sang bên phải */
 }
 .add-button {
   margin-top: 10px;

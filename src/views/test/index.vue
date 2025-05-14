@@ -368,12 +368,14 @@ export default {
 }
 
 #nkc-container-trai {
+  background-color: green; /* Màu nền để dễ nhận diện */
   flex: 1; /* Chiếm một phần không gian (có thể điều chỉnh) */
   color: white;
   padding: 10px;
 }
 
 #nkc-container-phai {
+  background-color: yellow; /* Màu nền để dễ nhận diện */
   flex: 1; /* Chiếm một phần không gian (có thể điều chỉnh) */
   padding: 10px;
 }
