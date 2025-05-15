@@ -10,8 +10,16 @@
       <div id="nkc-container">
         <div id="nkc-container-trai">
           <el-card class="box-card">
-            <div id="nkc-container-trai-header" slot="header" class="clearfix">
-              <span>Chứng từ</span>
+            <div id="nkc-container-trai-header" slot="header" class="clearfix container-row" style="display: flex; justify-content: space-between; align-items: end;">
+              <span>Chứng từ: </span>
+              <el-input 
+                v-model="nhatKyChung.chungTu.hdr_id"
+                placeholder="HDR_ID"
+                disabled
+                style="width: 180px; height: 19px; margin-left: auto;"
+                size="small"
+              />
+              <!-- <span>{{this.nhatKyChung.chungTu.hdr_id}}</span> -->
             </div>
             <div id="nkc-container-trai-body">
               <div id="nkc-container-trai-body-line1" class="container-row">
@@ -31,6 +39,8 @@
                     v-model="nhatKyChung.chungTu.ngay"
                     type="date"
                     placeholder="Chọn ngày"
+                    format="dd/MM/yyyy"
+                    value-format="dd/MM/yyyy"
                   />
                 </el-form-item>
                 <el-checkbox v-model="nhatKyChung.chungTu.hienSoChungTu"
@@ -85,6 +95,8 @@
                   <el-input
                     v-model="nhatKyChung.thongTinKhachHang.maSoThue"
                     placeholder="Điền vào mã số thuế"
+                    maxlength=20
+                    style="width: 180px;"
                   />
                 </el-form-item>
                 <el-form-item label="Tên đơn vị" style="flex-grow: 1">
@@ -105,6 +117,8 @@
                   <el-input
                     v-model="nhatKyChung.thongTinKhachHang.dienThoai"
                     placeholder="Điền vào điện thoại"
+                    maxlength=10
+                    style="width: 120px;"
                   />
                 </el-form-item>
               </div>

@@ -75,7 +75,7 @@ export default {
   data() {
     return {
       popupRef: null, // Lưu reference của popup
-      activeTab: "TAB_NHAT_KY_CHUNG", // Tab mặc định khi load trang
+      activeTab: "TAB_HACH_TOAN", // Tab mặc định khi load trang
       isHachToan: false,
       isNhapVatTu: false,
       isXuatVatTu: false,

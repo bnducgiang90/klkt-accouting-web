@@ -61,6 +61,7 @@
               format="dd/MM/yyyy"
               value-format="dd/MM/yyyy"
               :disabled="col.disableEditing"
+              style="width: 100% !important; max-width: 100% !important;"
             />
 
             <el-input

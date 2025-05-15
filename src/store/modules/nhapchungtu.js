@@ -26,6 +26,7 @@ const state = {
   lstKhoHang: [],
   nhatKyChung: {
     chungTu: {
+      hdr_id: null,
       sttgs: "",
       kyHieuSoCT: "",
       ngay: "",
@@ -48,6 +49,18 @@ const state = {
     },
   },
   hachToanData: [
+    {
+      "dongChungTu": 1,
+      "tkNo": "6427",
+      "chiTietNo": "1",
+      "tkCo": "6428",
+      "chiTietCo": "3",
+      "soTien": "100",
+      "thoiHanThanhToan": "22/05/2025",
+      "thoiHanChietKhau": "27/05/2025",
+      "kyHieuSoHoaDon": "hd222",
+      "editType": "inserted"
+    }
     // {
     //   dongChungTu: 1,
     //   tkNo: 112,
@@ -86,6 +99,24 @@ const state = {
     // },
   ],
   xuatVatTuData: [
+    {
+      "id": null,
+      "tkXuat": "6424",
+      "maKhoXuat": "01",
+      "maVatTu": "15",
+      "tenVatTu": "Mỡ bôi trơn castrol SPHEEROL EPL3",
+      "dvt": "Kg",
+      "soLuong": "12",
+      "soLuongTheoChungTu": "12",
+      "donGiaBan": "2",
+      "thanhTien": 24,
+      "khuyenMai": null,
+      "chietKhau": "2",
+      "thanhToan": 24,
+      "ghiChu": "dfsd",
+      "dongHachToan": "1",
+      "editType": "inserted"
+    }
     // {
     //   id: 1,
     //   tkXuat: "632",
@@ -142,6 +173,22 @@ const state = {
     // },
   ],
   hoaDonBanRaData: [
+    {
+      "id": 1,
+      "tkThueDauRa": "12",
+      "hoaDonDt": true,
+      "soHoaDon": "123",
+      "ngayHoaDon": "06/05/2025",
+      "nguoiMuaBan": "CÔNG TY TNHH ĐẦU TƯ THƯƠNG MẠI VÀ DỊCH VỤ ĐẠT THANH",
+      "hangHoaChiuThue": "30",
+      "maSoThue": "2700947985",
+      "tienHang": "234",
+      "thueSuat": "1",
+      "tienThue": "2",
+      "tongTien": 236,
+      "ghiChu": "dfsd",
+      "editType": "inserted"
+    }
     // {
     //   id: 1,
     //   tkThueDauRa: "1331",
@@ -678,10 +725,12 @@ const actions = {
       console.log("send data:", JSON.stringify(payload, null, 2));
 
       const response = await request.post("/core/upsert-tax-doc", payload);
+      console.log("recive response:", JSON.stringify(response, null, 2));
 
       // Nếu response là mảng và phần tử đầu tiên có status là "success"
-      if (Array.isArray(response) && response[0]?.status === "success") {
+      if (response.errorCode === "000") {
         commit("UPDATE_HACH_TOAN_DATA_EDITTYPE");
+        commit("UPDATE_MULTIPLE_FIELDS_NHAT_KY_CHUNG", [{ path: "chungTu.hdr_id", value: response.data.hdr_id }])
         // alert("Thành Công");
         // this.$message.success("Thành công!");
         Message.success("Thành công!");
