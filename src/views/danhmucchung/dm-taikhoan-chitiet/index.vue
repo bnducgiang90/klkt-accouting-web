@@ -1,15 +1,18 @@
 <template>
   <div class="taikhoan-chitiet-container">
     <el-card>
-      <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
-        <el-input
-          v-model="searchQuery"
-          placeholder="Nhập số hiệu hoặc tên chi tiết để tìm kiếm"
-          clearable
-          style="width: 400px;"
-          @keyup.enter.native="handleSearch"
-        />
-        <el-button type="primary" icon="el-icon-search" @click="handleSearch">Search</el-button>
+      <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center; justify-content: space-between;">
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <el-input
+            v-model="searchQuery"
+            placeholder="Nhập số hiệu hoặc tên chi tiết để tìm kiếm"
+            clearable
+            style="width: 400px;"
+            @keyup.enter.native="handleSearch"
+          />
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch">Search</el-button>
+        </div>
+        <el-button type="success" icon="el-icon-plus" @click="onCreate">Thêm mới</el-button>
       </div>
       <el-table
         :data="accounts"
@@ -60,14 +63,14 @@
               type="primary"
               size="small"
               class="el-icon-edit"
-              @click="openDialog('update', scope.row)"
+              @click="onEdit(scope.row)"
             >Edit</el-button>
             <el-button
-              type="danger"
+              :type="scope.row.su_dung ? 'danger' : 'warning'"
               size="small"
-              class="el-icon-delete"
-              @click="onDisable(scope.row)"
-            >Disable</el-button>
+              :class="scope.row.su_dung ? 'el-icon-delete' : 'el-icon-check'"
+              @click="scope.row.su_dung ? handleDisable(scope.row) : handleEnable(scope.row)"
+            >{{ scope.row.su_dung ? 'Disable' : 'Enable' }}</el-button>
           </template>
         </el-table-column>
 
@@ -82,6 +85,19 @@
           @current-change="handlePageChange"
         />
       </div>
+      <!-- Popup for create/edit -->
+      <tai-khoan-chi-tiet-form
+        :visible.sync="formVisible"
+        :is-edit="isEdit"
+        :account-data="currentRecord"
+        @success="handleFormSuccess"
+      />
+      <!-- Popup for detail -->
+      <tai-khoan-chi-tiet-detail
+        :visible.sync="detailVisible"
+        :account-data="currentRecord"
+        @close="handleDetailClose"
+      />
     </el-card>
   </div>
 </template>
@@ -89,9 +105,16 @@
 <script>
 import service from '@/utils/request';
 const baseUrl = process.env.VUE_APP_KLKT_APP_BASE_API;
+// Import popup components (to be created)
+import TaiKhoanChiTietForm from './components/TaiKhoanChiTietForm.vue';
+import TaiKhoanChiTietDetail from './components/TaiKhoanChiTietDetail.vue';
 
 export default {
   name: 'DmTaiKhoanChiTietList',
+  components: {
+    TaiKhoanChiTietForm,
+    TaiKhoanChiTietDetail,
+  },
   data() {
     return {
       searchQuery: '',
@@ -102,6 +125,11 @@ export default {
         pageSize: 10,
         total: 0,
       },
+      // Popup state
+      formVisible: false,
+      isEdit: false,
+      currentRecord: {},
+      detailVisible: false,
     };
   },
   methods: {
@@ -149,22 +177,101 @@ export default {
       }).format(value);
     },
     onEdit(row) {
-        this.$message.info('Edit: ' + JSON.stringify(row));
+      this.isEdit = true;
+      this.currentRecord = { ...row };
+      this.formVisible = true;
+    },
+    onCreate() {
+      this.isEdit = false;
+      this.currentRecord = {};
+      this.formVisible = true;
     },
     onDetail(row) {
-      this.$message.info('Detail: ' + JSON.stringify(row));
+      this.currentRecord = { ...row };
+      this.detailVisible = true;
     },
     onDisable(row) {
-      this.$message.warning('Disable: ' + JSON.stringify(row));
+      this.disableRecord = { ...row };
+      this.confirmDisableVisible = true;
+    },
+    handleFormSuccess() {
+      this.formVisible = false;
+      this.fetchAccounts();
+    },
+    handleDetailClose() {
+      this.detailVisible = false;
+    },
+    async handleDisable(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn vô hiệu hóa tài khoản chi tiết "${row.ten_chitiet}" (${row.ma_chitiet})?`,
+          'Xác nhận vô hiệu hóa',
+          {
+            confirmButtonText: 'Vô hiệu hóa',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--danger'
+          }
+        );
+        this.loading = true;
+        const payload = {
+          table_code: 'tbldmtaikhoan_chitiet',
+          id: row.id,
+          su_dung: false
+        };
+        await service.put(`${baseUrl}/dm/update`, payload);
+        this.$message.success('Vô hiệu hóa tài khoản chi tiết thành công');
+        this.fetchAccounts();
+      } catch (error) {
+        if (error !== 'cancel') {
+          console.error('Error disabling account detail:', error);
+          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa tài khoản chi tiết');
+        }
+      } finally {
+        this.loading = false;
+      }
+    },
+    async handleEnable(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn kích hoạt tài khoản chi tiết "${row.ten_chitiet}" (${row.ma_chitiet})?`,
+          'Xác nhận kích hoạt',
+          {
+            confirmButtonText: 'Kích hoạt',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--success'
+          }
+        );
+        this.loading = true;
+        const payload = {
+          table_code: 'tbldmtaikhoan_chitiet',
+          id: row.id,
+          su_dung: true
+        };
+        await service.put(`${baseUrl}/dm/update`, payload);
+        this.$message.success('Kích hoạt tài khoản chi tiết thành công');
+        this.fetchAccounts();
+      } catch (error) {
+        if (error !== 'cancel') {
+          console.error('Error enabling account detail:', error);
+          this.$message.error('Có lỗi xảy ra khi kích hoạt tài khoản chi tiết');
+        }
+      } finally {
+        this.loading = false;
+      }
     },
     openDialog(type, record = {}) {
-      this.$message.warning('Open dialog: ' + type + '; ' + JSON.stringify(record));
+      if (type === 'update') {
+        this.onEdit(record);
+      } else if (type === 'create') {
+        this.onCreate();
+      }
     },
   },
   created() {
     this.fetchAccounts();
   },
-
 };
 </script>
 

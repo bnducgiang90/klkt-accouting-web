@@ -1,15 +1,18 @@
 <template>
   <div class="taisan-container">
     <el-card>
-      <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
-        <el-input
-          v-model="searchQuery"
-          placeholder="Nhập MST, số hiệu TK hoặc tên tài sản để tìm kiếm"
-          clearable
-          style="width: 400px;"
-          @keyup.enter.native="handleSearch"
-        />
-        <el-button type="primary" icon="el-icon-search" @click="handleSearch">Search</el-button>
+      <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center; justify-content: space-between;">
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <el-input
+            v-model="searchQuery"
+            placeholder="Nhập MST, số hiệu TK hoặc tên tài sản để tìm kiếm"
+            clearable
+            style="width: 400px;"
+            @keyup.enter.native="handleSearch"
+          />
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch">Search</el-button>
+        </div>
+        <el-button type="success" icon="el-icon-plus" @click="openCreateDialog">Thêm mới</el-button>
       </div>
       <el-table
         :data="assets"
@@ -47,7 +50,13 @@
             {{ formatNumber(scope.row.nam_sanxuat) }}
           </template>
         </el-table-column>
-        <el-table-column prop="hientrang" label="Hiện trạng" width="100" />
+        <el-table-column prop="trang_thai" label="Trạng thái" width="100" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.trang_thai === 1 ? 'success' : 'danger'">
+              {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu' }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="donvi_quanly" label="Mã đơn vị quản lý" width="140" />
         <el-table-column prop="ten_donvi_quanly" label="Tên đơn vị quản lý" min-width="150" />
         <el-table-column prop="nguonvon" label="Nguồn vốn" width="120" />
@@ -105,21 +114,21 @@
             <el-button
               type="success"
               size="small"
-              class="el-icon-info"
-              @click="onDetail(scope.row)"
+              icon="el-icon-info"
+              @click="openDetailDialog(scope.row)"
             >Detail</el-button>
             <el-button
               type="primary"
               size="small"
-              class="el-icon-edit"
-              @click="openDialog('update', scope.row)"
+              icon="el-icon-edit"
+              @click="openEditDialog(scope.row)"
             >Edit</el-button>
             <el-button
-              type="danger"
+              :type="scope.row.trang_thai === 1 ? 'danger' : 'warning'"
               size="small"
-              class="el-icon-delete"
-              @click="onDisable(scope.row)"
-            >Disable</el-button>
+              :icon="scope.row.trang_thai === 1 ? 'el-icon-delete' : 'el-icon-check'"
+              @click="scope.row.trang_thai === 1 ? handleDisable(scope.row) : handleEnable(scope.row)"
+            >{{ scope.row.trang_thai === 1 ? 'Disable' : 'Enable' }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -134,15 +143,33 @@
         />
       </div>
     </el-card>
+    <AssetForm
+      :visible.sync="formDialog.visible"
+      :is-edit="formDialog.isEdit"
+      :asset-data="formDialog.assetData"
+      @success="handleFormSuccess"
+      @close="handleFormClose"
+    />
+    <AssetDetail
+      :visible.sync="detailDialog.visible"
+      :asset-data="detailDialog.assetData"
+      @close="handleDetailClose"
+    />
   </div>
 </template>
 
 <script>
 import service from '@/utils/request';
+import AssetForm from './components/AssetForm.vue';
+import AssetDetail from './components/AssetDetail.vue';
 const baseUrl = process.env.VUE_APP_KLKT_APP_BASE_API;
 
 export default {
   name: 'DmTaiSanList',
+  components: {
+    AssetForm,
+    AssetDetail
+  },
   data() {
     return {
       searchQuery: '',
@@ -153,6 +180,15 @@ export default {
         pageSize: 10,
         total: 0,
       },
+      formDialog: {
+        visible: false,
+        isEdit: false,
+        assetData: {}
+      },
+      detailDialog: {
+        visible: false,
+        assetData: {}
+      }
     };
   },
   methods: {
@@ -206,14 +242,65 @@ export default {
         currency: 'VND'
       }).format(value);
     },
-    onDetail(row) {
-      this.$message.info('Detail: ' + JSON.stringify(row));
+    openCreateDialog() {
+      this.formDialog = {
+        visible: true,
+        isEdit: false,
+        assetData: {}
+      };
     },
-    onDisable(row) {
-      this.$message.warning('Disable: ' + JSON.stringify(row));
+    openEditDialog(row) {
+      this.formDialog = {
+        visible: true,
+        isEdit: true,
+        assetData: { ...row }
+      };
     },
-    openDialog(type, record = {}) {
-      this.$message.warning('Open dialog: ' + type + '; ' + JSON.stringify(record));
+    openDetailDialog(row) {
+      this.detailDialog = {
+        visible: true,
+        assetData: { ...row }
+      };
+    },
+    handleFormSuccess() {
+      this.fetchAssets();
+      this.formDialog.visible = false;
+    },
+    handleFormClose() {
+      this.formDialog.visible = false;
+    },
+    handleDetailClose() {
+      this.detailDialog.visible = false;
+    },
+    handleDisable(row) {
+      this.$confirm('Bạn có chắc chắn muốn vô hiệu hóa tài sản này?', 'Xác nhận', {
+        confirmButtonText: 'Vô hiệu hóa',
+        cancelButtonText: 'Hủy',
+        type: 'warning'
+      }).then(async () => {
+        try {
+          await service.put(`${baseUrl}/dm/disable`, { table_code: 'tbldmtaisan', id: row.id });
+          this.$message.success('Đã vô hiệu hóa tài sản');
+          this.fetchAssets();
+        } catch (e) {
+          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa');
+        }
+      });
+    },
+    handleEnable(row) {
+      this.$confirm('Bạn có chắc chắn muốn kích hoạt lại tài sản này?', 'Xác nhận', {
+        confirmButtonText: 'Kích hoạt',
+        cancelButtonText: 'Hủy',
+        type: 'success'
+      }).then(async () => {
+        try {
+          await service.put(`${baseUrl}/dm/enable`, { table_code: 'tbldmtaisan', id: row.id });
+          this.$message.success('Đã kích hoạt lại tài sản');
+          this.fetchAssets();
+        } catch (e) {
+          this.$message.error('Có lỗi xảy ra khi kích hoạt lại');
+        }
+      });
     },
   },
   created() {

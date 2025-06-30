@@ -1,15 +1,18 @@
 <template>
   <div class="nhacungcap-container">
     <el-card>
-      <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
-        <el-input
-          v-model="searchQuery"
-          placeholder="Nhập MST, MST KH NCC hoặc tên công ty để tìm kiếm"
-          clearable
-          style="width: 400px;"
-          @keyup.enter.native="handleSearch"
-        />
-        <el-button type="primary" icon="el-icon-search" @click="handleSearch">Search</el-button>
+      <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center; justify-content: space-between;">
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <el-input
+            v-model="searchQuery"
+            placeholder="Nhập MST, MST KH NCC hoặc tên công ty để tìm kiếm"
+            clearable
+            style="width: 400px;"
+            @keyup.enter.native="handleSearch"
+          />
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch">Search</el-button>
+        </div>
+        <el-button type="success" icon="el-icon-plus" @click="openCreateDialog">Thêm mới</el-button>
       </div>
       <el-table
         :data="suppliers"
@@ -68,6 +71,13 @@
             {{ formatNumber(scope.row.cap) }}
           </template>
         </el-table-column>
+        <el-table-column prop="trang_thai" label="Trạng thái" width="100" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.trang_thai === 1 ? 'success' : 'danger'">
+              {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu' }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <!-- Cột hành động -->
         <el-table-column align="center" label="Action" width="280" fixed="right">
           <template slot-scope="scope">
@@ -75,20 +85,20 @@
               type="success"
               size="small"
               class="el-icon-info"
-              @click="onDetail(scope.row)"
+              @click="openDetailDialog(scope.row)"
             >Detail</el-button>
             <el-button
               type="primary"
               size="small"
               class="el-icon-edit"
-              @click="openDialog('update', scope.row)"
+              @click="openEditDialog(scope.row)"
             >Edit</el-button>
             <el-button
-              type="danger"
+              :type="scope.row.trang_thai === 1 ? 'danger' : 'warning'"
               size="small"
-              class="el-icon-delete"
-              @click="onDisable(scope.row)"
-            >Disable</el-button>
+              :class="scope.row.trang_thai === 1 ? 'el-icon-delete' : 'el-icon-check'"
+              @click="scope.row.trang_thai === 1 ? handleDisable(scope.row) : handleEnable(scope.row)"
+            >{{ scope.row.trang_thai === 1 ? 'Disable' : 'Enable' }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -103,15 +113,35 @@
         />
       </div>
     </el-card>
+    <!-- Popup Form -->
+    <SupplierForm
+      :visible.sync="formDialog.visible"
+      :is-edit="formDialog.isEdit"
+      :supplier-data="formDialog.supplierData"
+      @success="handleFormSuccess"
+      @close="handleFormClose"
+    />
+    <!-- Popup Detail -->
+    <SupplierDetail
+      :visible.sync="detailDialog.visible"
+      :supplier-data="detailDialog.supplierData"
+      @close="handleDetailClose"
+    />
   </div>
 </template>
 
 <script>
 import service from '@/utils/request';
+import SupplierForm from './components/SupplierForm.vue';
+import SupplierDetail from './components/SupplierDetail.vue';
 const baseUrl = process.env.VUE_APP_KLKT_APP_BASE_API;
 
 export default {
   name: 'DmNhaCungCapList',
+  components: {
+    SupplierForm,
+    SupplierDetail
+  },
   data() {
     return {
       searchQuery: '',
@@ -122,6 +152,15 @@ export default {
         pageSize: 10,
         total: 0,
       },
+      formDialog: {
+        visible: false,
+        isEdit: false,
+        supplierData: {}
+      },
+      detailDialog: {
+        visible: false,
+        supplierData: {}
+      }
     };
   },
   methods: {
@@ -171,15 +210,101 @@ export default {
         currency: 'VND'
       }).format(value);
     },
-    onDetail(row) {
-      this.$message.info('Detail: ' + JSON.stringify(row));
+    openCreateDialog() {
+      this.formDialog = {
+        visible: true,
+        isEdit: false,
+        supplierData: {}
+      };
     },
-    onDisable(row) {
-      this.$message.warning('Disable: ' + JSON.stringify(row));
+    openEditDialog(row) {
+      this.formDialog = {
+        visible: true,
+        isEdit: true,
+        supplierData: { ...row }
+      };
     },
-    openDialog(type, record = {}) {
-      this.$message.warning('Open dialog: ' + type + '; ' + JSON.stringify(record));
+    handleFormSuccess() {
+      this.fetchSuppliers();
+      this.$message.success(this.formDialog.isEdit ? 'Cập nhật thành công' : 'Thêm mới thành công');
     },
+    handleFormClose() {
+      this.formDialog = {
+        visible: false,
+        isEdit: false,
+        supplierData: {}
+      };
+    },
+    openDetailDialog(row) {
+      this.detailDialog = {
+        visible: true,
+        supplierData: { ...row }
+      };
+    },
+    handleDetailClose() {
+      this.detailDialog = {
+        visible: false,
+        supplierData: {}
+      };
+    },
+    async handleDisable(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn vô hiệu hóa nhà cung cấp "${row.ten_congty}" (MST: ${row.mst})?`,
+          'Xác nhận vô hiệu hóa',
+          {
+            confirmButtonText: 'Vô hiệu hóa',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--danger'
+          }
+        );
+        this.loading = true;
+        const payload = {
+          table_code: 'tbldmnhacungcap',
+          id: row.id,
+          trang_thai: 0
+        };
+        await service.put(`${baseUrl}/dm/update`, payload);
+        this.$message.success('Vô hiệu hóa nhà cung cấp thành công');
+        this.fetchSuppliers();
+      } catch (error) {
+        if (error !== 'cancel') {
+          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa nhà cung cấp');
+        }
+      } finally {
+        this.loading = false;
+      }
+    },
+    async handleEnable(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn kích hoạt nhà cung cấp "${row.ten_congty}" (MST: ${row.mst})?`,
+          'Xác nhận kích hoạt',
+          {
+            confirmButtonText: 'Kích hoạt',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--success'
+          }
+        );
+        this.loading = true;
+        const payload = {
+          table_code: 'tbldmnhacungcap',
+          id: row.id,
+          trang_thai: 1
+        };
+        await service.put(`${baseUrl}/dm/update`, payload);
+        this.$message.success('Kích hoạt nhà cung cấp thành công');
+        this.fetchSuppliers();
+      } catch (error) {
+        if (error !== 'cancel') {
+          this.$message.error('Có lỗi xảy ra khi kích hoạt nhà cung cấp');
+        }
+      } finally {
+        this.loading = false;
+      }
+    }
   },
   created() {
     this.fetchSuppliers();

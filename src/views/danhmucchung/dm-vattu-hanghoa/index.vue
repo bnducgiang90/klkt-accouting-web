@@ -1,15 +1,20 @@
 <template>
   <div class="vattu-hanghoa-container">
     <el-card>
-      <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
-        <el-input
-          v-model="searchQuery"
-          placeholder="Nhập MST, số hiệu TK hoặc tên vật tư để tìm kiếm"
-          clearable
-          style="width: 400px;"
-          @keyup.enter.native="handleSearch"
-        />
-        <el-button type="primary" icon="el-icon-search" @click="handleSearch">Search</el-button>
+      <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center; justify-content: space-between;">
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <el-input
+            v-model="searchQuery"
+            placeholder="Nhập MST, số hiệu TK hoặc tên vật tư để tìm kiếm"
+            clearable
+            style="width: 400px;"
+            @keyup.enter.native="handleSearch"
+          />
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch">Tìm kiếm</el-button>
+        </div>
+        <el-button type="success" icon="el-icon-plus" @click="openDialog('create')">
+          Thêm mới
+        </el-button>
       </div>
       <el-table
         :data="materials"
@@ -55,6 +60,13 @@
             {{ formatNumber(scope.row.nam) }}
           </template>
         </el-table-column>
+        <el-table-column prop="trang_thai" label="Trạng thái" width="120" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.trang_thai === 1 ? 'success' : 'danger'">
+              {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu hóa' }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <!-- Cột hành động -->
         <el-table-column align="center" label="Action" width="280" fixed="right">
           <template slot-scope="scope">
@@ -71,11 +83,11 @@
               @click="openDialog('update', scope.row)"
             >Edit</el-button>
             <el-button
-              type="danger"
+              :type="scope.row.trang_thai === 1 ? 'danger' : 'warning'"
               size="small"
-              class="el-icon-delete"
-              @click="onDisable(scope.row)"
-            >Disable</el-button>
+              :class="scope.row.trang_thai === 1 ? 'el-icon-delete' : 'el-icon-check'"
+              @click="scope.row.trang_thai === 1 ? handleDisable(scope.row) : handleEnable(scope.row)"
+            >{{ scope.row.trang_thai === 1 ? 'Disable' : 'Enable' }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -90,15 +102,36 @@
         />
       </div>
     </el-card>
+    <!-- Popup components -->
+    <MaterialForm
+      :visible.sync="dialogVisible"
+      :is-edit="dialogType === 'update'"
+      :material-data="selectedMaterial"
+      v-if="dialogType === 'create' || dialogType === 'update'"
+      @success="onFormSuccess"
+      @close="closeDialog"
+    />
+    <MaterialDetail
+      :visible.sync="detailVisible"
+      :material-data="selectedMaterial"
+      @close="closeDetail"
+    />
   </div>
 </template>
 
 <script>
 import service from '@/utils/request';
 const baseUrl = process.env.VUE_APP_KLKT_APP_BASE_API;
+// Import popup components (to be created)
+import MaterialForm from './components/MaterialForm.vue';
+import MaterialDetail from './components/MaterialDetail.vue';
 
 export default {
   name: 'DmVatTuHangHoaList',
+  components: {
+    MaterialForm,
+    MaterialDetail,
+  },
   data() {
     return {
       searchQuery: '',
@@ -109,6 +142,9 @@ export default {
         pageSize: 10,
         total: 0,
       },
+      dialogVisible: false,
+      dialogType: '', // 'create' | 'update'
+      detailVisible: false,
     };
   },
   methods: {
@@ -159,13 +195,83 @@ export default {
       }).format(value);
     },
     onDetail(row) {
-      this.$message.info('Detail: ' + JSON.stringify(row));
-    },
-    onDisable(row) {
-      this.$message.warning('Disable: ' + JSON.stringify(row));
+      this.selectedMaterial = row;
+      this.detailVisible = true;
     },
     openDialog(type, record = {}) {
-      this.$message.warning('Open dialog: ' + type + '; ' + JSON.stringify(record));
+      this.dialogType = type;
+      this.selectedMaterial = type === 'update' ? { ...record } : null;
+      this.dialogVisible = true;
+    },
+    closeDialog() {
+      this.dialogVisible = false;
+      this.selectedMaterial = null;
+    },
+    closeDetail() {
+      this.detailVisible = false;
+      this.selectedMaterial = null;
+    },
+    onFormSuccess() {
+      this.closeDialog();
+      this.fetchMaterials();
+    },
+    async handleDisable(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn vô hiệu hóa vật tư "${row.ten_vattu}" (${row.ma_vattu})?`,
+          'Xác nhận vô hiệu hóa',
+          {
+            confirmButtonText: 'Vô hiệu hóa',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--danger'
+          }
+        );
+        this.loading = true;
+        const payload = {
+          table_code: 'tbldmvattu_hanghoa',
+          id: row.id,
+          trang_thai: 0
+        };
+        await service.put(`${baseUrl}/dm/update-status`, payload);
+        this.$message.success('Vô hiệu hóa vật tư thành công');
+        this.fetchMaterials();
+      } catch (error) {
+        if (error !== 'cancel') {
+          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa vật tư');
+        }
+      } finally {
+        this.loading = false;
+      }
+    },
+    async handleEnable(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn kích hoạt vật tư "${row.ten_vattu}" (${row.ma_vattu})?`,
+          'Xác nhận kích hoạt',
+          {
+            confirmButtonText: 'Kích hoạt',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--success'
+          }
+        );
+        this.loading = true;
+        const payload = {
+          table_code: 'tbldmvattu_hanghoa',
+          id: row.id,
+          trang_thai: 1
+        };
+        await service.put(`${baseUrl}/dm/update-status`, payload);
+        this.$message.success('Kích hoạt vật tư thành công');
+        this.fetchMaterials();
+      } catch (error) {
+        if (error !== 'cancel') {
+          this.$message.error('Có lỗi xảy ra khi kích hoạt vật tư');
+        }
+      } finally {
+        this.loading = false;
+      }
     },
   },
   created() {
