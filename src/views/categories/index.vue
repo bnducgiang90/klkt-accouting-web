@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="categories-container">
     <vue-element-loading
       :active="isActive"
       spinner="line-wave"
@@ -7,134 +7,142 @@
       text="Loading..."
       size="50"
     >
-      <!-- <span>loading</span> -->
     </vue-element-loading>
-    <h3>Tìm kiếm danh mục</h3>
-    <el-form @submit.prevent="searchRecords">
-      <!-- Dropdown chọn danh mục -->
-      <div>
-        <!-- <label for="tableSelect">Chọn danh mục:</label> -->
-        <el-row>
-          <el-col :span="10">
-            <el-form-item label="Chọn danh mục cần quản lý">
-              <el-select
-                v-model="selectedTable"
-                placeholder="Chọn một danh mục"
-                clearable
-                style="width: 300px"
-                @change="fetchMetadata"
-              >
-                <el-option
-                  v-for="option in tables"
-                  :key="option.table_name"
-                  :label="option.table_desc"
-                  :value="option.table_name"
+    
+    <el-card>
+      <h3>Tìm kiếm danh mục</h3>
+      <el-form @submit.prevent="searchRecords">
+        <!-- Dropdown chọn danh mục -->
+        <div style="margin-bottom: 20px;">
+          <el-row :gutter="20" align="middle">
+            <el-col :span="8">
+              <el-form-item label="Chọn danh mục cần quản lý" label-width="200px">
+                <el-select
+                  v-model="selectedTable"
+                  placeholder="Chọn một danh mục"
+                  clearable
+                  style="width: 100%"
+                  @change="fetchMetadata"
+                >
+                  <el-option
+                    v-for="option in tables"
+                    :key="option.table_name"
+                    :label="option.table_desc"
+                    :value="option.table_name"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="Thông tin tìm kiếm" label-width="150px">
+                <el-input
+                  v-model="searchText"
+                  clearable
+                  placeholder="Nhập thông tin tìm kiếm (mã, tên ...)"
+                  style="width: 100%"
+                  @keyup.enter.native="searchRecords"
                 />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="10">
-            <el-form-item label="Thông tin tìm kiếm">
-              <el-input
-                v-model="searchText"
-                clearable
-                placeholder="Nhập thông tin tìm kiếm (mã, tên ...)"
-                style="width: 350px"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="4">
-            <el-button
-              type="primary"
-              class="filter-item"
-              icon="el-icon-search"
-              @click="searchRecords"
-            >Tìm kiếm</el-button>
-          </el-col>
-        </el-row>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label-width="0">
+                <el-button
+                  type="primary"
+                  icon="el-icon-search"
+                  @click="searchRecords"
+                  style="margin-right: 10px;"
+                >Tìm kiếm</el-button>
+                <el-button
+                  type="success"
+                  icon="el-icon-plus"
+                  @click="openDialog('create')"
+                >Thêm mới</el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
+      </el-form>
+
+      <div v-if="paginatedData.length > 0">
+        <h3>Danh sách kết quả</h3>
+
+        <!-- Bảng sử dụng el-table -->
+        <el-table
+          :data="paginatedData"
+          style="width: 100%; margin-top: 20px"
+          border
+          v-loading="loading"
+          empty-text="Không có dữ liệu"
+          max-height="600"
+          :header-cell-style="{
+            backgroundColor: '#ECEFF1',
+            color: '#000',
+            fontWeight: 'bold',
+          }"
+        >
+          <el-table-column width="60" type="index" label="STT" align="center" />
+          <!-- Vòng lặp qua metadata.columns để tạo cột động -->
+          <el-table-column
+            v-for="(label, field) in metadata.columns"
+            :key="field"
+            :prop="field"
+            :label="label"
+            min-width="120"
+          >
+            <template slot-scope="scope">
+              <el-tooltip content="Click to view" placement="top">
+                <span v-if="metadata.column_types[field] === 'dropdown'">
+                  {{ getDropdownLabel(field, scope.row[field]) }}
+                </span>
+                <!-- Nếu cột là date, format ngày -->
+                <span v-else-if="metadata.column_types[field] === 'date'">
+                  {{ formatDate(scope.row[field]) }}
+                </span>
+                <span v-else>
+                  {{ scope.row[field] }}
+                </span>
+              </el-tooltip>
+            </template>
+          </el-table-column>
+
+          <!-- Cột hành động -->
+          <el-table-column align="center" label="Action" width="280" fixed="right">
+            <template slot-scope="scope">
+              <el-button
+                type="success"
+                size="small"
+                class="el-icon-info"
+                @click="openDialog('update', scope.row)"
+              >Detail</el-button>
+              <el-button
+                type="primary"
+                size="small"
+                class="el-icon-edit"
+                @click="openDialog('update', scope.row)"
+              >Edit</el-button>
+              <el-button
+                type="danger"
+                size="small"
+                class="el-icon-delete"
+                @click="removeRecord(scope.row)"
+              >Delete</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
       </div>
 
-      <el-button
-        type="primary"
-        class="el-icon-plus"
-        style="display: flex; float: right"
-        @click="openDialog('create')"
-      >Thêm mới danh mục</el-button>
-    </el-form>
-    <div v-if="paginatedData.length > 0">
-      <h3>Danh sách kết quả</h3>
-
-      <!-- Bảng sử dụng el-table -->
-      <el-table
-        :data="paginatedData"
-        style="width: 100%; margin-top: 30px"
-        border
-        :header-cell-style="{
-          backgroundColor: '#ECEFF1',
-          color: '#000',
-          fontWeight: 'bold',
-        }"
-      >
-        <el-table-column width="50" type="index" label="#" align="center" />
-        <!-- Vòng lặp qua metadata.columns để tạo cột động -->
-        <el-table-column
-          v-for="(label, field) in metadata.columns"
-          :key="field"
-          :prop="field"
-          :label="label"
-        >
-          <template slot-scope="scope">
-            <el-tooltip content="Click to view" placement="top">
-              <span v-if="metadata.column_types[field] === 'dropdown'">
-                {{ getDropdownLabel(field, scope.row[field]) }}
-              </span>
-              <!-- Nếu cột là date, format ngày -->
-              <span v-else-if="metadata.column_types[field] === 'date'">
-                {{ formatDate(scope.row[field]) }}
-              </span>
-              <span v-else>
-                {{ scope.row[field] }}
-              </span>
-            </el-tooltip>
-          </template>
-        </el-table-column>
-
-        <!-- Cột hành động -->
-        <el-table-column align="center" label="Action" width="280">
-          <template slot-scope="scope">
-            <el-button
-              type="success"
-              size="small"
-              class="el-icon-info"
-              @click="openDialog('update', scope.row)"
-            >Detail</el-button>
-            <el-button
-              type="primary"
-              size="small"
-              class="el-icon-edit"
-              @click="openDialog('update', scope.row)"
-            >Edit</el-button>
-            <el-button
-              type="danger"
-              size="small"
-              class="el-icon-delete"
-              @click="removeRecord(scope.row)"
-            >Delete</el-button>
-            <!-- @click="deleteRecord(scope.row.id)" -->
-          </template>
-        </el-table-column>
-      </el-table>
-
-      <!-- Pagination -->
-      <el-pagination
-        background
-        layout="prev, pager, next"
-        :total="totalItems"
-        :page-size="pageSize"
-        :current-page.sync="currentPage"
-        @current-change="handlePageChange"
-      />
-    </div>
+      <!-- Pagination - moved outside conditional div -->
+      <div v-if="totalItems > 0" style="margin-top: 20px; text-align: right;">
+        <el-pagination
+          background
+          layout="prev, pager, next, jumper"
+          :total="totalItems"
+          :page-size="pageSize"
+          :current-page.sync="currentPage"
+          @current-change="handlePageChange"
+        />
+      </div>
+    </el-card>
 
     <el-dialog
       :title="
@@ -158,6 +166,7 @@
               v-if="metadata.column_types[field] === 'dropdown'"
               v-model="formData[field]"
               placeholder="Chọn một giá trị"
+              style="width: 100%"
             >
               <el-option
                 v-for="option in dropdownOptions[field]"
@@ -171,12 +180,14 @@
             <el-input
               v-else-if="metadata.column_types[field] === 'text'"
               v-model="formData[field]"
+              style="width: 100%"
             />
 
             <!-- Number input -->
             <el-input-number
               v-else-if="metadata.column_types[field] === 'number'"
               v-model="formData[field]"
+              style="width: 100%"
             />
 
             <!-- Date input -->
@@ -186,10 +197,11 @@
               type="date"
               :format="'dd/MM/yyyy'"
               placeholder="Chọn ngày"
+              style="width: 100%"
             />
 
             <!-- Default input (fallback là text nếu không có kiểu dữ liệu xác định) -->
-            <el-input v-else v-model="formData[field]" type="text" />
+            <el-input v-else v-model="formData[field]" type="text" style="width: 100%" />
           </el-form-item>
         </div>
       </el-form>
@@ -217,6 +229,7 @@ export default {
       dialogVisible: false,
       dialogType: '', // Loại hành động: create/update
       checkStrictly: false,
+      loading: false,
 
       tables: [], // Danh sách các bảng danh mục
       selectedTable: '', // Bảng danh mục được chọn
@@ -246,7 +259,6 @@ export default {
   mounted() {
     // Lấy danh sách bảng khi component được tải
     this.fetchTables()
-    // console.log("process.env:", process.env);
   },
   methods: {
     // Hàm xử lý khi thay đổi trang
@@ -255,6 +267,7 @@ export default {
     },
     // Hàm format ngày với moment.js
     formatDate(dateString) {
+      if (!dateString) return '';
       return moment(dateString).format('DD/MM/YYYY')
     },
     // Hàm xây dựng form validation rules dựa vào validationRules trả về từ API
@@ -270,14 +283,6 @@ export default {
             trigger: 'blur'
           })
         }
-
-        // if (validationRules[field].type === 'email') {
-        //   fieldRules.push({ type: 'email', message: 'Email không hợp lệ', trigger: 'blur' });
-        // }
-
-        // if (validationRules[field].type === 'number') {
-        //   fieldRules.push({ type: 'number', message: 'Vui lòng nhập số', trigger: 'blur' });
-        // }
 
         rules[field] = fieldRules
       })
@@ -308,7 +313,7 @@ export default {
           this.isActive = false
           this.$message({
             type: 'error',
-            message: 'Error occur!'
+            message: 'Có lỗi xảy ra khi tải danh sách bảng!'
           })
           console.error(err)
         })
@@ -339,7 +344,7 @@ export default {
             this.isActive = false
             this.$message({
               type: 'error',
-              message: 'Error occur!'
+              message: 'Có lỗi xảy ra khi tải metadata!'
             })
             console.error(err)
           })
@@ -347,20 +352,20 @@ export default {
     },
     searchRecords() {
       if (this.selectedTable) {
-        this.isActive = true
+        this.loading = true
         axios
           .post(`${baseUrl}/cate/search/${this.selectedTable}`, {
             query: this.searchText
           })
           .then(async(response) => {
             this.records = response.data
-            this.isActive = false
+            this.loading = false
           })
           .catch((err) => {
-            this.isActive = false
+            this.loading = false
             this.$message({
               type: 'error',
-              message: 'Error occur!'
+              message: 'Có lỗi xảy ra khi tìm kiếm!'
             })
             console.error(err)
           })
@@ -373,8 +378,6 @@ export default {
           cancelButtonText: 'Cancel',
           type: 'warning'
         }).then(() => {
-          // const primaryKeys = this.metadata.primary_columns
-
           this.isActive = true
           axios
             .delete(`${baseUrl}/cate/delete/${this.selectedTable}/${id}`)
@@ -394,7 +397,7 @@ export default {
               this.isActive = false
               this.$message({
                 type: 'error',
-                message: 'Error occur!'
+                message: 'Có lỗi xảy ra khi xóa!'
               })
               console.error(err)
             })
@@ -434,7 +437,7 @@ export default {
               this.isActive = false
               this.$message({
                 type: 'error',
-                message: 'Error occur!'
+                message: 'Có lỗi xảy ra khi xóa!'
               })
               console.error(err)
             })
@@ -494,7 +497,7 @@ export default {
                 this.isActive = false
                 this.$message({
                   type: 'error',
-                  message: 'Error occur!'
+                  message: 'Có lỗi xảy ra khi tạo mới!'
                 })
                 console.error(err)
               })
@@ -528,7 +531,7 @@ export default {
                 this.isActive = false
                 this.$message({
                   type: 'error',
-                  message: 'Error occur!'
+                  message: 'Có lỗi xảy ra khi cập nhật!'
                 })
                 console.error(err)
               })
@@ -540,13 +543,58 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.app-container {
-  .roles-table {
-    margin-top: 30px;
-  }
-  .permission-tree {
-    margin-bottom: 30px;
-  }
+<style scoped>
+.categories-container {
+  padding: 24px;
+}
+
+.el-table {
+  font-size: 12px;
+}
+
+.el-table .cell {
+  padding: 8px 0;
+}
+
+.el-form-item {
+  margin-bottom: 18px;
+}
+
+.el-form-item__label {
+  font-weight: 500;
+  color: #606266;
+}
+
+.el-input,
+.el-select,
+.el-input-number,
+.el-date-picker {
+  width: 100%;
+}
+
+.el-row {
+  margin-bottom: 0;
+}
+
+.el-col {
+  padding: 0 10px;
+}
+
+h3 {
+  margin-bottom: 20px;
+  color: #303133;
+  font-weight: 600;
+}
+
+.el-card {
+  margin-bottom: 20px;
+}
+
+.el-button {
+  margin-right: 8px;
+}
+
+.el-button:last-child {
+  margin-right: 0;
 }
 </style>

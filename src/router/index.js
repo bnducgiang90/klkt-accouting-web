@@ -105,29 +105,108 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+  // {
+  //   path: "/categories",
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: "index",
+  //       component: () => import("@/views/categories/index"),
+  //       name: "Danh mục chung",
+  //       meta: { title: "Danh mục chung", icon: "documentation", noCache: true },
+  //     },
+  //   ],
+  // },
   {
-    path: "/categories",
+    path: "/dm",
     component: Layout,
+    name: "Danh mục",
+    meta: {
+      title: "Quản lý danh mục",
+      icon: "el-icon-s-help",
+    },
     children: [
       {
-        path: "index",
+        path: "/dm-tai-khoan",
+        component: () => import("@/views/danhmucchung/dm-taikhoan/index"),
+        name: "tbldmtaikhoan",
+        meta: {
+          title: "Danh mục tài khoản",
+          icon: "documentation",
+          noCache: true,
+        },
+      },
+      {
+        path: "/dm-tai-khoan-chi-tiet",
+        component: () => import("@/views/danhmucchung/dm-taikhoan-chitiet/index"),
+        name: "tbldmtaikhoanchitiet",
+        meta: {
+          title: "Danh mục tài khoản chi tiết",
+          icon: "documentation",
+          noCache: true,
+        },
+      },
+      {
+        path: "/dm-chiphi-tratruoc",
+        component: () => import("@/views/danhmucchung/dm-chiphi-tratruoc/index"),
+        name: "tbldmchiphi_tratruoc",
+        meta: {
+          title: "Danh mục chi phí trả trước",
+          icon: "documentation",
+          noCache: true,
+        },
+      },
+      {
+        path: "/dm-khach-hang",
+        component: () => import("@/views/danhmucchung/dm-khachhang/index"),
+        name: "tbldmkhachhang",
+        meta: {
+          title: "Danh mục khách hàng",
+          icon: "documentation",
+          noCache: true,
+        },
+      },
+      {
+        path: "/dm-nha-cung-cap",
+        component: () => import("@/views/danhmucchung/dm-nha-cungcap/index"),
+        name: "tbldmnhacungcap",
+        meta: {
+          title: "Danh mục nhà cung cấp",
+          icon: "documentation",
+          noCache: true,
+        },
+      },
+      {
+        path: "/dm-tai-san",
+        component: () => import("@/views/danhmucchung/dm-taisan/index"),
+        name: "tbldmtaisan",
+        meta: {
+          title: "Danh mục tài sản",
+          icon: "documentation",
+          noCache: true,
+        },
+      },
+      {
+        path: "/dm-vatu-hanghoa",
+        component: () => import("@/views/danhmucchung/dm-vattu-hanghoa/index"),
+        name: "tbldmvattu_hanghoa",
+        meta: {
+          title: "Danh mục vật tư hàng hóa",
+          icon: "documentation",
+          noCache: true,
+        },
+      },
+      {
+        path: "/dm-others",
         component: () => import("@/views/categories/index"),
-        name: "Danh mục chung",
-        meta: { title: "Danh mục chung", icon: "documentation", noCache: true },
-      },
-    ],
-  },
-  {
-    path: "/test",
-    component: Layout,
-    children: [
-      {
-        path: "index",
-        component: () => import("@/views/test/index"),
-        name: "Test",
-        meta: { title: "Test thoi", icon: "documentation", noCache: true },
-      },
-    ],
+        name: "dm_others",
+        meta: {
+          title: "Danh mục khác",
+          icon: "documentation",
+          noCache: true,
+        },
+      }
+    ]
   },
   {
     path: "/nhap",
