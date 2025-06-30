@@ -448,10 +448,10 @@ export default {
         
         let response;
         if (this.isEdit) {
-          response = await service.put(`${baseUrl}/dm/update`, payload);
+          response = await service.post(`${baseUrl}/dm/upsert`, payload);
           this.$message.success('Cập nhật chi phí trả trước thành công');
         } else {
-          response = await service.post(`${baseUrl}/dm/create`, payload);
+          response = await service.post(`${baseUrl}/dm/upsert`, payload);
           this.$message.success('Thêm mới chi phí trả trước thành công');
         }
         

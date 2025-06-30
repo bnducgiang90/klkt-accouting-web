@@ -2,101 +2,112 @@
   <el-dialog
     title="Chi tiết chi phí trả trước"
     :visible.sync="visible"
-    width="800px"
+    width="1000px"
     :before-close="handleClose"
   >
-    <div v-if="chiphiTratruocData" class="chiphi-tratruoc-detail">
-      <el-descriptions :column="2" border>
-        <el-descriptions-item label="MST">
-          {{ chiphiTratruocData.mst || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Số hiệu TK">
-          {{ chiphiTratruocData.sohieutk || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Mã kho">
-          {{ chiphiTratruocData.ma_kho || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Mã nhóm">
-          {{ chiphiTratruocData.ma_nhom || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Mã tài sản">
-          {{ chiphiTratruocData.ma_taisan || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Đơn vị tính">
-          {{ chiphiTratruocData.dvt || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Tên tài sản" :span="2">
-          {{ chiphiTratruocData.ten_taisan || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Ngày lập thẻ">
-          {{ formatDate(chiphiTratruocData.ngaylap_the) }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Mã đơn vị quản lý">
-          {{ chiphiTratruocData.donvi_quanly || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Tên đơn vị quản lý" :span="2">
-          {{ chiphiTratruocData.ten_donvi_quanly || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Nguồn vốn">
-          {{ chiphiTratruocData.nguonvon || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Số lượng đầu kỳ">
-          <span class="amount">{{ formatNumber(chiphiTratruocData.soluong_dauky) }}</span>
-        </el-descriptions-item>
-        <el-descriptions-item label="Đơn giá">
-          <span class="amount">{{ formatCurrency(chiphiTratruocData.dongia) }}</span>
-        </el-descriptions-item>
-        <el-descriptions-item label="Nguyên giá">
-          <span class="amount">{{ formatCurrency(chiphiTratruocData.nguyengia) }}</span>
-        </el-descriptions-item>
-        <el-descriptions-item label="Hao mòn lũy kế">
-          <span class="amount">{{ formatCurrency(chiphiTratruocData.haomon_luyke) }}</span>
-        </el-descriptions-item>
-        <el-descriptions-item label="Giá trị còn lại">
-          <span class="amount">{{ formatCurrency(chiphiTratruocData.giatri_conlai) }}</span>
-        </el-descriptions-item>
-        <el-descriptions-item label="Số tháng phân bổ">
-          <span class="amount">{{ formatNumber(chiphiTratruocData.so_thang_phan_bo) }}</span>
-        </el-descriptions-item>
-        <el-descriptions-item label="Kỳ phân bổ">
-          {{ chiphiTratruocData.ky_phanbo || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Số tháng phân bổ">
-          <span class="amount">{{ formatNumber(chiphiTratruocData.sothang_phanbo) }}</span>
-        </el-descriptions-item>
-        <el-descriptions-item label="TK phân bổ">
-          {{ chiphiTratruocData.taikhoan_phanbo || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Mã kho CT">
-          {{ chiphiTratruocData.ma_kho_ct || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Mã nhóm CT">
-          {{ chiphiTratruocData.ma_nhom_ct || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Chi tiết TK phân bổ">
-          {{ chiphiTratruocData.chitiet_taikhoan_phanbo || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Công đoạn sản xuất">
-          {{ chiphiTratruocData.congdoan_sanxuat || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Trạng thái" :span="2">
+    <div v-if="chiphiTratruocData" class="chiphi-tratruoc-detail-form">
+      <!-- Thông tin chung -->
+      <div class="section-title">Thông tin chung</div>
+      <div class="form-row">
+        <div class="form-label">MST:</div>
+        <div class="form-value">{{ chiphiTratruocData.mst || 'N/A' }}</div>
+        <div class="form-label">Số hiệu TK:</div>
+        <div class="form-value">{{ chiphiTratruocData.sohieutk || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Mã kho:</div>
+        <div class="form-value">{{ chiphiTratruocData.ma_kho || 'N/A' }}</div>
+        <div class="form-label">Mã nhóm:</div>
+        <div class="form-value">{{ chiphiTratruocData.ma_nhom || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Mã tài sản:</div>
+        <div class="form-value">{{ chiphiTratruocData.ma_taisan || 'N/A' }}</div>
+        <div class="form-label">Đơn vị tính:</div>
+        <div class="form-value">{{ chiphiTratruocData.dvt || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Tên tài sản:</div>
+        <div class="form-value" style="grid-column: span 3;">{{ chiphiTratruocData.ten_taisan || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Ngày lập thẻ:</div>
+        <div class="form-value">{{ formatDate(chiphiTratruocData.ngaylap_the) }}</div>
+        <div class="form-label">Mã đơn vị quản lý:</div>
+        <div class="form-value">{{ chiphiTratruocData.donvi_quanly || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Tên đơn vị quản lý:</div>
+        <div class="form-value" style="grid-column: span 3;">{{ chiphiTratruocData.ten_donvi_quanly || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Nguồn vốn:</div>
+        <div class="form-value">{{ chiphiTratruocData.nguonvon || 'N/A' }}</div>
+      </div>
+
+      <!-- Thông tin kế toán -->
+      <div class="section-title">Thông tin kế toán</div>
+      <div class="form-row">
+        <div class="form-label">Số lượng đầu kỳ:</div>
+        <div class="form-value amount">{{ formatNumber(chiphiTratruocData.soluong_dauky) }}</div>
+        <div class="form-label">Đơn giá:</div>
+        <div class="form-value amount">{{ formatCurrency(chiphiTratruocData.dongia) }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Nguyên giá:</div>
+        <div class="form-value amount">{{ formatCurrency(chiphiTratruocData.nguyengia) }}</div>
+        <div class="form-label">Hao mòn lũy kế:</div>
+        <div class="form-value amount">{{ formatCurrency(chiphiTratruocData.haomon_luyke) }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Giá trị còn lại:</div>
+        <div class="form-value amount">{{ formatCurrency(chiphiTratruocData.giatri_conlai) }}</div>
+        <div class="form-label">Số tháng phân bổ:</div>
+        <div class="form-value amount">{{ formatNumber(chiphiTratruocData.so_thang_phan_bo) }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Kỳ phân bổ:</div>
+        <div class="form-value">{{ chiphiTratruocData.ky_phanbo || 'N/A' }}</div>
+        <div class="form-label">Số tháng phân bổ:</div>
+        <div class="form-value amount">{{ formatNumber(chiphiTratruocData.sothang_phanbo) }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">TK phân bổ:</div>
+        <div class="form-value">{{ chiphiTratruocData.taikhoan_phanbo || 'N/A' }}</div>
+        <div class="form-label">Mã kho CT:</div>
+        <div class="form-value">{{ chiphiTratruocData.ma_kho_ct || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Mã nhóm CT:</div>
+        <div class="form-value">{{ chiphiTratruocData.ma_nhom_ct || 'N/A' }}</div>
+        <div class="form-label">Chi tiết TK phân bổ:</div>
+        <div class="form-value">{{ chiphiTratruocData.chitiet_taikhoan_phanbo || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Công đoạn sản xuất:</div>
+        <div class="form-value">{{ chiphiTratruocData.congdoan_sanxuat || 'N/A' }}</div>
+      </div>
+
+      <!-- Trạng thái và ngày tạo/cập nhật -->
+      <div class="section-title">Trạng thái</div>
+      <div class="form-row">
+        <div class="form-label">Trạng thái:</div>
+        <div class="form-value">
           <el-tag :type="chiphiTratruocData.trang_thai === 1 ? 'success' : 'danger'">
             {{ chiphiTratruocData.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu hóa' }}
           </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="Ngày tạo" v-if="chiphiTratruocData.created_at">
-          {{ formatDate(chiphiTratruocData.created_at) }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Ngày cập nhật" v-if="chiphiTratruocData.updated_at">
-          {{ formatDate(chiphiTratruocData.updated_at) }}
-        </el-descriptions-item>
-      </el-descriptions>
+        </div>
+        <div class="form-label">Ngày tạo:</div>
+        <div class="form-value">{{ formatDate(chiphiTratruocData.created_at) }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Ngày cập nhật:</div>
+        <div class="form-value">{{ formatDate(chiphiTratruocData.updated_at) }}</div>
+      </div>
     </div>
-    
     <div v-else class="loading-container">
       <el-empty description="Không có dữ liệu" />
     </div>
-    
     <div slot="footer" class="dialog-footer">
       <el-button @click="handleClose">Đóng</el-button>
     </div>
@@ -151,33 +162,46 @@ export default {
 </script>
 
 <style scoped>
-.chiphi-tratruoc-detail {
+.chiphi-tratruoc-detail-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   padding: 10px 0;
 }
-
+.section-title {
+  font-weight: bold;
+  margin: 12px 0 4px 0;
+  color: #409eff;
+  font-size: 16px;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 140px 1fr;
+  gap: 8px 16px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.form-label {
+  font-weight: 500;
+  color: #606266;
+  text-align: right;
+}
+.form-value {
+  color: #303133;
+  font-weight: 400;
+}
+.amount {
+  font-weight: bold;
+  font-size: 14px;
+  color: #409eff;
+}
 .loading-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 200px;
 }
-
 .dialog-footer {
   text-align: right;
-}
-
-.amount {
-  font-weight: bold;
-  font-size: 14px;
-  color: #409eff;
-}
-
-.el-descriptions-item__label {
-  font-weight: 600;
-  color: #606266;
-}
-
-.el-descriptions-item__content {
-  color: #303133;
 }
 </style> 

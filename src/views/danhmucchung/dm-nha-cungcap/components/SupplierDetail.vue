@@ -2,73 +2,91 @@
   <el-dialog
     title="Chi tiết nhà cung cấp"
     :visible.sync="dialogVisible"
-    width="700px"
+    width="1000px"
     :before-close="handleClose"
   >
-    <div v-if="supplierData" class="supplier-detail">
-      <el-descriptions :column="2" border>
-        <el-descriptions-item label="MST">
-          {{ supplierData.mst || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="MST KH NCC">
-          {{ supplierData.mst_kh_ncc || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Tên công ty" :span="2">
-          {{ supplierData.ten_congty || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Dư nợ">
-          <span class="amount debit">{{ formatCurrency(supplierData.du_no) }}</span>
-        </el-descriptions-item>
-        <el-descriptions-item label="Dư có">
-          <span class="amount credit">{{ formatCurrency(supplierData.du_co) }}</span>
-        </el-descriptions-item>
-        <el-descriptions-item label="Địa chỉ" :span="2">
-          {{ supplierData.dia_chi || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Huyện">
-          {{ supplierData.huyen || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Tỉnh">
-          {{ supplierData.tinh || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Điện thoại">
-          {{ supplierData.dien_thoai || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Tên giám đốc">
-          {{ supplierData.ten_giamdoc || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Tên kế toán">
-          {{ supplierData.ten_ketoan || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Lĩnh vực KD" :span="2">
-          {{ supplierData.linh_vuc_kd || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Khách hàng">
+    <div v-if="supplierData" class="supplier-detail-form">
+      <!-- Thông tin chung -->
+      <div class="section-title">Thông tin chung</div>
+      <div class="form-row">
+        <div class="form-label">MST:</div>
+        <div class="form-value">{{ supplierData.mst || 'N/A' }}</div>
+        <div class="form-label">MST KH NCC:</div>
+        <div class="form-value">{{ supplierData.mst_kh_ncc || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Tên công ty:</div>
+        <div class="form-value" style="grid-column: span 3;">{{ supplierData.ten_congty || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Địa chỉ:</div>
+        <div class="form-value" style="grid-column: span 3;">{{ supplierData.dia_chi || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Huyện:</div>
+        <div class="form-value">{{ supplierData.huyen || 'N/A' }}</div>
+        <div class="form-label">Tỉnh:</div>
+        <div class="form-value">{{ supplierData.tinh || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Điện thoại:</div>
+        <div class="form-value">{{ supplierData.dien_thoai || 'N/A' }}</div>
+      </div>
+
+      <!-- Thông tin tài chính -->
+      <div class="section-title">Thông tin tài chính</div>
+      <div class="form-row">
+        <div class="form-label">Dư nợ:</div>
+        <div class="form-value amount debit">{{ formatCurrency(supplierData.du_no) }}</div>
+        <div class="form-label">Dư có:</div>
+        <div class="form-value amount credit">{{ formatCurrency(supplierData.du_co) }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Tài khoản:</div>
+        <div class="form-value">{{ supplierData.tai_khoan || 'N/A' }}</div>
+        <div class="form-label">Ngân hàng:</div>
+        <div class="form-value">{{ supplierData.ngan_hang || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Cấp:</div>
+        <div class="form-value">{{ supplierData.cap || 'N/A' }}</div>
+      </div>
+
+      <!-- Thông tin liên hệ -->
+      <div class="section-title">Thông tin liên hệ</div>
+      <div class="form-row">
+        <div class="form-label">Tên giám đốc:</div>
+        <div class="form-value">{{ supplierData.ten_giamdoc || 'N/A' }}</div>
+        <div class="form-label">Tên kế toán:</div>
+        <div class="form-value">{{ supplierData.ten_ketoan || 'N/A' }}</div>
+      </div>
+
+      <!-- Thông tin khác -->
+      <div class="section-title">Thông tin khác</div>
+      <div class="form-row">
+        <div class="form-label">Lĩnh vực KD:</div>
+        <div class="form-value" style="grid-column: span 3;">{{ supplierData.linh_vuc_kd || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Khách hàng:</div>
+        <div class="form-value">
           <el-tag :type="supplierData.khach_hang ? 'success' : 'info'">
             {{ supplierData.khach_hang ? 'Có' : 'Không' }}
           </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="Nhà cung cấp">
+        </div>
+        <div class="form-label">Nhà cung cấp:</div>
+        <div class="form-value">
           <el-tag :type="supplierData.nha_cungcap ? 'success' : 'info'">
             {{ supplierData.nha_cungcap ? 'Có' : 'Không' }}
           </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="Tài khoản">
-          {{ supplierData.tai_khoan || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Ngân hàng">
-          {{ supplierData.ngan_hang || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Cấp">
-          {{ supplierData.cap || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Ngày tạo" v-if="supplierData.created_at">
-          {{ formatDate(supplierData.created_at) }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Ngày cập nhật" v-if="supplierData.updated_at">
-          {{ formatDate(supplierData.updated_at) }}
-        </el-descriptions-item>
-      </el-descriptions>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Ngày tạo:</div>
+        <div class="form-value">{{ formatDate(supplierData.created_at) }}</div>
+        <div class="form-label">Ngày cập nhật:</div>
+        <div class="form-value">{{ formatDate(supplierData.updated_at) }}</div>
+      </div>
     </div>
     <div v-else class="loading-container">
       <el-empty description="Không có dữ liệu" />
@@ -129,17 +147,33 @@ export default {
 </script>
 
 <style scoped>
-.supplier-detail {
+.supplier-detail-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   padding: 10px 0;
 }
-.loading-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 200px;
+.section-title {
+  font-weight: bold;
+  margin: 12px 0 4px 0;
+  color: #409eff;
+  font-size: 16px;
 }
-.dialog-footer {
+.form-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 140px 1fr;
+  gap: 8px 16px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.form-label {
+  font-weight: 500;
+  color: #606266;
   text-align: right;
+}
+.form-value {
+  color: #303133;
+  font-weight: 400;
 }
 .amount {
   font-weight: bold;
@@ -151,11 +185,13 @@ export default {
 .amount.credit {
   color: #67c23a;
 }
-.el-descriptions-item__label {
-  font-weight: 600;
-  color: #606266;
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
 }
-.el-descriptions-item__content {
-  color: #303133;
+.dialog-footer {
+  text-align: right;
 }
 </style> 

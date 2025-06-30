@@ -2,7 +2,7 @@
   <el-dialog
     :title="isEdit ? 'Chỉnh sửa vật tư' : 'Thêm mới vật tư'"
     :visible.sync="dialogVisible"
-    width="700px"
+    width="1000px"
     :before-close="handleClose"
     :close-on-click-modal="false"
   >
@@ -16,31 +16,31 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="MST" prop="mst">
-            <el-input v-model="formData.mst" placeholder="Nhập MST" clearable />
+            <el-input v-model="formData.mst" placeholder="Nhập MST" clearable :disabled="isEdit" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="Số hiệu TK" prop="sohieutk">
-            <el-input v-model="formData.sohieutk" placeholder="Nhập số hiệu TK" clearable />
+            <el-input v-model="formData.sohieutk" placeholder="Nhập số hiệu TK" clearable :disabled="isEdit" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="Mã kho" prop="ma_kho">
-            <el-input v-model="formData.ma_kho" placeholder="Nhập mã kho" clearable />
+            <el-input v-model="formData.ma_kho" placeholder="Nhập mã kho" clearable :disabled="isEdit" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="Mã nhóm" prop="ma_nhom">
-            <el-input v-model="formData.ma_nhom" placeholder="Nhập mã nhóm" clearable />
+            <el-input v-model="formData.ma_nhom" placeholder="Nhập mã nhóm" clearable :disabled="isEdit" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="Mã vật tư" prop="ma_vattu">
-            <el-input v-model="formData.ma_vattu" placeholder="Nhập mã vật tư" clearable />
+            <el-input v-model="formData.ma_vattu" placeholder="Nhập mã vật tư" clearable :disabled="isEdit" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -82,6 +82,13 @@
         <el-col :span="12">
           <el-form-item label="Mã đơn vị quy đổi" prop="ma_don_vi_quy_doi">
             <el-input v-model="formData.ma_don_vi_quy_doi" placeholder="Nhập mã đơn vị quy đổi" clearable />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="Trạng thái" prop="trang_thai">
+            <el-switch v-model="formData.trang_thai" :active-value="1" :inactive-value="0" active-text="Hoạt động" inactive-text="Ngừng hoạt động" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -138,7 +145,8 @@ export default {
         ma_don_vi_quy_doi: '',
         vi_tri_luu_tru: '',
         nam: new Date().getFullYear(),
-        ghi_chu: ''
+        ghi_chu: '',
+        trang_thai: 1
       },
       rules: {
         mst: [
@@ -147,11 +155,20 @@ export default {
         sohieutk: [
           { required: true, message: 'Vui lòng nhập số hiệu TK', trigger: 'blur' }
         ],
+        ma_kho: [
+          { required: true, message: 'Vui lòng nhập mã kho', trigger: 'blur' }
+        ],
+        ma_nhom: [
+          { required: true, message: 'Vui lòng nhập mã nhóm', trigger: 'blur' }
+        ],
         ma_vattu: [
           { required: true, message: 'Vui lòng nhập mã vật tư', trigger: 'blur' }
         ],
         ten_vattu: [
           { required: true, message: 'Vui lòng nhập tên vật tư', trigger: 'blur' }
+        ],
+        trang_thai: [
+          { required: true, message: 'Vui lòng chọn trạng thái', trigger: 'change' }
         ]
       }
     };
@@ -190,7 +207,8 @@ export default {
           ma_don_vi_quy_doi: this.materialData.ma_don_vi_quy_doi || '',
           vi_tri_luu_tru: this.materialData.vi_tri_luu_tru || '',
           nam: this.materialData.nam || new Date().getFullYear(),
-          ghi_chu: this.materialData.ghi_chu || ''
+          ghi_chu: this.materialData.ghi_chu || '',
+          trang_thai: this.materialData.trang_thai != null ? this.materialData.trang_thai : 1
         };
       } else {
         this.resetForm();
@@ -211,7 +229,8 @@ export default {
         ma_don_vi_quy_doi: '',
         vi_tri_luu_tru: '',
         nam: new Date().getFullYear(),
-        ghi_chu: ''
+        ghi_chu: '',
+        trang_thai: 1
       };
       this.$nextTick(() => {
         this.$refs.form && this.$refs.form.clearValidate();
@@ -226,11 +245,18 @@ export default {
           table_code: 'tbldmvattu_hanghoa',
           ...this.formData
         };
+        // Convert boolean fields to 1/0
+        const boolFields = [
+          'trang_thai'
+        ];
+        boolFields.forEach(field => {
+          payload[field] = this.formData[field] ? 1 : 0;
+        });
         if (this.isEdit) {
           payload.id = this.materialData.id;
-          await service.put(`${baseUrl}/dm/update`, payload);
+          await service.post(`${baseUrl}/dm/upsert`, payload);
         } else {
-          await service.post(`${baseUrl}/dm/create`, payload);
+          await service.post(`${baseUrl}/dm/upsert`, payload);
         }
         this.$emit('success', this.formData);
       } catch (e) {

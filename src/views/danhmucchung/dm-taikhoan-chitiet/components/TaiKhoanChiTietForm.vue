@@ -2,7 +2,7 @@
   <el-dialog
     :title="isEdit ? 'Chỉnh sửa tài khoản chi tiết' : 'Thêm mới tài khoản chi tiết'"
     :visible.sync="dialogVisible"
-    width="600px"
+    width="900px"
     :before-close="handleClose"
     :close-on-click-modal="false"
   >
@@ -16,19 +16,19 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="MST" prop="mst">
-            <el-input v-model="formData.mst" placeholder="Nhập MST" clearable />
+            <el-input v-model="formData.mst" placeholder="Nhập MST" clearable :disabled="isEdit" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="Số hiệu TK" prop="sohieutk">
-            <el-input v-model="formData.sohieutk" placeholder="Nhập số hiệu tài khoản" clearable />
+            <el-input v-model="formData.sohieutk" placeholder="Nhập số hiệu tài khoản" clearable :disabled="isEdit" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="Mã chi tiết" prop="ma_chitiet">
-            <el-input v-model="formData.ma_chitiet" placeholder="Nhập mã chi tiết" clearable />
+            <el-input v-model="formData.ma_chitiet" placeholder="Nhập mã chi tiết" clearable :disabled="isEdit" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -49,8 +49,8 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="Sử dụng" prop="su_dung">
-        <el-switch v-model="formData.su_dung" active-text="Có" inactive-text="Không" />
+      <el-form-item label="Trạng thái" prop="trang_thai">
+        <el-switch v-model="formData.trang_thai" :active-value="1" :inactive-value="0" active-text="Hoạt động" inactive-text="Vô hiệu" />
       </el-form-item>
       <el-form-item label="Ghi chú" prop="ghi_chu">
         <el-input
@@ -100,7 +100,7 @@ export default {
         ten_chitiet: '',
         du_no_dau_ky: 0,
         du_co_dau_ky: 0,
-        su_dung: true,
+        trang_thai: 1,
         ghi_chu: ''
       },
       rules: {
@@ -146,7 +146,7 @@ export default {
           ten_chitiet: this.accountData.ten_chitiet || '',
           du_no_dau_ky: this.accountData.du_no_dau_ky || 0,
           du_co_dau_ky: this.accountData.du_co_dau_ky || 0,
-          su_dung: this.accountData.su_dung !== undefined ? this.accountData.su_dung : true,
+          trang_thai: this.accountData.trang_thai != null ? this.accountData.trang_thai : 1,
           ghi_chu: this.accountData.ghi_chu || ''
         };
       } else {
@@ -161,7 +161,7 @@ export default {
         ten_chitiet: '',
         du_no_dau_ky: 0,
         du_co_dau_ky: 0,
-        su_dung: true,
+        trang_thai: false,
         ghi_chu: ''
       };
       this.$nextTick(() => {
@@ -177,11 +177,18 @@ export default {
           table_code: 'tbldmtaikhoan_chitiet',
           ...this.formData
         };
+        // Convert boolean fields to 1/0
+        const boolFields = [
+          'trang_thai'
+        ];
+        boolFields.forEach(field => {
+          payload[field] = this.formData[field] ? 1 : 0;
+        });
         if (this.isEdit) {
           payload.id = this.accountData.id;
-          await service.put(`${baseUrl}/dm/update`, payload);
+          await service.post(`${baseUrl}/dm/upsert`, payload);
         } else {
-          await service.post(`${baseUrl}/dm/create`, payload);
+          await service.post(`${baseUrl}/dm/upsert`, payload);
         }
         this.$emit('success', this.formData);
         this.handleClose();

@@ -32,14 +32,138 @@
         <el-table-column prop="mst" label="MST" width="120" />
         <el-table-column prop="sohieutk" label="Số hiệu TK" width="120" />
         <el-table-column prop="ten_tk" label="Tên tài khoản" min-width="200" />
-        <el-table-column prop="du_no_dau_ky" label="Dư nợ đầu kỳ" width="150" align="right">
+        <el-table-column prop="ten_tk_ta" label="Tên tài khoản TA" min-width="200" />
+        <el-table-column prop="du_no" label="Dư nợ" width="100" align="right">
           <template slot-scope="scope">
-            {{ formatCurrency(scope.row.du_no_dau_ky) }}
+            {{ scope.row.du_no }}
           </template>
         </el-table-column>
-        <el-table-column prop="du_co_dau_ky" label="Dư có đầu kỳ" width="150" align="right">
+        <el-table-column prop="du_co" label="Dư có" width="100" align="right">
           <template slot-scope="scope">
-            {{ formatCurrency(scope.row.du_co_dau_ky) }}
+            {{ scope.row.du_co }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="chitiet_doituong" label="Chi tiết đối tượng" width="120" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.chitiet_doituong === 1 ? 'success' : 'info'">
+              {{ scope.row.chitiet_doituong === 1 ? 'Có' : 'Không' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="tk_vattu_hanghoa" label="TK vật tư hàng hóa" width="140" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.tk_vattu_hanghoa === 1 ? 'success' : 'info'">
+              {{ scope.row.tk_vattu_hanghoa === 1 ? 'Có' : 'Không' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="cap_chitet" label="Cấp chi tiết" width="110" align="center" />
+        <el-table-column prop="phieu_thu" label="Phiếu thu" width="90" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.phieu_thu === 1 ? 'success' : 'info'">
+              {{ scope.row.phieu_thu === 1 ? 'Có' : 'Không' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="phieu_chi" label="Phiếu chi" width="90" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.phieu_chi === 1 ? 'success' : 'info'">
+              {{ scope.row.phieu_chi === 1 ? 'Có' : 'Không' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="phieu_nhap" label="Phiếu nhập" width="100" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.phieu_nhap === 1 ? 'success' : 'info'">
+              {{ scope.row.phieu_nhap === 1 ? 'Có' : 'Không' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="phieu_xuat" label="Phiếu xuất" width="100" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.phieu_xuat === 1 ? 'success' : 'info'">
+              {{ scope.row.phieu_xuat === 1 ? 'Có' : 'Không' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="ban_hang" label="Bán hàng" width="90" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.ban_hang === 1 ? 'success' : 'info'">
+              {{ scope.row.ban_hang === 1 ? 'Có' : 'Không' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="ngan_hang" label="Ngân hàng" width="100" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.ngan_hang === 1 ? 'success' : 'info'">
+              {{ scope.row.ngan_hang === 1 ? 'Có' : 'Không' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="tien_luong" label="Tiền lương" width="100" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.tien_luong === 1 ? 'success' : 'info'">
+              {{ scope.row.tien_luong === 1 ? 'Có' : 'Không' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="khau_hao" label="Khấu hao" width="90" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.khau_hao === 1 ? 'success' : 'info'">
+              {{ scope.row.khau_hao === 1 ? 'Có' : 'Không' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="gia_thanh" label="Giá thành" width="90" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.gia_thanh === 1 ? 'success' : 'info'">
+              {{ scope.row.gia_thanh === 1 ? 'Có' : 'Không' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="luu_chuyen_nb" label="Lưu chuyển NB" width="120" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.luu_chuyen_nb === 1 ? 'success' : 'info'">
+              {{ scope.row.luu_chuyen_nb === 1 ? 'Có' : 'Không' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="tinh_gia_von" label="Tính giá vốn" width="120" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.tinh_gia_von === 1 ? 'success' : 'info'">
+              {{ scope.row.tinh_gia_von === 1 ? 'Có' : 'Không' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="chung_tu_khac" label="Chứng từ khác" width="120" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.chung_tu_khac === 1 ? 'success' : 'info'">
+              {{ scope.row.chung_tu_khac === 1 ? 'Có' : 'Không' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="ngoai_bang" label="Ngoài bảng" width="100" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.ngoai_bang === 1 ? 'success' : 'info'">
+              {{ scope.row.ngoai_bang === 1 ? 'Có' : 'Không' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="su_dung" label="Sử dụng" width="90" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.su_dung === 1 ? 'success' : 'info'">
+              {{ scope.row.su_dung === 1 ? 'Có' : 'Không' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="tu_ngay" label="Từ ngày" width="130" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.tu_ngay ? (new Date(scope.row.tu_ngay)).toLocaleDateString('vi-VN') : '' }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="den_ngay" label="Đến ngày" width="130" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.den_ngay ? (new Date(scope.row.den_ngay)).toLocaleDateString('vi-VN') : '' }}
           </template>
         </el-table-column>
         <el-table-column prop="trang_thai" label="Trạng thái" width="100" align="center">
@@ -245,11 +369,12 @@ export default {
         this.loading = true;
         const payload = {
           table_code: 'tbldmtaikhoan',
-          id: row.id,
+          mst: row.mst,
+          sohieutk: row.sohieutk,
           trang_thai: 0
         };
         
-        await service.put(`${baseUrl}/dm/update`, payload);
+        await service.post(`${baseUrl}/dm/update-status`, payload);
         this.$message.success('Vô hiệu hóa tài khoản thành công');
         this.fetchAccounts();
       } catch (error) {
@@ -279,11 +404,12 @@ export default {
         this.loading = true;
         const payload = {
           table_code: 'tbldmtaikhoan',
-          id: row.id,
+          mst: row.mst,
+          sohieutk: row.sohieutk,
           trang_thai: 1
         };
         
-        await service.put(`${baseUrl}/dm/update`, payload);
+        await service.post(`${baseUrl}/dm/update-status`, payload);
         this.$message.success('Kích hoạt tài khoản thành công');
         this.fetchAccounts();
       } catch (error) {

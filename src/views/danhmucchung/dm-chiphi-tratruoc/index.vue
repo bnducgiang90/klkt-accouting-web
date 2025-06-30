@@ -300,11 +300,14 @@ export default {
         this.loading = true;
         const payload = {
           table_code: 'tbldmchiphi_tratruoc',
-          id: row.id,
+          sohieutk: row.sohieutk,
+          ma_kho: row.ma_kho,
+          ma_nhom: row.ma_nhom,
+          ma_taisan: row.ma_taisan,
           trang_thai: 0
         };
         
-        await service.put(`${baseUrl}/dm/update`, payload);
+        await service.post(`${baseUrl}/dm/update-status`, payload);
         this.$message.success('Vô hiệu hóa chi phí trả trước thành công');
         this.fetchChiphiTratruoc();
       } catch (error) {
@@ -334,11 +337,14 @@ export default {
         this.loading = true;
         const payload = {
           table_code: 'tbldmchiphi_tratruoc',
-          id: row.id,
+          sohieutk: row.sohieutk,
+          ma_kho: row.ma_kho,
+          ma_nhom: row.ma_nhom,
+          ma_taisan: row.ma_taisan,
           trang_thai: 1
         };
         
-        await service.put(`${baseUrl}/dm/update`, payload);
+        await service.post(`${baseUrl}/dm/update-status`, payload);
         this.$message.success('Kích hoạt chi phí trả trước thành công');
         this.fetchChiphiTratruoc();
       } catch (error) {

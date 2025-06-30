@@ -263,9 +263,10 @@ export default {
         const payload = {
           table_code: 'tbldmnhacungcap',
           id: row.id,
+          mst: row.mst,
           trang_thai: 0
         };
-        await service.put(`${baseUrl}/dm/update`, payload);
+        await service.post(`${baseUrl}/dm/update-status`, payload);
         this.$message.success('Vô hiệu hóa nhà cung cấp thành công');
         this.fetchSuppliers();
       } catch (error) {
@@ -292,9 +293,10 @@ export default {
         const payload = {
           table_code: 'tbldmnhacungcap',
           id: row.id,
+          mst: row.mst,
           trang_thai: 1
         };
-        await service.put(`${baseUrl}/dm/update`, payload);
+        await service.post(`${baseUrl}/dm/update-status`, payload);
         this.$message.success('Kích hoạt nhà cung cấp thành công');
         this.fetchSuppliers();
       } catch (error) {

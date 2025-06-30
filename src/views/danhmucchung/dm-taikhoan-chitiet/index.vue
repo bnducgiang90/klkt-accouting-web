@@ -43,10 +43,11 @@
             {{ formatCurrency(scope.row.du_co_dau_ky) }}
           </template>
         </el-table-column>
-        <el-table-column prop="su_dung" label="Sử dụng" width="100" align="center">
+        <el-table-column prop="trang_thai" label="Trạng thái" width="100" align="center">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.su_dung" type="success">Có</el-tag>
-            <el-tag v-else type="info">Không</el-tag>
+            <el-tag :type="scope.row.trang_thai === 1 ? 'success' : 'danger'">
+              {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu' }}
+            </el-tag>
           </template>
         </el-table-column>
 
@@ -66,11 +67,11 @@
               @click="onEdit(scope.row)"
             >Edit</el-button>
             <el-button
-              :type="scope.row.su_dung ? 'danger' : 'warning'"
+              :type="scope.row.trang_thai === 1 ? 'danger' : 'warning'"
               size="small"
-              :class="scope.row.su_dung ? 'el-icon-delete' : 'el-icon-check'"
-              @click="scope.row.su_dung ? handleDisable(scope.row) : handleEnable(scope.row)"
-            >{{ scope.row.su_dung ? 'Disable' : 'Enable' }}</el-button>
+              :icon="scope.row.trang_thai === 1 ? 'el-icon-delete' : 'el-icon-check'"
+              @click="scope.row.trang_thai === 1 ? handleDisable(scope.row) : handleEnable(scope.row)"
+            >{{ scope.row.trang_thai === 1 ? 'Disable' : 'Enable' }}</el-button>
           </template>
         </el-table-column>
 
@@ -216,10 +217,12 @@ export default {
         this.loading = true;
         const payload = {
           table_code: 'tbldmtaikhoan_chitiet',
-          id: row.id,
-          su_dung: false
+          mst: row.mst,
+          sohieutk: row.sohieutk,
+          ma_chitiet: row.ma_chitiet,
+          trang_thai: 0
         };
-        await service.put(`${baseUrl}/dm/update`, payload);
+        await service.post(`${baseUrl}/dm/update-status`, payload);
         this.$message.success('Vô hiệu hóa tài khoản chi tiết thành công');
         this.fetchAccounts();
       } catch (error) {
@@ -246,10 +249,12 @@ export default {
         this.loading = true;
         const payload = {
           table_code: 'tbldmtaikhoan_chitiet',
-          id: row.id,
-          su_dung: true
+          mst: row.mst,
+          sohieutk: row.sohieutk,
+          ma_chitiet: row.ma_chitiet,
+          trang_thai: 1
         };
-        await service.put(`${baseUrl}/dm/update`, payload);
+        await service.post(`${baseUrl}/dm/update-status`, payload);
         this.$message.success('Kích hoạt tài khoản chi tiết thành công');
         this.fetchAccounts();
       } catch (error) {

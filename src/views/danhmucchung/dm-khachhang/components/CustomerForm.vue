@@ -288,9 +288,9 @@ export default {
 
         if (this.isEdit) {
           payload.id = this.customerData.id;
-          await service.put(`${baseUrl}/dm/update`, payload);
+          await service.post(`${baseUrl}/dm/upsert`, payload);
         } else {
-          await service.post(`${baseUrl}/dm/create`, payload);
+          await service.post(`${baseUrl}/dm/upsert`, payload);
         }
 
         this.$emit('success', this.form);

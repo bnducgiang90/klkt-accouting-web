@@ -145,6 +145,7 @@ export default {
       dialogVisible: false,
       dialogType: '', // 'create' | 'update'
       detailVisible: false,
+      selectedMaterial: null,
     };
   },
   methods: {
@@ -230,10 +231,14 @@ export default {
         this.loading = true;
         const payload = {
           table_code: 'tbldmvattu_hanghoa',
-          id: row.id,
+          mst: row.mst,
+          sohieutk: row.sohieutk,
+          ma_kho: row.ma_kho,
+          ma_nhom: row.ma_nhom,
+          ma_vattu: row.ma_vattu,
           trang_thai: 0
         };
-        await service.put(`${baseUrl}/dm/update-status`, payload);
+        await service.post(`${baseUrl}/dm/update-status`, payload);
         this.$message.success('Vô hiệu hóa vật tư thành công');
         this.fetchMaterials();
       } catch (error) {
@@ -259,10 +264,14 @@ export default {
         this.loading = true;
         const payload = {
           table_code: 'tbldmvattu_hanghoa',
-          id: row.id,
+          mst: row.mst,
+          sohieutk: row.sohieutk,
+          ma_kho: row.ma_kho,
+          ma_nhom: row.ma_nhom,
+          ma_vattu: row.ma_vattu,
           trang_thai: 1
         };
-        await service.put(`${baseUrl}/dm/update-status`, payload);
+        await service.post(`${baseUrl}/dm/update-status`, payload);
         this.$message.success('Kích hoạt vật tư thành công');
         this.fetchMaterials();
       } catch (error) {

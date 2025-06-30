@@ -149,24 +149,26 @@
         dialogType === 'create' ? 'Thêm danh mục mới' : 'Chỉnh sửa danh mục'
       "
       :visible.sync="dialogVisible"
-      width="70%"
+      width="700px"
       @close="resetForm"
     >
       <el-form
         ref="formRef"
         :model="formData"
         :rules="formRules"
-        label-width="250px"
+        label-width="130px"
+        label-position="left"
+        class="categories-dialog-form"
       >
         <div v-for="(column, field) in metadata.columns" :key="field">
-          <el-form-item :label="column" :prop="field">
+          <el-form-item :label="column" :prop="field" class="categories-form-item">
             <!-- Kiểm tra kiểu dữ liệu để chọn component nhập liệu -->
             <!-- Dropdown -->
             <el-select
               v-if="metadata.column_types[field] === 'dropdown'"
               v-model="formData[field]"
               placeholder="Chọn một giá trị"
-              style="width: 100%"
+              class="categories-form-input"
             >
               <el-option
                 v-for="option in dropdownOptions[field]"
@@ -180,14 +182,14 @@
             <el-input
               v-else-if="metadata.column_types[field] === 'text'"
               v-model="formData[field]"
-              style="width: 100%"
+              class="categories-form-input"
             />
 
             <!-- Number input -->
             <el-input-number
               v-else-if="metadata.column_types[field] === 'number'"
               v-model="formData[field]"
-              style="width: 100%"
+              class="categories-form-input"
             />
 
             <!-- Date input -->
@@ -197,11 +199,11 @@
               type="date"
               :format="'dd/MM/yyyy'"
               placeholder="Chọn ngày"
-              style="width: 100%"
+              class="categories-form-input"
             />
 
             <!-- Default input (fallback là text nếu không có kiểu dữ liệu xác định) -->
-            <el-input v-else v-model="formData[field]" type="text" style="width: 100%" />
+            <el-input v-else v-model="formData[field]" type="text" class="categories-form-input" />
           </el-form-item>
         </div>
       </el-form>
@@ -548,16 +550,28 @@ export default {
   padding: 24px;
 }
 
-.el-table {
-  font-size: 12px;
+.el-card {
+  margin-bottom: 20px;
 }
 
-.el-table .cell {
-  padding: 8px 0;
+/* Thanh tìm kiếm và nút thêm mới trên cùng */
+.categories-search-bar {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.categories-search-left {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex: 1;
 }
 
 .el-form-item {
-  margin-bottom: 18px;
+  margin-bottom: 0;
 }
 
 .el-form-item__label {
@@ -572,22 +586,12 @@ export default {
   width: 100%;
 }
 
-.el-row {
-  margin-bottom: 0;
+.el-table {
+  font-size: 12px;
 }
 
-.el-col {
-  padding: 0 10px;
-}
-
-h3 {
-  margin-bottom: 20px;
-  color: #303133;
-  font-weight: 600;
-}
-
-.el-card {
-  margin-bottom: 20px;
+.el-table .cell {
+  padding: 8px 0;
 }
 
 .el-button {
@@ -596,5 +600,85 @@ h3 {
 
 .el-button:last-child {
   margin-right: 0;
+}
+
+.el-pagination {
+  margin-top: 20px;
+  padding: 10px 0;
+  background-color: #fff;
+  border-top: 1px solid #ebeef5;
+}
+
+.el-pagination .el-pager li {
+  margin: 0 2px;
+}
+
+.el-pagination .btn-prev,
+.el-pagination .btn-next {
+  margin: 0 5px;
+}
+
+h3 {
+  margin-bottom: 20px;
+  color: #303133;
+  font-weight: 600;
+}
+
+/* Responsive adjustments for better visibility */
+@media screen and (max-width: 1200px) {
+  .categories-container {
+    padding: 16px;
+  }
+  .el-table {
+    font-size: 11px;
+  }
+  .el-table .cell {
+    padding: 6px 0;
+  }
+}
+
+/* Tối ưu hiển thị form popup */
+.el-dialog {
+  max-width: 98vw;
+  min-width: 320px;
+}
+.el-dialog__body {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.categories-dialog-form {
+  margin-top: 10px;
+}
+
+.categories-form-item {
+  margin-bottom: 18px !important;
+}
+
+.categories-form-input {
+  width: 100%;
+  min-width: 120px;
+  max-width: 480px;
+}
+
+@media (max-width: 600px) {
+  .el-dialog {
+    width: 98vw !important;
+    min-width: unset;
+    max-width: 98vw;
+  }
+  .el-dialog__body {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .categories-form-input {
+    max-width: 100%;
+    min-width: 80px;
+  }
+  .categories-dialog-form {
+    margin-top: 0;
+  }
 }
 </style>

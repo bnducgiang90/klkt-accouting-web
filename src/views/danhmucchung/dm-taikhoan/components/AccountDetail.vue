@@ -2,47 +2,56 @@
   <el-dialog
     title="Chi tiết tài khoản"
     :visible.sync="dialogVisible"
-    width="600px"
+    width="1000px"
     :before-close="handleClose"
   >
-    <div v-if="accountData" class="account-detail">
-      <el-descriptions :column="2" border>
-        <el-descriptions-item label="MST">
-          {{ accountData.mst || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Số hiệu TK">
-          {{ accountData.sohieutk || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Tên tài khoản" :span="2">
-          {{ accountData.ten_tk || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Dư nợ đầu kỳ">
-          <span class="amount debit">{{ formatCurrency(accountData.du_no_dau_ky) }}</span>
-        </el-descriptions-item>
-        <el-descriptions-item label="Dư có đầu kỳ">
-          <span class="amount credit">{{ formatCurrency(accountData.du_co_dau_ky) }}</span>
-        </el-descriptions-item>
-        <el-descriptions-item label="Ghi chú" :span="2">
-          {{ accountData.ghi_chu || 'Không có ghi chú' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Trạng thái" :span="2">
+    <div v-if="accountData" class="account-detail-form">
+      <!-- Thông tin chung -->
+      <div class="section-title">Thông tin chung</div>
+      <div class="form-row">
+        <div class="form-label">MST:</div>
+        <div class="form-value">{{ accountData.mst || 'N/A' }}</div>
+        <div class="form-label">Số hiệu TK:</div>
+        <div class="form-value">{{ accountData.sohieutk || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Tên tài khoản:</div>
+        <div class="form-value" style="grid-column: span 3;">{{ accountData.ten_tk || 'N/A' }}</div>
+      </div>
+
+      <!-- Số dư đầu kỳ -->
+      <div class="section-title">Số dư đầu kỳ</div>
+      <div class="form-row">
+        <div class="form-label">Dư nợ đầu kỳ:</div>
+        <div class="form-value amount debit">{{ formatCurrency(accountData.du_no_dau_ky) }}</div>
+        <div class="form-label">Dư có đầu kỳ:</div>
+        <div class="form-value amount credit">{{ formatCurrency(accountData.du_co_dau_ky) }}</div>
+      </div>
+
+      <!-- Thông tin khác -->
+      <div class="section-title">Thông tin khác</div>
+      <div class="form-row">
+        <div class="form-label">Ghi chú:</div>
+        <div class="form-value" style="grid-column: span 3;">{{ accountData.ghi_chu || 'Không có ghi chú' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Trạng thái:</div>
+        <div class="form-value">
           <el-tag :type="accountData.trang_thai === 1 ? 'success' : 'danger'">
             {{ accountData.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu hóa' }}
           </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="Ngày tạo" v-if="accountData.created_at">
-          {{ formatDate(accountData.created_at) }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Ngày cập nhật" v-if="accountData.updated_at">
-          {{ formatDate(accountData.updated_at) }}
-        </el-descriptions-item>
-      </el-descriptions>
+        </div>
+        <div class="form-label">Ngày tạo:</div>
+        <div class="form-value">{{ formatDate(accountData.created_at) }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Ngày cập nhật:</div>
+        <div class="form-value">{{ formatDate(accountData.updated_at) }}</div>
+      </div>
     </div>
-    
     <div v-else class="loading-container">
       <el-empty description="Không có dữ liệu" />
     </div>
-    
     <div slot="footer" class="dialog-footer">
       <el-button @click="handleClose">Đóng</el-button>
     </div>
@@ -101,40 +110,51 @@ export default {
 </script>
 
 <style scoped>
-.account-detail {
+.account-detail-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   padding: 10px 0;
 }
-
+.section-title {
+  font-weight: bold;
+  margin: 12px 0 4px 0;
+  color: #409eff;
+  font-size: 16px;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 140px 1fr;
+  gap: 8px 16px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.form-label {
+  font-weight: 500;
+  color: #606266;
+  text-align: right;
+}
+.form-value {
+  color: #303133;
+  font-weight: 400;
+}
+.amount {
+  font-weight: bold;
+  font-size: 14px;
+}
+.amount.debit {
+  color: #f56c6c;
+}
+.amount.credit {
+  color: #67c23a;
+}
 .loading-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 200px;
 }
-
 .dialog-footer {
   text-align: right;
-}
-
-.amount {
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.amount.debit {
-  color: #f56c6c;
-}
-
-.amount.credit {
-  color: #67c23a;
-}
-
-.el-descriptions-item__label {
-  font-weight: 600;
-  color: #606266;
-}
-
-.el-descriptions-item__content {
-  color: #303133;
 }
 </style> 

@@ -2,77 +2,96 @@
   <el-dialog
     title="Chi tiết khách hàng"
     :visible.sync="dialogVisible"
-    width="800px"
+    width="1000px"
     :before-close="handleClose"
   >
-    <div class="customer-detail">
-      <el-descriptions :column="2" border>
-        <el-descriptions-item label="ID">
-          {{ customerData.id || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="MST">
-          {{ customerData.mst || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="MST KH NCC">
-          {{ customerData.mst_kh_ncc || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Tên công ty">
-          {{ customerData.ten_congty || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Dư nợ">
-          {{ formatCurrency(customerData.du_no) }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Dư có">
-          {{ formatCurrency(customerData.du_co) }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Địa chỉ" :span="2">
-          {{ customerData.dia_chi || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Huyện">
-          {{ customerData.huyen || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Tỉnh">
-          {{ customerData.tinh || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Điện thoại">
-          {{ customerData.dien_thoai || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Tên giám đốc">
-          {{ customerData.ten_giamdoc || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Tên kế toán">
-          {{ customerData.ten_ketoan || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Lĩnh vực KD" :span="2">
-          {{ customerData.linh_vuc_kd || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Khách hàng">
+    <div class="customer-detail-form">
+      <!-- Thông tin chung -->
+      <div class="section-title">Thông tin chung</div>
+      <div class="form-row">
+        <div class="form-label">ID:</div>
+        <div class="form-value">{{ customerData.id || '-' }}</div>
+        <div class="form-label">MST:</div>
+        <div class="form-value">{{ customerData.mst || '-' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">MST KH NCC:</div>
+        <div class="form-value">{{ customerData.mst_kh_ncc || '-' }}</div>
+        <div class="form-label">Tên công ty:</div>
+        <div class="form-value">{{ customerData.ten_congty || '-' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Địa chỉ:</div>
+        <div class="form-value" style="grid-column: span 3;">{{ customerData.dia_chi || '-' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Huyện:</div>
+        <div class="form-value">{{ customerData.huyen || '-' }}</div>
+        <div class="form-label">Tỉnh:</div>
+        <div class="form-value">{{ customerData.tinh || '-' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Điện thoại:</div>
+        <div class="form-value">{{ customerData.dien_thoai || '-' }}</div>
+      </div>
+
+      <!-- Thông tin tài chính -->
+      <div class="section-title">Thông tin tài chính</div>
+      <div class="form-row">
+        <div class="form-label">Dư nợ:</div>
+        <div class="form-value amount">{{ formatCurrency(customerData.du_no) }}</div>
+        <div class="form-label">Dư có:</div>
+        <div class="form-value amount">{{ formatCurrency(customerData.du_co) }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Tài khoản:</div>
+        <div class="form-value">{{ customerData.tai_khoan || '-' }}</div>
+        <div class="form-label">Ngân hàng:</div>
+        <div class="form-value">{{ customerData.ngan_hang || '-' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Cấp:</div>
+        <div class="form-value">{{ formatNumber(customerData.cap) }}</div>
+      </div>
+
+      <!-- Thông tin liên hệ -->
+      <div class="section-title">Thông tin liên hệ</div>
+      <div class="form-row">
+        <div class="form-label">Tên giám đốc:</div>
+        <div class="form-value">{{ customerData.ten_giamdoc || '-' }}</div>
+        <div class="form-label">Tên kế toán:</div>
+        <div class="form-value">{{ customerData.ten_ketoan || '-' }}</div>
+      </div>
+
+      <!-- Thông tin khác -->
+      <div class="section-title">Thông tin khác</div>
+      <div class="form-row">
+        <div class="form-label">Lĩnh vực KD:</div>
+        <div class="form-value" style="grid-column: span 3;">{{ customerData.linh_vuc_kd || '-' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Khách hàng:</div>
+        <div class="form-value">
           <el-tag :type="customerData.khach_hang ? 'success' : 'info'" size="small">
             {{ customerData.khach_hang ? 'Có' : 'Không' }}
           </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="Nhà cung cấp">
+        </div>
+        <div class="form-label">Nhà cung cấp:</div>
+        <div class="form-value">
           <el-tag :type="customerData.nha_cungcap ? 'success' : 'info'" size="small">
             {{ customerData.nha_cungcap ? 'Có' : 'Không' }}
           </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="Tài khoản">
-          {{ customerData.tai_khoan || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Ngân hàng">
-          {{ customerData.ngan_hang || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Cấp">
-          {{ formatNumber(customerData.cap) }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Trạng thái">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Trạng thái:</div>
+        <div class="form-value">
           <el-tag :type="customerData.trang_thai === 1 ? 'success' : 'danger'" size="small">
             {{ customerData.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu' }}
           </el-tag>
-        </el-descriptions-item>
-      </el-descriptions>
+        </div>
+      </div>
     </div>
-
     <div slot="footer" class="dialog-footer">
       <el-button @click="handleClose">Đóng</el-button>
     </div>
@@ -122,20 +141,40 @@ export default {
 </script>
 
 <style scoped>
-.customer-detail {
+.customer-detail-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   padding: 10px 0;
 }
-
-.dialog-footer {
+.section-title {
+  font-weight: bold;
+  margin: 12px 0 4px 0;
+  color: #409eff;
+  font-size: 16px;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 140px 1fr;
+  gap: 8px 16px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.form-label {
+  font-weight: 500;
+  color: #606266;
   text-align: right;
 }
-
-.el-descriptions {
-  margin-bottom: 20px;
+.form-value {
+  color: #303133;
+  font-weight: 400;
 }
-
-.el-descriptions-item__label {
-  font-weight: 600;
-  color: #606266;
+.amount {
+  font-weight: bold;
+  font-size: 14px;
+  color: #409eff;
+}
+.dialog-footer {
+  text-align: right;
 }
 </style> 

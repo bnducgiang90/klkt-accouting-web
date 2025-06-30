@@ -2,65 +2,82 @@
   <el-dialog
     title="Chi tiết vật tư"
     :visible.sync="dialogVisible"
-    width="700px"
+    width="1000px"
     :before-close="handleClose"
   >
-    <div v-if="materialData" class="material-detail">
-      <el-descriptions :column="2" border>
-        <el-descriptions-item label="MST">
-          {{ materialData.mst || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Số hiệu TK">
-          {{ materialData.sohieutk || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Mã kho">
-          {{ materialData.ma_kho || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Mã nhóm">
-          {{ materialData.ma_nhom || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Mã vật tư">
-          {{ materialData.ma_vattu || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Tên vật tư">
-          {{ materialData.ten_vattu || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Đơn vị tính">
-          {{ materialData.dvt || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Năm">
-          {{ materialData.nam || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Lượng đầu kỳ">
-          <span class="amount">{{ formatNumber(materialData.luong_dau_ky) }}</span>
-        </el-descriptions-item>
-        <el-descriptions-item label="Giá trị đầu kỳ">
-          <span class="amount">{{ formatCurrency(materialData.gia_tri_dau_ky) }}</span>
-        </el-descriptions-item>
-        <el-descriptions-item label="Hệ số quy đổi">
-          {{ formatNumber(materialData.he_so_quy_doi) }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Mã đơn vị quy đổi">
-          {{ materialData.ma_don_vi_quy_doi || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Vị trí lưu trữ" :span="2">
-          {{ materialData.vi_tri_luu_tru || 'N/A' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Ghi chú" :span="2">
-          {{ materialData.ghi_chu || 'Không có ghi chú' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Trạng thái" :span="2">
+    <div v-if="materialData" class="material-detail-form">
+      <!-- Thông tin chung -->
+      <div class="section-title">Thông tin chung</div>
+      <div class="form-row">
+        <div class="form-label">MST:</div>
+        <div class="form-value">{{ materialData.mst || 'N/A' }}</div>
+        <div class="form-label">Số hiệu TK:</div>
+        <div class="form-value">{{ materialData.sohieutk || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Mã kho:</div>
+        <div class="form-value">{{ materialData.ma_kho || 'N/A' }}</div>
+        <div class="form-label">Mã nhóm:</div>
+        <div class="form-value">{{ materialData.ma_nhom || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Mã vật tư:</div>
+        <div class="form-value">{{ materialData.ma_vattu || 'N/A' }}</div>
+        <div class="form-label">Tên vật tư:</div>
+        <div class="form-value">{{ materialData.ten_vattu || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Đơn vị tính:</div>
+        <div class="form-value">{{ materialData.dvt || 'N/A' }}</div>
+        <div class="form-label">Năm:</div>
+        <div class="form-value">{{ materialData.nam || 'N/A' }}</div>
+      </div>
+
+      <!-- Thông tin đầu kỳ -->
+      <div class="section-title">Thông tin đầu kỳ</div>
+      <div class="form-row">
+        <div class="form-label">Lượng đầu kỳ:</div>
+        <div class="form-value amount">{{ formatNumber(materialData.luong_dau_ky) }}</div>
+        <div class="form-label">Giá trị đầu kỳ:</div>
+        <div class="form-value amount">{{ formatCurrency(materialData.gia_tri_dau_ky) }}</div>
+      </div>
+
+      <!-- Thông tin quy đổi -->
+      <div class="section-title">Thông tin quy đổi</div>
+      <div class="form-row">
+        <div class="form-label">Hệ số quy đổi:</div>
+        <div class="form-value">{{ formatNumber(materialData.he_so_quy_doi) }}</div>
+        <div class="form-label">Mã đơn vị quy đổi:</div>
+        <div class="form-value">{{ materialData.ma_don_vi_quy_doi || 'N/A' }}</div>
+      </div>
+
+      <!-- Thông tin lưu trữ & ghi chú -->
+      <div class="section-title">Thông tin lưu trữ & ghi chú</div>
+      <div class="form-row">
+        <div class="form-label">Vị trí lưu trữ:</div>
+        <div class="form-value" style="grid-column: span 3;">{{ materialData.vi_tri_luu_tru || 'N/A' }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Ghi chú:</div>
+        <div class="form-value" style="grid-column: span 3;">{{ materialData.ghi_chu || 'Không có ghi chú' }}</div>
+      </div>
+
+      <!-- Trạng thái & ngày tạo/cập nhật -->
+      <div class="section-title">Trạng thái & ngày tạo/cập nhật</div>
+      <div class="form-row">
+        <div class="form-label">Trạng thái:</div>
+        <div class="form-value">
           <el-tag :type="materialData.trang_thai === 1 ? 'success' : 'danger'">
             {{ materialData.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu hóa' }}
           </el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="Ngày tạo" v-if="materialData.created_at">
-          {{ formatDate(materialData.created_at) }}
-        </el-descriptions-item>
-        <el-descriptions-item label="Ngày cập nhật" v-if="materialData.updated_at">
-          {{ formatDate(materialData.updated_at) }}
-        </el-descriptions-item>
-      </el-descriptions>
+        </div>
+        <div class="form-label">Ngày tạo:</div>
+        <div class="form-value">{{ formatDate(materialData.created_at) }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-label">Ngày cập nhật:</div>
+        <div class="form-value">{{ formatDate(materialData.updated_at) }}</div>
+      </div>
     </div>
     <div v-else class="loading-container">
       <el-empty description="Không có dữ liệu" />
@@ -125,8 +142,38 @@ export default {
 </script>
 
 <style scoped>
-.material-detail {
+.material-detail-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   padding: 10px 0;
+}
+.section-title {
+  font-weight: bold;
+  margin: 12px 0 4px 0;
+  color: #409eff;
+  font-size: 16px;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 140px 1fr;
+  gap: 8px 16px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.form-label {
+  font-weight: 500;
+  color: #606266;
+  text-align: right;
+}
+.form-value {
+  color: #303133;
+  font-weight: 400;
+}
+.amount {
+  font-weight: bold;
+  font-size: 14px;
+  color: #409eff;
 }
 .loading-container {
   display: flex;
@@ -136,9 +183,5 @@ export default {
 }
 .dialog-footer {
   text-align: right;
-}
-.amount {
-  font-weight: bold;
-  font-size: 14px;
 }
 </style> 

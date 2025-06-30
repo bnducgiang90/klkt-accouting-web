@@ -276,10 +276,11 @@ export default {
         const payload = {
           table_code: 'tbldmkhachhang',
           id: row.id,
+          mst: row.mst,
           trang_thai: 0
         };
         
-        await service.put(`${baseUrl}/dm/update`, payload);
+        await service.post(`${baseUrl}/dm/update-status`, payload);
         this.$message.success('Vô hiệu hóa khách hàng thành công');
         this.fetchCustomers();
       } catch (error) {
@@ -310,10 +311,11 @@ export default {
         const payload = {
           table_code: 'tbldmkhachhang',
           id: row.id,
+          mst: row.mst,
           trang_thai: 1
         };
         
-        await service.put(`${baseUrl}/dm/update`, payload);
+        await service.post(`${baseUrl}/dm/update-status`, payload);
         this.$message.success('Kích hoạt khách hàng thành công');
         this.fetchCustomers();
       } catch (error) {

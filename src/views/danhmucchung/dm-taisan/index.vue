@@ -272,35 +272,73 @@ export default {
     handleDetailClose() {
       this.detailDialog.visible = false;
     },
-    handleDisable(row) {
-      this.$confirm('Bạn có chắc chắn muốn vô hiệu hóa tài sản này?', 'Xác nhận', {
-        confirmButtonText: 'Vô hiệu hóa',
-        cancelButtonText: 'Hủy',
-        type: 'warning'
-      }).then(async () => {
-        try {
-          await service.put(`${baseUrl}/dm/disable`, { table_code: 'tbldmtaisan', id: row.id });
-          this.$message.success('Đã vô hiệu hóa tài sản');
-          this.fetchAssets();
-        } catch (e) {
-          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa');
+    async handleDisable(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn vô hiệu hóa tài khoản chi tiết "${row.ma_nhom}" (${row.ma_taisan})?`,
+          'Xác nhận vô hiệu hóa',
+          {
+            confirmButtonText: 'Vô hiệu hóa',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--danger'
+          }
+        );
+        this.loading = true;
+        const payload = {
+          table_code: 'tbldmtaisan',
+          mst: row.mst,
+          sohieutk: row.sohieutk,
+          ma_kho: row.ma_kho,
+          ma_nhom: row.ma_nhom,
+          ma_taisan: row.ma_taisan,
+          trang_thai: 0
+        };
+        await service.post(`${baseUrl}/dm/update-status`, payload);
+        this.$message.success('Vô hiệu tài sản thành công');
+        this.fetchAssets();
+      } catch (error) {
+        if (error !== 'cancel') {
+          console.error('Error disabling account detail:', error);
+          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa tài sản');
         }
-      });
+      } finally {
+        this.loading = false;
+      }
     },
-    handleEnable(row) {
-      this.$confirm('Bạn có chắc chắn muốn kích hoạt lại tài sản này?', 'Xác nhận', {
-        confirmButtonText: 'Kích hoạt',
-        cancelButtonText: 'Hủy',
-        type: 'success'
-      }).then(async () => {
-        try {
-          await service.put(`${baseUrl}/dm/enable`, { table_code: 'tbldmtaisan', id: row.id });
-          this.$message.success('Đã kích hoạt lại tài sản');
-          this.fetchAssets();
-        } catch (e) {
-          this.$message.error('Có lỗi xảy ra khi kích hoạt lại');
+    async handleEnable(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn kích hoạt tài sản "${row.ma_nhom}" (${row.ma_taisan})?`,
+          'Xác nhận kích hoạt',
+          {
+            confirmButtonText: 'Kích hoạt',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--success'
+          }
+        );
+        this.loading = true;
+        const payload = {
+          table_code: 'tbldmtaisan',
+          mst: row.mst,
+          sohieutk: row.sohieutk,
+          ma_kho: row.ma_kho,
+          ma_nhom: row.ma_nhom,
+          ma_taisan: row.ma_taisan,
+          trang_thai: 1
+        };
+        await service.post(`${baseUrl}/dm/update-status`, payload);
+        this.$message.success('Kích hoạt tài sản thành công');
+        this.fetchAssets();
+      } catch (error) {
+        if (error !== 'cancel') {
+          console.error('Error enabling account detail:', error);
+          this.$message.error('Có lỗi xảy ra khi kích hoạt tài sản');
         }
-      });
+      } finally {
+        this.loading = false;
+      }
     },
   },
   created() {
