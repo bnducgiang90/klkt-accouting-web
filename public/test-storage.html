@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test LocalStorage & Cookie</title>
+</head>
+<body>
+  <h2>Test LocalStorage & Cookie</h2>
+  <button onclick="localStorage.setItem('test', '123');alert('Set localStorage xong!')">Set localStorage</button>
+  <button onclick="alert('localStorage: ' + localStorage.getItem('test'))">Get localStorage</button>
+  <button onclick="localStorage.removeItem('test');alert('Đã xóa localStorage!')">Remove localStorage</button>
+  <br/><br/>
+  <button onclick="document.cookie='testcookie=abc;path=/';alert('Set cookie xong!')">Set Cookie</button>
+  <button onclick="alert('Cookie: ' + document.cookie)">Get Cookie</button>
+  <button onclick="document.cookie='testcookie=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';alert('Đã xóa cookie!')">Remove Cookie</button>
+  <br/><br/>
+  <div id="result"></div>
+  <script>
+    // Hiển thị trạng thái hiện tại khi load trang
+    document.getElementById('result').innerHTML =
+      '<b>localStorage:</b> ' + localStorage.getItem('test') + '<br>' +
+      '<b>Cookie:</b> ' + document.cookie;
+  </script>
+</body>
+</html> 
