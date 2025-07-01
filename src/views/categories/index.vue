@@ -112,7 +112,7 @@
                 type="success"
                 size="small"
                 class="el-icon-info"
-                @click="openDialog('update', scope.row)"
+                @click="openDetailDialog(scope.row)"
               >Detail</el-button>
               <el-button
                 type="primary"
@@ -144,6 +144,7 @@
       </div>
     </el-card>
 
+    <!-- Dialog cho Edit/Create -->
     <el-dialog
       :title="
         dialogType === 'create' ? 'Thêm danh mục mới' : 'Chỉnh sửa danh mục'
@@ -212,6 +213,34 @@
         <el-button type="primary" @click="handleSubmit">Lưu</el-button>
       </span>
     </el-dialog>
+
+    <!-- Dialog cho Detail -->
+    <el-dialog
+      title="Chi tiết danh mục"
+      :visible.sync="detailDialogVisible"
+      width="600px"
+      @close="closeDetailDialog"
+    >
+      <div class="detail-content">
+        <div v-for="(column, field) in metadata.columns" :key="field" class="detail-item">
+          <div class="detail-label">{{ column }}:</div>
+          <div class="detail-value">
+            <span v-if="metadata.column_types[field] === 'dropdown'">
+              {{ getDropdownLabel(field, detailData[field]) }}
+            </span>
+            <span v-else-if="metadata.column_types[field] === 'date'">
+              {{ formatDate(detailData[field]) }}
+            </span>
+            <span v-else>
+              {{ detailData[field] || 'N/A' }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="detailDialogVisible = false">Đóng</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -230,6 +259,8 @@ export default {
     return {
       dialogVisible: false,
       dialogType: '', // Loại hành động: create/update
+      detailDialogVisible: false, // Dialog cho detail
+      detailData: {}, // Dữ liệu cho detail dialog
       checkStrictly: false,
       loading: false,
 
@@ -458,6 +489,16 @@ export default {
       }
     },
 
+    openDetailDialog(record) {
+      this.detailData = { ...record }
+      this.detailDialogVisible = true
+    },
+
+    closeDetailDialog() {
+      this.detailDialogVisible = false
+      this.detailData = {}
+    },
+
     resetForm() {
       if (this.$refs.formRef && this.$refs.formRef.resetFields()) {
         this.$refs.formRef.resetFields() // Reset validate và dữ liệu của form
@@ -679,6 +720,49 @@ h3 {
   }
   .categories-dialog-form {
     margin-top: 0;
+  }
+}
+
+/* Styles cho detail dialog */
+.detail-content {
+  padding: 10px 0;
+}
+
+.detail-item {
+  display: flex;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 12px;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #606266;
+  min-width: 150px;
+  flex-shrink: 0;
+  margin-right: 16px;
+}
+
+.detail-value {
+  flex: 1;
+  color: #303133;
+  word-break: break-word;
+}
+
+@media (max-width: 768px) {
+  .detail-item {
+    flex-direction: column;
+  }
+  
+  .detail-label {
+    min-width: auto;
+    margin-right: 0;
+    margin-bottom: 4px;
   }
 }
 </style>
