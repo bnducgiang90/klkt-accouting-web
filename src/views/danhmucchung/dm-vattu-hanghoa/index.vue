@@ -107,7 +107,7 @@
       :visible.sync="dialogVisible"
       :is-edit="dialogType === 'update'"
       :material-data="selectedMaterial"
-      v-if="dialogType === 'create' || dialogType === 'update'"
+      v-show="dialogVisible && (dialogType === 'create' || dialogType === 'update')"
       @success="onFormSuccess"
       @close="closeDialog"
     />

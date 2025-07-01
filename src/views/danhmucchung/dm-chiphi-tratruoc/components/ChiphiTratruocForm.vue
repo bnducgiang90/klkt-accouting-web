@@ -2,10 +2,14 @@
   <el-dialog
     :title="isEdit ? 'Chỉnh sửa chi phí trả trước' : 'Thêm mới chi phí trả trước'"
     :visible.sync="visible"
-    width="800px"
+    width="1000px"
     :before-close="handleClose"
   >
+    <div v-if="formLoading" style="display:flex;align-items:center;justify-content:center;min-height:200px;">
+      <i class="el-icon-loading" style="font-size:32px;margin-right:8px"></i> Đang tải dữ liệu...
+    </div>
     <el-form
+      v-else
       ref="form"
       :model="formData"
       :rules="rules"
@@ -36,20 +40,40 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="Mã kho" prop="ma_kho">
-            <el-input
+            <el-select
               v-model="formData.ma_kho"
-              placeholder="Nhập mã kho"
+              placeholder="Chọn mã kho"
               clearable
-            />
+              filterable
+              style="width: 100%"
+              @change="handleMaKhoChange"
+            >
+              <el-option
+                v-for="item in khoOptions"
+                :key="item.ma_kho"
+                :label="`${item.ma_kho} - ${item.ten_kho}`"
+                :value="item.ma_kho"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="Mã nhóm" prop="ma_nhom">
-            <el-input
+            <el-select
               v-model="formData.ma_nhom"
-              placeholder="Nhập mã nhóm"
+              placeholder="Chọn mã nhóm"
               clearable
-            />
+              filterable
+              style="width: 100%"
+              @change="handleMaNhomChange"
+            >
+              <el-option
+                v-for="item in nhomOptions"
+                :key="item.ma_nhom"
+                :label="`${item.ma_nhom} - ${item.ten_nhom}`"
+                :value="item.ma_nhom"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
       </el-row>
@@ -57,11 +81,21 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="Mã tài sản" prop="ma_taisan">
-            <el-input
+            <el-select
               v-model="formData.ma_taisan"
-              placeholder="Nhập mã tài sản"
+              placeholder="Chọn mã tài sản"
               clearable
-            />
+              filterable
+              style="width: 100%"
+              @change="handleMaTaisanChange"
+            >
+              <el-option
+                v-for="item in taisanOptions"
+                :key="item.ma_taisan"
+                :label="`${item.ma_taisan} - ${item.ten_taisan}`"
+                :value="item.ma_taisan"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -316,6 +350,10 @@ export default {
   data() {
     return {
       loading: false,
+      formLoading: false,
+      khoOptions: [],
+      nhomOptions: [],
+      taisanOptions: [],
       formData: {
         mst: '',
         sohieutk: '',
@@ -349,8 +387,14 @@ export default {
         sohieutk: [
           { required: true, message: 'Vui lòng nhập số hiệu tài khoản', trigger: 'blur' }
         ],
+        ma_kho: [
+          { required: true, message: 'Vui lòng chọn mã kho', trigger: 'change' }
+        ],
+        ma_nhom: [
+          { required: true, message: 'Vui lòng chọn mã nhóm', trigger: 'change' }
+        ],
         ma_taisan: [
-          { required: true, message: 'Vui lòng nhập mã tài sản', trigger: 'blur' }
+          { required: true, message: 'Vui lòng chọn mã tài sản', trigger: 'change' }
         ],
         ten_taisan: [
           { required: true, message: 'Vui lòng nhập tên tài sản', trigger: 'blur' }
@@ -359,9 +403,12 @@ export default {
     };
   },
   watch: {
-    visible(newVal) {
+    async visible(newVal) {
       if (newVal) {
-        this.initForm();
+        this.formLoading = true;
+        await this.initForm();
+        this.formLoading = false;
+        this.loadKhoOptions();
       }
     },
     chiphiTratruocData: {
@@ -371,10 +418,128 @@ export default {
         }
       },
       deep: true
-    }
+    },
+    'formData.mst'(val) {
+      if (!this.isEdit) {
+        this.formData.ma_kho = '';
+        this.formData.ma_nhom = '';
+        this.formData.ma_taisan = '';
+        this.nhomOptions = [];
+        this.taisanOptions = [];
+      }
+    },
+    'formData.sohieutk'(val) {
+      if (!this.isEdit) {
+        this.formData.ma_kho = '';
+        this.formData.ma_nhom = '';
+        this.formData.ma_taisan = '';
+        this.nhomOptions = [];
+        this.taisanOptions = [];
+      }
+    },
+    'formData.ma_kho'(val) {
+      if (val && this.formData.mst && this.formData.sohieutk) {
+        this.loadNhomOptions(this.formData.mst, this.formData.sohieutk, val);
+      }
+      if (!this.isEdit) {
+        this.formData.ma_nhom = '';
+        this.formData.ma_taisan = '';
+        this.taisanOptions = [];
+      }
+    },
+    'formData.ma_nhom'(val) {
+      if (val && this.formData.mst && this.formData.sohieutk && this.formData.ma_kho) {
+        this.loadTaisanOptions(this.formData.mst, this.formData.sohieutk, this.formData.ma_kho, val);
+      }
+      if (!this.isEdit) {
+        this.formData.ma_taisan = '';
+      }
+    },
   },
   methods: {
-    initForm() {
+    async loadKhoOptions() {
+      try {
+        const response = await service.post(`${baseUrl}/dm/get-list`, {
+          table_code: 'tbldmkhohang',
+          size: 1000,
+          page: 1
+        });
+        this.khoOptions = (response.data && response.data.items) ? response.data.items : [];
+      } catch (error) {
+        console.error('Error loading kho options:', error);
+        this.$message.error('Không thể tải danh sách kho');
+      }
+    },
+
+    async loadNhomOptions(mst, sohieutk, ma_kho) {
+      if (!mst || !sohieutk || !ma_kho) {
+        this.nhomOptions = [];
+        return;
+      }
+      try {
+        const response = await service.post(`${baseUrl}/dm/get-list`, {
+          table_code: 'tbldmnhomhang',
+          size: 1000,
+          page: 1,
+          filters: { mst, sohieutk, ma_kho }
+        });
+        this.nhomOptions = (response.data && response.data.items) ? response.data.items : [];
+      } catch (error) {
+        console.error('Error loading nhom options:', error);
+        this.$message.error('Không thể tải danh sách nhóm');
+      }
+    },
+
+    async loadTaisanOptions(mst, sohieutk, ma_kho, ma_nhom) {
+      if (!mst || !sohieutk || !ma_kho || !ma_nhom) {
+        this.taisanOptions = [];
+        return;
+      }
+      try {
+        const response = await service.post(`${baseUrl}/dm/get-list`, {
+          table_code: 'tbldmtaisan',
+          size: 1000,
+          page: 1,
+          filters: { mst, sohieutk, ma_kho, ma_nhom }
+        });
+        this.taisanOptions = (response.data && response.data.items) ? response.data.items : [];
+      } catch (error) {
+        console.error('Error loading taisan options:', error);
+        this.$message.error('Không thể tải danh sách tài sản');
+      }
+    },
+
+    handleMaKhoChange() {
+      // Reset dependent fields
+      this.formData.ma_nhom = '';
+      this.formData.ma_taisan = '';
+      this.formData.ten_taisan = '';
+      this.formData.dvt = '';
+      
+      // Load nhom options
+      this.loadNhomOptions(this.formData.mst, this.formData.sohieutk, this.formData.ma_kho);
+    },
+
+    handleMaNhomChange() {
+      // Reset dependent fields
+      this.formData.ma_taisan = '';
+      this.formData.ten_taisan = '';
+      this.formData.dvt = '';
+      
+      // Load taisan options
+      this.loadTaisanOptions(this.formData.mst, this.formData.sohieutk, this.formData.ma_kho, this.formData.ma_nhom);
+    },
+
+    handleMaTaisanChange() {
+      // Auto-fill tên tài sản and đơn vị tính from selected tài sản
+      const selectedTaisan = this.taisanOptions.find(item => item.ma_taisan === this.formData.ma_taisan);
+      if (selectedTaisan) {
+        this.formData.ten_taisan = selectedTaisan.ten_taisan || '';
+        this.formData.dvt = selectedTaisan.dvt || '';
+      }
+    },
+
+    async initForm() {
       if (this.isEdit && this.chiphiTratruocData) {
         this.formData = {
           mst: this.chiphiTratruocData.mst || '',
@@ -402,6 +567,14 @@ export default {
           chitiet_taikhoan_phanbo: this.chiphiTratruocData.chitiet_taikhoan_phanbo || '',
           congdoan_sanxuat: this.chiphiTratruocData.congdoan_sanxuat || ''
         };
+        
+        // Load dependent dropdowns for edit mode sequentially
+        if (this.formData.ma_kho) {
+          await this.loadNhomOptions(this.formData.mst, this.formData.sohieutk, this.formData.ma_kho);
+        }
+        if (this.formData.ma_kho && this.formData.ma_nhom) {
+          await this.loadTaisanOptions(this.formData.mst, this.formData.sohieutk, this.formData.ma_kho, this.formData.ma_nhom);
+        }
       } else {
         this.formData = {
           mst: '',

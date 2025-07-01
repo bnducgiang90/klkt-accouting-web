@@ -1,12 +1,16 @@
 <template>
   <el-dialog
     :title="isEdit ? 'Chỉnh sửa vật tư' : 'Thêm mới vật tư'"
-    :visible.sync="dialogVisible"
+    :visible.sync="visible"
     width="1000px"
     :before-close="handleClose"
     :close-on-click-modal="false"
   >
+    <div v-if="formLoading" style="display:flex;align-items:center;justify-content:center;min-height:200px;">
+      <i class="el-icon-loading" style="font-size:32px;margin-right:8px"></i> Đang tải dữ liệu...
+    </div>
     <el-form
+      v-else
       ref="form"
       :model="formData"
       :rules="rules"
@@ -16,31 +20,59 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="MST" prop="mst">
-            <el-input v-model="formData.mst" placeholder="Nhập MST" clearable :disabled="isEdit" />
+            <el-input v-model="formData.mst" placeholder="Nhập MST" clearable />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="Số hiệu TK" prop="sohieutk">
-            <el-input v-model="formData.sohieutk" placeholder="Nhập số hiệu TK" clearable :disabled="isEdit" />
+            <el-input v-model="formData.sohieutk" placeholder="Nhập số hiệu TK" clearable />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="Mã kho" prop="ma_kho">
-            <el-input v-model="formData.ma_kho" placeholder="Nhập mã kho" clearable :disabled="isEdit" />
+            <el-select
+              v-model="formData.ma_kho"
+              placeholder="Chọn mã kho"
+              clearable
+              filterable
+              style="width: 100%"
+              @change="handleMaKhoChange"
+            >
+              <el-option
+                v-for="(item, idx) in khoOptions"
+                :key="`makho-${item.ma_kho}-${idx}`"
+                :label="`${item.ma_kho} - ${item.ten_kho}`"
+                :value="item.ma_kho"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="Mã nhóm" prop="ma_nhom">
-            <el-input v-model="formData.ma_nhom" placeholder="Nhập mã nhóm" clearable :disabled="isEdit" />
+            <el-select
+              v-model="formData.ma_nhom"
+              placeholder="Chọn mã nhóm"
+              clearable
+              filterable
+              style="width: 100%"
+              @change="handleMaNhomChange"
+            >
+              <el-option
+                v-for="(item, idx) in nhomOptions"
+                :key="`manhom-${item.ma_nhom}-${idx}`"
+                :label="`${item.ma_nhom} - ${item.ten_nhom}`"
+                :value="item.ma_nhom"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="Mã vật tư" prop="ma_vattu">
-            <el-input v-model="formData.ma_vattu" placeholder="Nhập mã vật tư" clearable :disabled="isEdit" />
+            <el-input v-model="formData.ma_vattu" placeholder="Nhập mã vật tư" clearable />
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -131,6 +163,9 @@ export default {
   data() {
     return {
       loading: false,
+      formLoading: false,
+      khoOptions: [],
+      nhomOptions: [],
       formData: {
         mst: '',
         sohieutk: '',
@@ -156,10 +191,10 @@ export default {
           { required: true, message: 'Vui lòng nhập số hiệu TK', trigger: 'blur' }
         ],
         ma_kho: [
-          { required: true, message: 'Vui lòng nhập mã kho', trigger: 'blur' }
+          { required: true, message: 'Vui lòng chọn mã kho', trigger: 'change' }
         ],
         ma_nhom: [
-          { required: true, message: 'Vui lòng nhập mã nhóm', trigger: 'blur' }
+          { required: true, message: 'Vui lòng chọn mã nhóm', trigger: 'change' }
         ],
         ma_vattu: [
           { required: true, message: 'Vui lòng nhập mã vật tư', trigger: 'blur' }
@@ -173,25 +208,78 @@ export default {
       }
     };
   },
-  computed: {
-    dialogVisible: {
-      get() {
-        return this.visible;
-      },
-      set(val) {
-        this.$emit('update:visible', val);
-      }
-    }
-  },
   watch: {
-    visible(val) {
-      if (val) {
-        this.initForm();
+    async visible(newVal) {
+      if (newVal) {
+        this.formLoading = true;
+        await this.initForm();
+        this.formLoading = false;
+      }
+    },
+    'formData.mst'(val) {
+      if (!this.isEdit) {
+        this.formData.ma_kho = '';
+        this.formData.ma_nhom = '';
+        this.nhomOptions = [];
+      }
+    },
+    'formData.sohieutk'(val) {
+      if (!this.isEdit) {
+        this.formData.ma_kho = '';
+        this.formData.ma_nhom = '';
+        this.nhomOptions = [];
+      }
+    },
+    'formData.ma_kho'(val) {
+      if (val && this.formData.mst && this.formData.sohieutk) {
+        this.loadNhomOptions(this.formData.mst, this.formData.sohieutk, val);
+      }
+      if (!this.isEdit) {
+        this.formData.ma_nhom = '';
       }
     }
   },
   methods: {
-    initForm() {
+    async loadKhoOptions(mst, sohieutk) {
+      try {
+        const params = {
+          table_code: 'tbldmkhohang',
+          size: 1000,
+          page: 1
+        };
+        if (mst) params.filters = { mst };
+        if (sohieutk) params.filters = { ...params.filters, sohieutk };
+        const response = await service.post(`${baseUrl}/dm/get-list`, params);
+        this.khoOptions = (response.data && response.data.items) ? response.data.items : [];
+      } catch (error) {
+        this.$message.error('Không thể tải danh sách kho');
+      }
+    },
+    async loadNhomOptions(mst, sohieutk, ma_kho) {
+      if (!mst || !sohieutk || !ma_kho) {
+        this.nhomOptions = [];
+        return;
+      }
+      try {
+        const response = await service.post(`${baseUrl}/dm/get-list`, {
+          table_code: 'tbldmnhomhang',
+          size: 1000,
+          page: 1,
+          filters: { mst, sohieutk, ma_kho }
+        });
+        this.nhomOptions = (response.data && response.data.items) ? response.data.items : [];
+      } catch (error) {
+        this.$message.error('Không thể tải danh sách nhóm');
+      }
+    },
+    handleMaKhoChange() {
+      this.formData.ma_nhom = '';
+      this.loadNhomOptions(this.formData.mst, this.formData.sohieutk, this.formData.ma_kho);
+    },
+    handleMaNhomChange() {
+      // Additional logic can be added here if needed when ma_nhom changes
+    },
+    async initForm() {
       if (this.isEdit && this.materialData) {
         this.formData = {
           mst: this.materialData.mst || '',
@@ -210,9 +298,17 @@ export default {
           ghi_chu: this.materialData.ghi_chu || '',
           trang_thai: this.materialData.trang_thai != null ? this.materialData.trang_thai : 1
         };
+        // Load dependent dropdowns for edit mode sequentially
+        if (this.formData.ma_kho) {
+          await this.loadNhomOptions(this.formData.mst, this.formData.sohieutk, this.formData.ma_kho);
+        }
       } else {
         this.resetForm();
+        await this.loadKhoOptions();
       }
+      this.$nextTick(() => {
+        this.$refs.form && this.$refs.form.clearValidate();
+      });
     },
     resetForm() {
       this.formData = {
@@ -245,7 +341,6 @@ export default {
           table_code: 'tbldmvattu_hanghoa',
           ...this.formData
         };
-        // Convert boolean fields to 1/0
         const boolFields = [
           'trang_thai'
         ];
