@@ -138,7 +138,8 @@ export const asyncRoutes = [
       },
       {
         path: "/dm-tai-khoan-chi-tiet",
-        component: () => import("@/views/danhmucchung/dm-taikhoan-chitiet/index"),
+        component: () =>
+          import("@/views/danhmucchung/dm-taikhoan-chitiet/index"),
         name: "tbldmtaikhoanchitiet",
         meta: {
           title: "Danh mục tài khoản chi tiết",
@@ -148,7 +149,8 @@ export const asyncRoutes = [
       },
       {
         path: "/dm-chiphi-tratruoc",
-        component: () => import("@/views/danhmucchung/dm-chiphi-tratruoc/index"),
+        component: () =>
+          import("@/views/danhmucchung/dm-chiphi-tratruoc/index"),
         name: "tbldmchiphi_tratruoc",
         meta: {
           title: "Danh mục chi phí trả trước",
@@ -205,8 +207,8 @@ export const asyncRoutes = [
           icon: "documentation",
           noCache: true,
         },
-      }
-    ]
+      },
+    ],
   },
   {
     path: "/nhap",
@@ -228,7 +230,7 @@ export const asyncRoutes = [
         },
       },
       {
-        path: "/phieuchitienmat",
+        path: "phieuchitienmat",
         component: () => import("@/views/nhapchungtu/index"),
         name: "nhapphieuchitienmat",
         meta: {
@@ -238,7 +240,7 @@ export const asyncRoutes = [
         },
       },
       {
-        path: "/nhap/phieunhapvattucongcu",
+        path: "phieunhapvattucongcu",
         component: () => import("@/views/nhapchungtu/index"),
         name: "nhapphieunhapvattucongcu",
         meta: {
@@ -248,7 +250,7 @@ export const asyncRoutes = [
         },
       },
       {
-        path: "/nhap/banhangthutiensau",
+        path: "banhangthutiensau",
         component: () => import("@/views/nhapchungtu/index"),
         name: "nhapbanhangthutiensau",
         meta: {
@@ -258,7 +260,7 @@ export const asyncRoutes = [
         },
       },
       {
-        path: "/nhap/chungtunganhang",
+        path: "chungtunganhang",
         component: () => import("@/views/nhapchungtu/index"),
         name: "nhapchungtunganhang",
         meta: {
@@ -268,7 +270,7 @@ export const asyncRoutes = [
         },
       },
       {
-        path: "/nhap/chungtughiso",
+        path: "chungtughiso",
         component: () => import("@/views/nhapchungtu/index"),
         name: "nhapchungtughiso",
         meta: {
@@ -278,7 +280,7 @@ export const asyncRoutes = [
         },
       },
       {
-        path: "/nhap/chungtuluuchuyennoibo",
+        path: "chungtuluuchuyennoibo",
         component: () => import("@/views/nhapchungtu/index"),
         name: "nhapchungtuluuchuyennoibo",
         meta: {
