@@ -142,6 +142,30 @@ const state = {
 
 const mutations = {
   INIT_DATA(state) {
+    state.nhatKyChung = {
+      chungTu: {
+        hdr_id: null,
+        sttgs: "",
+        kyHieuSoCT: "",
+        ngay: "",
+        hienSoChungTu: true,
+        noiDung: "",
+        khachHang: "",
+      },
+      thongTinKhachHang: {
+        maSoThue: "123",
+        tenDonVi: "",
+        diaChi: "d",
+        dienThoai: "",
+        soTaiKhoan: "",
+        nganHang: "",
+        hinhThucTT: "",
+        maNguoiGiaoDich: "",
+        tenNguoiGiaoDich: "",
+        nhaCungCap: "",
+        hachToanNgoaiTe: false,
+      },
+    }
     state.hachToanData = 
       [
         {

@@ -68,7 +68,6 @@
               v-else-if="col.format === 'currency'"
               v-model="scope.row[col.prop]"
               :disabled="col.disableEditing"
-              @input="formatCurrency(scope.row, col.prop)"
               @keydown.native.space.prevent="
                 col.onSpaceKey ? handleSpaceKey(scope.row, col) : null
               "
@@ -136,24 +135,24 @@
               )
             "
           >
-            <el-button type="primary" @click="editRow(scope.row)"
+            <el-button size="mini" type="primary" @click="editRow(scope.row)"
               >Sửa</el-button
             >
-            <el-button type="danger" @click="deleteRow(scope.row)"
+            <el-button size="mini" type="danger" @click="deleteRow(scope.row)"
               >Xóa</el-button
             >
           </template>
           <template v-else>
-            <el-button type="success" @click="saveRow(scope.row)"
+            <el-button size="mini" type="success" @click="saveRow(scope.row)"
               >Lưu</el-button
             >
-            <el-button type="danger" @click="cancel(scope.row)">Hủy</el-button>
+            <el-button size="mini" ype="danger" @click="cancel(scope.row)">Hủy</el-button>
           </template>
         </template>
       </el-table-column>
     </el-table>
     <div class="button-container">
-      <el-button type="primary" class="add-button" @click="addRow"
+      <el-button size="mini" type="primary" class="add-button" @click="addRow"
         >Chèn</el-button
       >
     </div>
@@ -208,11 +207,11 @@ export default {
 
       this.$emit("handle-row", "inserting", newRow);
     },
-    formatCurrency(row, prop) {
-      row[prop] = row[prop]
-        .replace(/\D/g, "")
-        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-    },
+    // formatCurrency(row, prop) {
+    //   row[prop] = row[prop]
+    //     .replace(/\D/g, "")
+    //     .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+    // },
     formatDisplayCurrency(value) {
       return new Intl.NumberFormat("vi-VN", {
         style: "currency",
