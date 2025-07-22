@@ -136,17 +136,18 @@ export const asyncRoutes = [
           noCache: true,
         },
       },
-      {
-        path: "/dm-tai-khoan-chi-tiet",
-        component: () =>
-          import("@/views/danhmucchung/dm-taikhoan-chitiet/index"),
-        name: "tbldmtaikhoanchitiet",
-        meta: {
-          title: "Danh mục tài khoản chi tiết",
-          icon: "documentation",
-          noCache: true,
-        },
-      },
+      // {
+      //   path: "/dm-tai-khoan-chi-tiet",
+      //   component: () =>
+      //     import("@/views/danhmucchung/dm-taikhoan-chitiet/index"),
+      //   name: "tbldmtaikhoanchitiet",
+      //   meta: {
+      //     title: "Danh mục tài khoản chi tiết",
+      //     icon: "documentation",
+      //     noCache: true,
+      //   },
+      // },
+      
       {
         path: "/dm-chiphi-tratruoc",
         component: () =>
@@ -194,6 +195,17 @@ export const asyncRoutes = [
         name: "tbldmvattu_hanghoa",
         meta: {
           title: "Danh mục vật tư hàng hóa",
+          icon: "documentation",
+          noCache: true,
+        },
+      },
+      {
+        path: "/dm-kho-hang",
+        component: () =>
+          import("@/views/danhmucchung/dm-khohang/index"),
+        name: "tbldmkhohang",
+        meta: {
+          title: "Danh mục kho hàng",
           icon: "documentation",
           noCache: true,
         },

@@ -31,7 +31,7 @@
           :index="indexMethod"
           align="center"
         />
-        <el-table-column prop="mst" label="MST" width="120" />
+        <el-table-column prop="mst" label="MST" width="120" v-if="false"/>
         <el-table-column prop="sohieutk" label="Số hiệu TK" width="120" />
         <el-table-column prop="ma_kho" label="Mã kho" width="100" />
         <el-table-column prop="ma_nhom" label="Mã nhóm" width="100" />

@@ -30,7 +30,7 @@
           align="center"
         />
         <el-table-column prop="id" label="ID" width="120" />
-        <el-table-column prop="mst" label="MST" width="120" />
+        <el-table-column prop="mst" label="MST" width="120" v-if="false"/>
         <el-table-column prop="mst_kh_ncc" label="MST KH NCC" width="120" />
         <el-table-column prop="ten_congty" label="Tên công ty" min-width="200" />
         <el-table-column prop="du_no" label="Dư nợ" width="120" align="right">
