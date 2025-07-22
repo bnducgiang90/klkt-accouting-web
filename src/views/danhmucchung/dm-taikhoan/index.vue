@@ -31,19 +31,19 @@
         />
         <el-table-column prop="mst" label="MST" width="120" />
         <el-table-column prop="sohieutk" label="Số hiệu TK" width="120" />
-        <el-table-column prop="ten_tk" label="Tên tài khoản" min-width="200" />
-        <el-table-column prop="ten_tk_ta" label="Tên tài khoản TA" min-width="200" />
-        <el-table-column prop="du_no" label="Dư nợ" width="100" align="right">
+        <el-table-column prop="ten_tk" label="Tên tài khoản" min-width="100" />
+        <!-- <el-table-column prop="ten_tk_ta" label="Tên tài khoản TA" min-width="120" /> -->
+        <el-table-column prop="du_no_dau_ky" label="Dư nợ đầu kỳ" width="140" align="right">
           <template slot-scope="scope">
-            {{ scope.row.du_no }}
+            {{ formatCurrency(scope.row.du_no_dau_ky) }}
           </template>
         </el-table-column>
-        <el-table-column prop="du_co" label="Dư có" width="100" align="right">
+        <el-table-column prop="du_co_dau_ky" label="Dư có đầu kỳ" width="140" align="right">
           <template slot-scope="scope">
-            {{ scope.row.du_co }}
+            {{ formatCurrency(scope.row.du_co_dau_ky) }}
           </template>
         </el-table-column>
-        <el-table-column prop="chitiet_doituong" label="Chi tiết đối tượng" width="120" align="center">
+        <!-- <el-table-column prop="chitiet_doituong" label="Chi tiết đối tượng" width="120" align="center">
           <template slot-scope="scope">
             <el-tag :type="scope.row.chitiet_doituong === 1 ? 'success' : 'info'">
               {{ scope.row.chitiet_doituong === 1 ? 'Có' : 'Không' }}
@@ -165,7 +165,7 @@
           <template slot-scope="scope">
             {{ scope.row.den_ngay ? (new Date(scope.row.den_ngay)).toLocaleDateString('vi-VN') : '' }}
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column prop="trang_thai" label="Trạng thái" width="100" align="center">
           <template slot-scope="scope">
             <el-tag :type="scope.row.trang_thai === 1 ? 'success' : 'danger'">
@@ -173,8 +173,20 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="Tài khoản chi tiết" width="160">
+          <template slot-scope="scope">
+            <el-tag
+              type="info"
+              effect="dark"
+              style="cursor:pointer"
+              @click="openSubAccountDrawer(scope.row)"
+            >
+              {{ scope.row.subAccountCount != null ? scope.row.subAccountCount : 'Xem' }} tài khoản chi tiết
+            </el-tag>
+          </template>
+        </el-table-column>
         <!-- Cột hành động -->
-        <el-table-column align="center" label="Action" width="280" fixed="right">
+        <el-table-column align="center" label="Action" width="350">
           <template slot-scope="scope">
             <el-button
               type="success"
@@ -224,6 +236,167 @@
       :account-data="detailDialog.accountData"
       @close="handleDetailClose"
     />
+
+    <!-- Sub-Account Drawer -->
+    <el-drawer
+      :visible.sync="subAccountDrawer.visible"
+      size="50%"
+      @close="closeSubAccountDrawer"
+    >
+      <div class="custom-drawer-title">
+        Danh sách tài khoản chi tiết của <span>{{ subAccountDrawer.ten_tk }}</span>
+        (<span class="sohieutk-highlight">{{ subAccountDrawer.sohieutk }}</span>)
+        <!-- <el-button
+          icon="el-icon-close"
+          @click="closeSubAccountDrawer"
+          circle
+          size="mini"
+          style="float: right; margin-top: 2px;"
+        /> -->
+      </div>
+      <div class="drawer-content-padding">
+        <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center; justify-content: space-between;">
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <el-input
+              v-model="subAccountDrawer.searchQuery"
+              placeholder="Nhập số hiệu hoặc tên chi tiết để tìm kiếm"
+              clearable
+              style="width: 300px;"
+              @keyup.enter.native="fetchSubAccounts"
+            />
+            <el-button type="primary" icon="el-icon-search" @click="fetchSubAccounts">Search</el-button>
+          </div>
+          <el-button type="success" icon="el-icon-plus" @click="openSubAccountForm(false)">Thêm mới</el-button>
+        </div>
+        <!-- Tổng dư nợ/có đầu kỳ -->
+        <el-table
+          :data="subAccountDrawer.accounts"
+          border
+          style="width: 100%"
+          v-loading="subAccountDrawer.loading"
+          empty-text="Không có dữ liệu"
+          max-height="400"
+        >
+          <!-- <el-table-column label="STT" type="index" width="60" :index="subAccountIndexMethod" align="center" /> -->
+          <el-table-column prop="ma_chitiet" label="Mã chi tiết" width="120" />
+          <el-table-column prop="ten_chitiet" label="Tên chi tiết" min-width="180" />
+          <el-table-column prop="du_no_dau_ky" label="Dư nợ đầu kỳ" width="130" align="right">
+            <template slot-scope="scope">
+              {{ formatCurrency(scope.row.du_no_dau_ky) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="du_co_dau_ky" label="Dư có đầu kỳ" width="130" align="right">
+            <template slot-scope="scope">
+              {{ formatCurrency(scope.row.du_co_dau_ky) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="trang_thai" label="Trạng thái" width="100" align="center">
+            <template slot-scope="scope">
+              <el-tag :type="scope.row.trang_thai === 1 ? 'success' : 'danger'">
+                {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="Action" width="200">
+            <template slot-scope="scope">
+              <div class="action-btn-group">
+                <el-button type="primary" size="small" icon="el-icon-edit" @click="openSubAccountForm(true, scope.row)">Sửa</el-button>
+                <el-button :type="scope.row.trang_thai === 1 ? 'danger' : 'warning'" size="small" :icon="scope.row.trang_thai === 1 ? 'el-icon-delete' : 'el-icon-check'" @click="scope.row.trang_thai === 1 ? handleDisableSubAccount(scope.row) : handleEnableSubAccount(scope.row)">{{ scope.row.trang_thai === 1 ? 'Disable' : 'Enable' }}</el-button>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div style="margin-top: 20px; text-align: right;">
+          <el-pagination
+            background
+            layout="prev, pager, next, jumper"
+            :current-page="subAccountDrawer.pagination.page"
+            :page-size="subAccountDrawer.pagination.pageSize"
+            :total="subAccountDrawer.pagination.total"
+            @current-change="handleSubAccountPageChange"
+          />
+        </div>
+        <div class="total-balance-info">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-weight: 600; font-size: 16px;">Tổng dư nợ đầu kỳ:</label>
+            <el-input
+              :value="formatCurrency(totalDuNoDauKy)"
+              style="width: 180px; background: #fff0f0; font-size: 18px;"
+            />
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-weight: 600; font-size: 16px;">Tổng dư có đầu kỳ:</label>
+            <el-input
+              :value="formatCurrency(totalDuCoDauKy)"
+              style="width: 180px; background: #fff0f0; font-size: 18px;"
+            />
+          </div>
+        </div>
+        <!-- Sub-Account Form Inline -->
+        <div v-if="subAccountDrawer.showForm" style="margin-top: 24px; background: #fafbfc; padding: 24px; border-radius: 8px;">
+          <el-form
+            ref="subAccountForm"
+            :model="subAccountDrawer.formData"
+            :rules="subAccountDrawer.rules"
+            label-width="120px"
+            label-position="left"
+          >
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="MST" prop="mst">
+                  <el-input v-model="subAccountDrawer.formData.mst" placeholder="MST" clearable readonly />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Số hiệu TK" prop="sohieutk">
+                  <el-input v-model="subAccountDrawer.formData.sohieutk" placeholder="Số hiệu tài khoản" clearable readonly />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Mã chi tiết" prop="ma_chitiet">
+                  <el-input v-model="subAccountDrawer.formData.ma_chitiet" placeholder="Nhập mã chi tiết" clearable />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Tên chi tiết" prop="ten_chitiet">
+                  <el-input v-model="subAccountDrawer.formData.ten_chitiet" placeholder="Nhập tên chi tiết" clearable />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Dư nợ đầu kỳ" prop="du_no_dau_ky">
+                  <el-input-number v-model="subAccountDrawer.formData.du_no_dau_ky" :precision="0" :step="1000" :min="0" style="width: 100%" placeholder="0" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Dư có đầu kỳ" prop="du_co_dau_ky">
+                  <el-input-number v-model="subAccountDrawer.formData.du_co_dau_ky" :precision="0" :step="1000" :min="0" style="width: 100%" placeholder="0" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Trạng thái" prop="trang_thai">
+                  <el-switch v-model="subAccountDrawer.formData.trang_thai" :active-value="1" :inactive-value="0" active-text="Hoạt động" inactive-text="Vô hiệu" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-form-item label="Ghi chú" prop="ghi_chu">
+              <el-input v-model="subAccountDrawer.formData.ghi_chu" type="textarea" :rows="3" placeholder="Nhập ghi chú (nếu có)" />
+            </el-form-item>
+          </el-form>
+          <div style="text-align: left; margin-top: 16px;">
+            <el-button @click="closeSubAccountForm">Hủy</el-button>
+            <el-button type="primary" @click="submitSubAccountForm" :loading="subAccountDrawer.formLoading">
+              {{ subAccountDrawer.isEdit ? 'Cập nhật' : 'Thêm mới' }}
+            </el-button>
+          </div>
+        </div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -237,7 +410,7 @@ export default {
   name: 'DmTaiKhoanList',
   components: {
     AccountForm,
-    AccountDetail
+    AccountDetail,
   },
   data() {
     return {
@@ -257,7 +430,51 @@ export default {
       detailDialog: {
         visible: false,
         accountData: {}
-      }
+      },
+      subAccountDrawer: {
+        visible: false,
+        title: '',
+        sohieutk: '',
+        mst: '', // Thêm thuộc tính này
+        searchQuery: '',
+        accounts: [],
+        loading: false,
+        pagination: {
+          page: 1,
+          pageSize: 10,
+          total: 0,
+        },
+        isEdit: false,
+        currentRecord: {},
+        showForm: false,
+        formData: {
+          mst: '',
+          sohieutk: '',
+          ma_chitiet: '',
+          ten_chitiet: '',
+          du_no_dau_ky: 0,
+          du_co_dau_ky: 0,
+          trang_thai: 1,
+          ghi_chu: ''
+        },
+        rules: {
+          mst: [
+            { required: true, message: 'Vui lòng nhập MST', trigger: 'blur' }
+          ],
+          sohieutk: [
+            { required: true, message: 'Vui lòng nhập số hiệu tài khoản', trigger: 'blur' }
+          ],
+          ma_chitiet: [
+            { required: true, message: 'Vui lòng nhập mã chi tiết', trigger: 'blur' }
+          ],
+          ten_chitiet: [
+            { required: true, message: 'Vui lòng nhập tên chi tiết', trigger: 'blur' }
+          ]
+        },
+        formLoading: false,
+        totalDuNoDauKy: 0, // Thêm thuộc tính này
+        totalDuCoDauKy: 0  // Thêm thuộc tính này
+      },
     };
   },
   methods: {
@@ -420,9 +637,230 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+
+    // Sub-Account Methods
+    openSubAccountDrawer(row) {
+      this.subAccountDrawer.visible = true;
+      this.subAccountDrawer.ten_tk = row.ten_tk; // Lưu tên tài khoản cha
+      this.subAccountDrawer.sohieutk = row.sohieutk;
+      this.subAccountDrawer.mst = row.mst; // Lưu mst tài khoản cha
+      this.subAccountDrawer.searchQuery = '';
+      this.subAccountDrawer.pagination.page = 1;
+      this.fetchSubAccounts();
+      this.fetchSubAccountBalance(); // Gọi lấy tổng khi mở drawer
+    },
+    closeSubAccountDrawer() {
+      this.subAccountDrawer.visible = false;
+    },
+    async fetchSubAccounts() {
+      this.subAccountDrawer.loading = true;
+      try {
+        const payload = {
+          table_code: 'tbldmtaikhoan_chitiet',
+          sohieutk: this.subAccountDrawer.sohieutk,
+          ten_chitiet: this.subAccountDrawer.searchQuery || undefined,
+          page: this.subAccountDrawer.pagination.page,
+          pageSize: this.subAccountDrawer.pagination.pageSize,
+        };
+        const res = await service.post(`${baseUrl}/dm/search`, payload);
+        this.subAccountDrawer.accounts = (res.data.items || []);
+        this.subAccountDrawer.pagination.total = res.data.total || 0;
+      } catch (e) {
+        this.subAccountDrawer.accounts = [];
+        this.subAccountDrawer.pagination.total = 0;
+        this.$message.error('Có lỗi xảy ra khi tải tài khoản chi tiết');
+      } finally {
+        this.subAccountDrawer.loading = false;
+      }
+    },
+    handleSubAccountPageChange(page) {
+      this.subAccountDrawer.pagination.page = page;
+      this.fetchSubAccounts();
+    },
+    subAccountIndexMethod(index) {
+      return (this.subAccountDrawer.pagination.page - 1) * this.subAccountDrawer.pagination.pageSize + index + 1;
+    },
+    openSubAccountForm(isEdit, row = {}) {
+      this.subAccountDrawer.isEdit = isEdit;
+      if (isEdit && row) {
+        this.subAccountDrawer.formData = {
+          mst: row.mst || '',
+          sohieutk: row.sohieutk || '',
+          ma_chitiet: row.ma_chitiet || '',
+          ten_chitiet: row.ten_chitiet || '',
+          du_no_dau_ky: row.du_no_dau_ky || 0,
+          du_co_dau_ky: row.du_co_dau_ky || 0,
+          trang_thai: row.trang_thai != null ? row.trang_thai : 1,
+          ghi_chu: row.ghi_chu || ''
+        };
+      } else {
+        this.subAccountDrawer.formData = {
+          mst: this.subAccountDrawer.mst || '',
+          sohieutk: this.subAccountDrawer.sohieutk || '',
+          ma_chitiet: '',
+          ten_chitiet: '',
+          du_no_dau_ky: 0,
+          du_co_dau_ky: 0,
+          trang_thai: 1,
+          ghi_chu: ''
+        };
+      }
+      this.subAccountDrawer.showForm = true;
+    },
+    closeSubAccountForm() {
+      this.subAccountDrawer.showForm = false;
+      // Optionally reset form
+      this.$refs.subAccountForm && this.$refs.subAccountForm.resetFields();
+    },
+    async submitSubAccountForm() {
+      this.$refs.subAccountForm.validate(async (valid) => {
+        if (!valid) return;
+        this.subAccountDrawer.formLoading = true;
+        try {
+          const payload = {
+            table_code: 'tbldmtaikhoan_chitiet',
+            ...this.subAccountDrawer.formData
+          };
+          // Convert boolean fields to 1/0 if needed
+          payload.trang_thai = this.subAccountDrawer.formData.trang_thai ? 1 : 0;
+          await service.post(`${baseUrl}/dm/upsert`, payload);
+          this.$message.success(this.subAccountDrawer.isEdit ? 'Cập nhật thành công' : 'Thêm mới thành công');
+          this.subAccountDrawer.showForm = false;
+          // Sau khi thêm/sửa thành công, fetch lại sub-accounts, tổng và accounts để cập nhật tổng dư nợ/có
+          await this.fetchSubAccounts();
+          await this.fetchSubAccountBalance();
+          await this.updateMainAccountBalance();
+          await this.fetchAccounts();
+        } catch (e) {
+          this.$message.error('Có lỗi xảy ra khi lưu dữ liệu');
+        } finally {
+          this.subAccountDrawer.formLoading = false;
+        }
+      });
+    },
+    // Thêm method updateMainAccountBalance để cập nhật dư nợ/có đầu kỳ của tài khoản chính
+    async updateMainAccountBalance() {
+      // Lấy tổng dư nợ/có đầu kỳ từ subAccountDrawer.totalDuNoDauKy và totalDuCoDauKy
+      const totalDuNo = this.subAccountDrawer.totalDuNoDauKy;
+      const totalDuCo = this.subAccountDrawer.totalDuCoDauKy;
+      // Gọi API cập nhật tài khoản chính
+      try {
+        const payload = {
+          table_code: 'tbldmtaikhoan',
+          mst: this.subAccountDrawer.formData.mst || (this.subAccountDrawer.accounts[0] && this.subAccountDrawer.accounts[0].mst) || '',
+          sohieutk: this.subAccountDrawer.sohieutk,
+          du_no_dau_ky: totalDuNo,
+          du_co_dau_ky: totalDuCo
+        };
+        await service.post(`${baseUrl}/dm/taikhoan/update-balance`, payload);
+      } catch (e) {
+        // Không báo lỗi lên UI, chỉ log
+        console.error('Lỗi cập nhật dư nợ/có tài khoản chính:', e);
+      }
+    },
+    handleSubAccountFormSuccess() {
+      this.subAccountDrawer.showForm = false;
+      this.fetchSubAccounts();
+      this.fetchAccounts();
+    },
+    async fetchSubAccountBalance() {
+      try {
+        const payload = {
+          sohieutk: this.subAccountDrawer.sohieutk,
+          table_code: 'tbldmtaikhoan_chitiet'
+        };
+        const res = await service.post(`${baseUrl}/dm/taikhoan-chitiet/get-balance`, payload);
+        console.log('API /dm/taikhoan-chitiet/get-balance result:', res);
+        if (res.data) {
+          this.subAccountDrawer.totalDuNoDauKy = res.data.du_no_dau_ky || 0;
+          this.subAccountDrawer.totalDuCoDauKy = res.data.du_co_dau_ky || 0;
+        } else {
+          this.subAccountDrawer.totalDuNoDauKy = 0;
+          this.subAccountDrawer.totalDuCoDauKy = 0;
+        }
+      } catch (e) {
+        this.subAccountDrawer.totalDuNoDauKy = 0;
+        this.subAccountDrawer.totalDuCoDauKy = 0;
+      }
+    },
+    async handleDisableSubAccount(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn vô hiệu hóa tài khoản chi tiết "${row.ten_chitiet}" (${row.ma_chitiet})?`,
+          'Xác nhận vô hiệu hóa',
+          {
+            confirmButtonText: 'Vô hiệu hóa',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--danger'
+          }
+        );
+        this.subAccountDrawer.loading = true;
+        const payload = {
+          table_code: 'tbldmtaikhoan_chitiet',
+          mst: row.mst,
+          sohieutk: row.sohieutk,
+          ma_chitiet: row.ma_chitiet,
+          trang_thai: 0
+        };
+        await service.post(`${baseUrl}/dm/update-status`, payload);
+        this.$message.success('Vô hiệu hóa tài khoản chi tiết thành công');
+        this.fetchSubAccounts();
+        await this.fetchSubAccountBalance(); // Lấy tổng mới nhất
+        await this.updateMainAccountBalance(); // Cập nhật số dư tài khoản cha
+        this.fetchAccounts();
+      } catch (error) {
+        if (error !== 'cancel') {
+          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa tài khoản chi tiết');
+        }
+      } finally {
+        this.subAccountDrawer.loading = false;
+      }
+    },
+    async handleEnableSubAccount(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn kích hoạt tài khoản chi tiết "${row.ten_chitiet}" (${row.ma_chitiet})?`,
+          'Xác nhận kích hoạt',
+          {
+            confirmButtonText: 'Kích hoạt',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--success'
+          }
+        );
+        this.subAccountDrawer.loading = true;
+        const payload = {
+          table_code: 'tbldmtaikhoan_chitiet',
+          mst: row.mst,
+          sohieutk: row.sohieutk,
+          ma_chitiet: row.ma_chitiet,
+          trang_thai: 1
+        };
+        await service.post(`${baseUrl}/dm/update-status`, payload);
+        this.$message.success('Kích hoạt tài khoản chi tiết thành công');
+        this.fetchSubAccounts();
+        await this.fetchSubAccountBalance(); // Lấy tổng mới nhất
+        await this.updateMainAccountBalance(); // Cập nhật số dư tài khoản cha
+        this.fetchAccounts();
+      } catch (error) {
+        if (error !== 'cancel') {
+          this.$message.error('Có lỗi xảy ra khi kích hoạt tài khoản chi tiết');
+        }
+      } finally {
+        this.subAccountDrawer.loading = false;
+      }
+    },
+  },
+  computed: {
+    totalDuNoDauKy() {
+      return this.subAccountDrawer.totalDuNoDauKy;
+    },
+    totalDuCoDauKy() {
+      return this.subAccountDrawer.totalDuCoDauKy;
     }
   },
-  
   created() {
     this.fetchAccounts();
   }
@@ -435,10 +873,104 @@ export default {
 }
 
 .el-table {
-  font-size: 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.el-table th, .el-table td {
+  padding: 8px 12px !important;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.el-table th {
+  background: #f5f7fa;
+  font-weight: 600;
+  color: #333;
 }
 
 .el-table .cell {
-  padding: 8px 0;
+  padding: 0 !important;
+  line-height: 1.6;
 }
-</style> 
+
+.el-table__body tr:hover > td {
+  background: #f0f9ff !important;
+}
+
+.el-table .el-tag {
+  margin: 0 auto;
+}
+
+.el-table .el-button {
+  min-width: 70px;
+}
+
+.el-table .action-btn-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.total-balance-info {
+  display: flex;
+  gap: 32px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  align-items: center;
+  padding: 16px 0 16px 0;
+  background: #fff8f8;
+  border-radius: 8px;
+}
+
+.drawer-content-padding {
+  padding: 24px;
+}
+
+.custom-drawer-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 10px;
+  padding-left: 16px;
+}
+.custom-drawer-title .sohieutk-highlight {
+  color: #d32f2f;
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+:deep(.el-drawer__body) {
+  padding-top: 0 !important;
+}
+:deep(.el-drawer__header) {
+  display: none !important;
+}
+:deep(.el-drawer) {
+  padding-top: 0 !important;
+}
+:deep(.el-drawer__wrapper) {
+  padding-top: 0 !important;
+}
+:deep(.el-drawer__container) {
+  padding-top: 0 !important;
+}
+</style>
+<style>
+.total-balance-info .el-input__inner {
+  color: #d32f2f !important;
+  font-weight: bold;
+  font-size: 18px;
+  background: #fff0f0;
+}
+</style>
+<style>
+.el-drawer__header {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+}
+</style>
