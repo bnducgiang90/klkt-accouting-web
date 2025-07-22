@@ -176,12 +176,11 @@
         <el-table-column label="Tài khoản chi tiết" width="160">
           <template slot-scope="scope">
             <el-tag
-              type="info"
-              effect="dark"
-              style="cursor:pointer"
+              type="primary"
+              style="cursor:pointer; font-size: 12px; font-weight: bold;"
               @click="openSubAccountDrawer(scope.row)"
             >
-              {{ scope.row.subAccountCount != null ? scope.row.subAccountCount : 'Xem' }} tài khoản chi tiết
+              Tài khoản chi tiết (<span class="highlight-ct">{{ scope.row.total_tk_ct }}</span>)
             </el-tag>
           </template>
         </el-table-column>
@@ -240,7 +239,7 @@
     <!-- Sub-Account Drawer -->
     <el-drawer
       :visible.sync="subAccountDrawer.visible"
-      size="50%"
+      size="55%"
       @close="closeSubAccountDrawer"
     >
       <div class="custom-drawer-title">
@@ -306,7 +305,25 @@
             </template>
           </el-table-column>
         </el-table>
-        <div style="margin-top: 20px; text-align: right;">
+        <div class="balance-pagination-row">
+          <div class="total-balance-info">
+            <div class="balance-block">
+              <span class="balance-label">Tổng dư nợ đầu kỳ:</span>
+              <el-input
+                v-model="formattedDuNo"
+                @input="onInputDuNo"
+                class="balance-input debit"
+              />
+            </div>
+            <div class="balance-block">
+              <span class="balance-label">Tổng dư có đầu kỳ:</span>
+              <el-input
+                v-model="formattedDuCo"
+                @input="onInputDuCo"
+                class="balance-input credit"
+              />
+            </div>
+          </div>
           <el-pagination
             background
             layout="prev, pager, next, jumper"
@@ -315,22 +332,6 @@
             :total="subAccountDrawer.pagination.total"
             @current-change="handleSubAccountPageChange"
           />
-        </div>
-        <div class="total-balance-info">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <label style="font-weight: 600; font-size: 16px;">Tổng dư nợ đầu kỳ:</label>
-            <el-input
-              :value="formatCurrency(totalDuNoDauKy)"
-              style="width: 180px; background: #fff0f0; font-size: 18px;"
-            />
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <label style="font-weight: 600; font-size: 16px;">Tổng dư có đầu kỳ:</label>
-            <el-input
-              :value="formatCurrency(totalDuCoDauKy)"
-              style="width: 180px; background: #fff0f0; font-size: 18px;"
-            />
-          </div>
         </div>
         <!-- Sub-Account Form Inline -->
         <div v-if="subAccountDrawer.showForm" style="margin-top: 24px; background: #fafbfc; padding: 24px; border-radius: 8px;">
@@ -475,7 +476,23 @@ export default {
         totalDuNoDauKy: 0, // Thêm thuộc tính này
         totalDuCoDauKy: 0  // Thêm thuộc tính này
       },
+      formattedDuNo: '',
+      formattedDuCo: ''
     };
+  },
+  watch: {
+    'subAccountDrawer.totalDuNoDauKy': {
+      immediate: true,
+      handler(val) {
+        this.formattedDuNo = this.formatVND(val);
+      }
+    },
+    'subAccountDrawer.totalDuCoDauKy': {
+      immediate: true,
+      handler(val) {
+        this.formattedDuCo = this.formatVND(val);
+      }
+    }
   },
   methods: {
     async fetchAccounts() {
@@ -852,6 +869,21 @@ export default {
         this.subAccountDrawer.loading = false;
       }
     },
+    formatVND(value) {
+      if (!value) return '';
+      return Number(value).toLocaleString('vi-VN') + ' ₫';
+    },
+    parseVND(value) {
+      return Number((value || '').replace(/[^\d]/g, '')) || 0;
+    },
+    onInputDuNo(val) {
+      this.subAccountDrawer.totalDuNoDauKy = this.parseVND(val);
+      this.formattedDuNo = this.formatVND(this.subAccountDrawer.totalDuNoDauKy);
+    },
+    onInputDuCo(val) {
+      this.subAccountDrawer.totalDuCoDauKy = this.parseVND(val);
+      this.formattedDuCo = this.formatVND(this.subAccountDrawer.totalDuCoDauKy);
+    },
   },
   computed: {
     totalDuNoDauKy() {
@@ -917,12 +949,11 @@ export default {
 .total-balance-info {
   display: flex;
   gap: 32px;
-  margin-top: 24px;
-  margin-bottom: 16px;
   align-items: center;
-  padding: 16px 0 16px 0;
   background: #fff8f8;
   border-radius: 8px;
+  padding: 8px 16px;
+  margin: 0;
 }
 
 .drawer-content-padding {
@@ -942,6 +973,20 @@ export default {
   font-weight: bold;
   letter-spacing: 1px;
 }
+.highlight-ct {
+  color: #d32f2f !important;
+  font-weight: bold;
+  font-size: 12px;
+  background: transparent !important;
+}
+/* Tùy chỉnh màu nền và màu chữ cho el-tag info plain nổi bật hơn */
+:deep(.el-tag--info.is-plain) {
+  background-color: #fff3e0 !important; /* cam nhạt nổi bật */
+  color: #e65100 !important; /* cam đậm cho text */
+  border-color: #ffb74d !important;
+  font-weight: bold;
+  font-size: 15px;
+}
 :deep(.el-drawer__body) {
   padding-top: 0 !important;
 }
@@ -957,12 +1002,43 @@ export default {
 :deep(.el-drawer__container) {
   padding-top: 0 !important;
 }
+.balance-label {
+  font-weight: 600;
+  font-size: 12px;
+  color: #222;
+}
+.balance-pagination-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0 0 0;
+  padding: 0 8px;
+}
+.balance-input {
+  font-size: 13px;
+  font-weight: bold;
+  width: 160px;
+  border-radius: 6px;
+  text-align: right;
+  background: #fff0f0;
+}
+.balance-input.credit .el-input__inner {
+  color: #219653 !important;
+  background: #e6f9f0 !important;
+  font-weight: bold;
+  font-size: 13px !important;
+}
+.balance-input.debit .el-input__inner {
+  color: #d32f2f !important;
+  background: #fff0f0 !important;
+  font-weight: bold;
+}
 </style>
 <style>
 .total-balance-info .el-input__inner {
   color: #d32f2f !important;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 13px;
   background: #fff0f0;
 }
 </style>
@@ -972,5 +1048,17 @@ export default {
   padding-bottom: 0 !important;
   height: 0 !important;
   min-height: 0 !important;
+}
+</style>
+<style>
+.balance-input.credit .el-input__inner,
+.el-input.balance-input.credit .el-input__inner,
+.el-input__inner.balance-input.credit,
+.el-input__inner.balance-input.credit:focus {
+  color: #219653 !important;
+  background: #e6f9f0 !important;
+  font-weight: bold !important;
+  font-size: 13px !important;
+  border-color: #b2dfdb !important;
 }
 </style>
