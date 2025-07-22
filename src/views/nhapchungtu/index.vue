@@ -256,4 +256,87 @@ export default {
   justify-content: center;
   gap: 10px; /* Khoảng cách giữa các nút */
 }
+
+/* ======================MOI THEM============================ */
+/* Vùng bao popup bảng */
+.popup-table-wrapper {
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Container bảng */
+.table-container {
+  overflow-x: auto;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Nếu component TableData render <table>, áp dụng CSS bên dưới */
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.table-container th {
+  background-color: #f1f5f9;
+  font-weight: bold;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #334155;
+  text-align: left;
+}
+
+.table-container td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #475569;
+  vertical-align: middle;
+}
+
+.table-container tr:hover {
+  background-color: #f9fafb;
+}
+
+/* Căn phải các cột cần căn phải */
+.table-container td.align-right {
+  text-align: right;
+}
+
+/* Căn giữa các cột cần căn giữa */
+.table-container td.align-center {
+  text-align: center;
+}
+
+/* Tùy chọn: tô đậm dòng tổng hoặc dòng quan trọng */
+.table-container tr.summary-row td {
+  font-weight: bold;
+  background-color: #fef9c3;
+}
+
+/* Tùy chọn: dòng bị chọn */
+.table-container tr.selected-row {
+  background-color: #e0f2fe !important;
+}
+
+/* Cải thiện giao diện input nếu có ô nhập trong bảng */
+.table-container input {
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.table-container input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
 </style>

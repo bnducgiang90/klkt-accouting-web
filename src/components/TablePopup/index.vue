@@ -109,105 +109,116 @@ export default {
 </script>
 
 <style>
+/* Overlay tối mờ nhẹ */
 .popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(30, 30, 30, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999; /* Đảm bảo cao hơn các thành phần khác */
+  z-index: 9999;
 }
+
+/* Popup content đẹp hơn */
 .popup-content {
-  background: white;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.2);
   max-height: 80vh;
   display: flex;
   flex-direction: column;
-  position: relative; /* Để nút đóng định vị theo popup */
+  position: relative;
   width: 50%;
+  transition: all 0.3s ease;
 }
 
-/* Tiêu đề popup (cố định, căn giữa) */
+/* Header với gradient hoặc màu nổi bật */
 .popup-header {
   position: sticky;
   top: 0;
-  background: white;
+  background: linear-gradient(90deg, #4b6cb7, #182848);
+  color: white;
   z-index: 10;
   text-align: center;
-  font-size: 20px; /* Tiêu đề to hơn */
+  font-size: 20px;
   font-weight: bold;
-  padding: 12px;
-  border-bottom: 1px solid #ddd;
+  padding: 14px;
+  border-radius: 8px 8px 0 0;
 }
 
-/* Nút đóng (cố định, căn phải) */
+/* Nút đóng nhẹ nhàng hơn */
 .popup-close {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: red;
-  color: white;
+  top: 12px;
+  right: 14px;
+  background: #444;
+  color: #fff;
   border: none;
-  padding: 5px 10px;
+  padding: 6px 12px;
   cursor: pointer;
   font-size: 14px;
-  border-radius: 3px;
+  border-radius: 4px;
+  transition: background 0.2s ease;
 }
 
-/* Khu vực dữ liệu có thanh cuộn */
+.popup-close:hover {
+  background: #222;
+}
+
+/* Body table */
 .popup-body {
   flex: 1;
   overflow-y: auto;
   max-height: 60vh;
+  margin-top: 8px;
 }
 
-/* Bảng hiển thị dữ liệu */
+/* Bảng hiện đại hơn */
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px; /* Chữ bé hơn */
+  font-size: 14px;
 }
 
-/* Kẻ ô bảng rõ ràng */
-.data-table th,
-.data-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
-
-/* Tiêu đề cột to hơn */
+/* Header bảng */
 .data-table th {
-  background: #f4f4f4;
-  font-size: 16px; /* Tiêu đề cột lớn hơn */
+  background: #f8f9fa;
+  color: #333;
+  font-size: 15px;
   font-weight: bold;
   text-align: center;
-  padding: 10px;
+  padding: 12px;
+  border-bottom: 2px solid #ddd;
 }
 
-/* Cố định tiêu đề bảng khi cuộn */
+/* Ô bảng */
+.data-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  color: #555;
+}
+
+/* Hover và selection */
+.data-table tbody tr:hover {
+  background-color: #f1f5f9;
+}
+
+.data-table tbody tr.selected {
+  background-color: #e0f2fe !important;
+  font-weight: 600;
+}
+
+/* Cố định header khi cuộn */
 .data-table thead {
   position: sticky;
   top: 0;
-  background: #f4f4f4;
+  background: #f8f9fa;
   z-index: 5;
 }
 
-/* Khi hover vào dòng */
-.data-table tbody tr:hover {
-  background-color: #f0f0f0; /* Màu xám nhạt khi hover */
-  cursor: pointer;
-}
-
-/* Khi dòng được chọn */
-.data-table tbody tr.selected {
-  background-color: #d1e7fd !important; /* Màu xanh nhạt */
-  font-weight: bold;
-}
 </style>

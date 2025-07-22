@@ -27,6 +27,7 @@
                   <el-input
                     v-model="nhatKyChung.chungTu.sttgs"
                     placeholder="Điền vào STT_GS"
+                    type="number"
                   />
                 </el-form-item>
                 <el-form-item label="Ký hiệu - Số CT">
@@ -61,10 +62,10 @@
               </div>
               <div id="nkc-container-trai-body-line4" class="container-row">
                 <el-form-item label="Khách hàng" style="flex-grow: 1">
-                  <el-input v-model="nhatKyChung.chungTu.khachHang" />
+                  <el-input v-model="nhatKyChung.chungTu.khachHang" disabled/>
                 </el-form-item>
                 <el-form-item class="center-btn" label-width="20px">
-                  <el-button type="primary" @click="openPopupKhachHang"
+                  <el-button size="mini" type="primary" @click="openPopupKhachHang"
                     >...</el-button
                   >
                 </el-form-item>
@@ -73,10 +74,11 @@
                   <el-input
                     v-model="nhatKyChung.thongTinKhachHang.nhaCungCap"
                     placeholder="Điền vào nhà cung cấp"
+                    disabled
                   />
                 </el-form-item>
                 <el-form-item class="center-btn" label-width="20px">
-                  <el-button type="primary" @click="openPopupNhaCungCap"
+                  <el-button size="mini" type="primary" @click="openPopupNhaCungCap"
                     >...</el-button
                   >
                 </el-form-item>
@@ -96,7 +98,7 @@
                     v-model="nhatKyChung.thongTinKhachHang.maSoThue"
                     placeholder="Điền vào mã số thuế"
                     maxlength=20
-                    style="width: 180px;"
+                    style="min-width: 100px;"
                   />
                 </el-form-item>
                 <el-form-item label="Tên đơn vị" style="flex-grow: 1">
@@ -118,7 +120,7 @@
                     v-model="nhatKyChung.thongTinKhachHang.dienThoai"
                     placeholder="Điền vào điện thoại"
                     maxlength=10
-                    style="width: 120px;"
+                    style="min-width: 80px;"
                   />
                 </el-form-item>
               </div>
@@ -127,10 +129,11 @@
                   <el-input
                     v-model="nhatKyChung.thongTinKhachHang.soTaiKhoan"
                     placeholder="Điền vào số tài khoản"
+                    disabled
                   />
                 </el-form-item>
                 <el-form-item class="center-btn" label-width="20px">
-                  <el-button type="primary" @click="openPopupTaiKhoanNganHang"
+                  <el-button size="mini" type="primary" @click="openPopupTaiKhoanNganHang"
                     >...</el-button
                   >
                 </el-form-item>
@@ -138,6 +141,7 @@
                   <el-input
                     v-model="nhatKyChung.thongTinKhachHang.nganHang"
                     placeholder="Điền vào ngân hàng"
+                    disabled
                   />
                 </el-form-item>
               </div>
@@ -160,10 +164,11 @@
                   <el-input
                     v-model="nhatKyChung.thongTinKhachHang.tenNguoiGiaoDich"
                     placeholder="Điền vào người giao dịch"
+                    disabled
                   />
                 </el-form-item>
                 <el-form-item class="center-btn" label-width="20px">
-                  <el-button type="primary" @click="openPopupNguoiGiaoDich"
+                  <el-button size="mini" type="primary" @click="openPopupNguoiGiaoDich"
                     >...</el-button
                   >
                 </el-form-item>
