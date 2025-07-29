@@ -1,192 +1,127 @@
 <template>
-  <div>
-    <el-form
-      ref="form"
-      :model="nhatKyChung"
-      size="medium"
-      label-width="120px"
-      label-position="left"
-    >
-      <div id="nkc-container">
-        <div id="nkc-container-trai">
-          <el-card class="box-card">
-            <div id="nkc-container-trai-header" slot="header" class="clearfix container-row" style="display: flex; justify-content: space-between; align-items: end;">
-              <span>Chứng từ: </span>
-              <el-input 
-                v-model="nhatKyChung.chungTu.hdr_id"
-                placeholder="HDR_ID"
-                disabled
-                style="width: 180px; height: 19px; margin-left: auto;"
-                size="small"
-              />
-              <!-- <span>{{this.nhatKyChung.chungTu.hdr_id}}</span> -->
-            </div>
-            <div id="nkc-container-trai-body">
-              <div id="nkc-container-trai-body-line1" class="container-row">
-                <el-form-item label="STT_GS">
-                  <el-input
-                    v-model="nhatKyChung.chungTu.sttgs"
-                    placeholder="Điền vào STT_GS"
-                    type="number"
-                  />
-                </el-form-item>
-                <el-form-item label="Ký hiệu - Số CT">
-                  <el-input v-model="nhatKyChung.chungTu.kyHieuSoCT" />
-                </el-form-item>
-              </div>
-              <div id="nkc-container-trai-body-line2" class="container-row">
-                <el-form-item label="Ngày">
-                  <el-date-picker
-                    v-model="nhatKyChung.chungTu.ngay"
-                    type="date"
-                    placeholder="Chọn ngày"
-                    format="dd/MM/yyyy"
-                    value-format="dd/MM/yyyy"
-                  />
-                </el-form-item>
-                <el-checkbox v-model="nhatKyChung.chungTu.hienSoChungTu"
-                  >Hiện số chứng từ</el-checkbox
-                >
-                <el-checkbox
-                  v-model="nhatKyChung.thongTinKhachHang.hachToanNgoaiTe"
-                  >Hạch toán ngoại tệ</el-checkbox
-                >
-              </div>
-              <div id="nkc-container-trai-body-line3" class="container-row">
-                <el-form-item label="Nội dung" style="flex: 1">
-                  <el-input
-                    v-model="nhatKyChung.chungTu.noiDung"
-                    placeholder="Điền vào nội dung"
-                  />
-                </el-form-item>
-              </div>
-              <div id="nkc-container-trai-body-line4" class="container-row">
-                <el-form-item label="Khách hàng" style="flex-grow: 1">
-                  <el-input v-model="nhatKyChung.chungTu.khachHang" disabled/>
-                </el-form-item>
-                <el-form-item class="center-btn" label-width="20px">
-                  <el-button size="mini" type="primary" @click="openPopupKhachHang"
-                    >...</el-button
-                  >
-                </el-form-item>
+  <div class="container">
+    <div class="panel-wrapper">
+      <div class="panel-label">Thông tin chứng từ</div>
+      <!-- BÊN TRÁI -->
+      <div class="left-panel">
+        <!-- Dòng 1 -->
+        <el-row :gutter="10">
+          <el-col :span="12">
+            <floating-input v-model="nhatKyChung.chungTu.sttgs" label="STT GS" />
+          </el-col>
+          <el-col :span="12">
+            <floating-input v-model="nhatKyChung.chungTu.kyHieuSoCT" label="Ký hiệu - Số CT" />
+          </el-col>
+        </el-row>
 
-                <el-form-item label="Nhà cung cấp" style="flex-grow: 1">
-                  <el-input
-                    v-model="nhatKyChung.thongTinKhachHang.nhaCungCap"
-                    placeholder="Điền vào nhà cung cấp"
-                    disabled
-                  />
-                </el-form-item>
-                <el-form-item class="center-btn" label-width="20px">
-                  <el-button size="mini" type="primary" @click="openPopupNhaCungCap"
-                    >...</el-button
-                  >
-                </el-form-item>
-              </div>
-            </div>
-          </el-card>
-        </div>
-        <div id="nkc-container-phai">
-          <el-card class="box-card">
-            <div slot="header" class="clearfix">
-              <span>Thông tin khách hàng</span>
-            </div>
-            <div id="nkc-container-phai-body">
-              <div id="nkc-container-phia-body-line1" class="container-row">
-                <el-form-item label="Mã số thuế">
-                  <el-input
-                    v-model="nhatKyChung.thongTinKhachHang.maSoThue"
-                    placeholder="Điền vào mã số thuế"
-                    maxlength=20
-                    style="min-width: 100px;"
-                  />
-                </el-form-item>
-                <el-form-item label="Tên đơn vị" style="flex-grow: 1">
-                  <el-input
-                    v-model="nhatKyChung.thongTinKhachHang.tenDonVi"
-                    placeholder="Điền vào tên đơn vị"
-                  />
-                </el-form-item>
-              </div>
-              <div id="nkc-container-phia-body-line2" class="container-row">
-                <el-form-item label="Địa chỉ" style="flex-grow: 1">
-                  <el-input
-                    v-model="nhatKyChung.thongTinKhachHang.diaChi"
-                    placeholder="Điền vào địa chỉ"
-                  />
-                </el-form-item>
-                <el-form-item label="Điện thoại">
-                  <el-input
-                    v-model="nhatKyChung.thongTinKhachHang.dienThoai"
-                    placeholder="Điền vào điện thoại"
-                    maxlength=10
-                    style="min-width: 80px;"
-                  />
-                </el-form-item>
-              </div>
-              <div id="nkc-container-phia-body-line3" class="container-row">
-                <el-form-item label="Số tài khoản">
-                  <el-input
-                    v-model="nhatKyChung.thongTinKhachHang.soTaiKhoan"
-                    placeholder="Điền vào số tài khoản"
-                    disabled
-                  />
-                </el-form-item>
-                <el-form-item class="center-btn" label-width="20px">
-                  <el-button size="mini" type="primary" @click="openPopupTaiKhoanNganHang"
-                    >...</el-button
-                  >
-                </el-form-item>
-                <el-form-item label="Ngân hàng" style="flex-grow: 1">
-                  <el-input
-                    v-model="nhatKyChung.thongTinKhachHang.nganHang"
-                    placeholder="Điền vào ngân hàng"
-                    disabled
-                  />
-                </el-form-item>
-              </div>
-              <div id="nkc-container-phia-body-line4" class="container-row">
-                <el-form-item label="Hình thức TT">
-                  <el-select
-                    v-model="nhatKyChung.thongTinKhachHang.hinhThucTT"
-                    placeholder="Chọn hình thức thanh toán"
-                    clearable
-                  >
-                    <el-option
-                      v-for="item in lstHinhThucTT"
-                      :key="item.ma_httt"
-                      :label="item.ten_httt"
-                      :value="item.ma_httt"
-                    />
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="Người giao dịch" style="flex-grow: 1">
-                  <el-input
-                    v-model="nhatKyChung.thongTinKhachHang.tenNguoiGiaoDich"
-                    placeholder="Điền vào người giao dịch"
-                    disabled
-                  />
-                </el-form-item>
-                <el-form-item class="center-btn" label-width="20px">
-                  <el-button size="mini" type="primary" @click="openPopupNguoiGiaoDich"
-                    >...</el-button
-                  >
-                </el-form-item>
-              </div>
-            </div>
-          </el-card>
-        </div>
+        <!-- Dòng 2 -->
+        <el-row :gutter="10" class="row-margin">
+          <el-col :span="8">
+            <floating-label-date-picker v-model="nhatKyChung.chungTu.ngay" type="date" label="Ngày" format="dd/MM/yyyy" value-format="dd/MM/yyyy" style="width: 100%;" />
+          </el-col>
+          <el-col :span="8" class="checkbox-middle">
+            <el-checkbox v-model="nhatKyChung.chungTu.hienSoChungTu">Hiện số chứng từ</el-checkbox>
+          </el-col>
+          <el-col :span="8" class="checkbox-middle">
+            <el-checkbox v-model="nhatKyChung.thongTinKhachHang.hachToanNgoaiTe">Hạch toán ngoại tệ</el-checkbox>
+          </el-col>
+        </el-row>
+
+        <!-- Dòng 3 -->
+        <el-row class="row-margin">
+          <el-col :span="24">
+            <floating-input v-model="nhatKyChung.chungTu.noiDung" label="Nội dung" :title="nhatKyChung.chungTu.noiDung"/>
+          </el-col>
+        </el-row>
+
+        <!-- Dòng 4 -->
+        <el-row :gutter="10" class="row-margin">
+          <el-col :span="8">
+            <floating-input v-model="nhatKyChung.chungTu.khachHang" label="Khách hàng" />
+          </el-col>
+          <el-col :span="2" class="input-button-group">
+            <el-button size="mini" type="info" icon="el-icon-more" class="align-button" @click="openPopupKhachHang"/>
+          </el-col>
+          <el-col :span="8">
+            <floating-input v-model="nhatKyChung.thongTinKhachHang.nhaCungCap" label="Nhà cung cấp" />
+          </el-col>
+          <el-col :span="2" class="input-button-group">
+            <el-button size="mini" type="info" icon="el-icon-more" class="align-button" @click="openPopupNhaCungCap" />
+          </el-col>
+        </el-row>
       </div>
-    </el-form>
+    </div>
+
+    <!-- BÊN PHẢI -->
+    <div class="panel-wrapper">
+      <div class="panel-label">Thông tin khách hàng</div>
+      <div class="right-panel">
+        <!-- Dòng 1 -->
+        <el-row :gutter="10">
+          <el-col :span="6">
+            <floating-input v-model="nhatKyChung.thongTinKhachHang.maSoThue" label="Mã số thuế" />
+          </el-col>
+          <el-col :span="2" class="input-button-group">
+            <el-button type="primary" icon="el-icon-check" class="align-button" @click="checkMst" />
+          </el-col>
+          <el-col :span="16">
+            <floating-input v-model="nhatKyChung.thongTinKhachHang.tenDonVi" label="Tên đơn vị" :title="nhatKyChung.thongTinKhachHang.tenDonVi"/>
+          </el-col>
+        </el-row>
+
+        <!-- Dòng 2 -->
+        <el-row :gutter="10" class="row-margin">
+          <el-col :span="14">
+            <floating-input v-model="nhatKyChung.thongTinKhachHang.diaChi" label="Địa chỉ" :title="nhatKyChung.thongTinKhachHang.diaChi"/>
+          </el-col>
+          <el-col :span="10">
+            <floating-input v-model="nhatKyChung.thongTinKhachHang.dienThoai" label="Số điện thoại" />
+          </el-col>
+        </el-row>
+
+        <!-- Dòng 3 -->
+        <el-row :gutter="10" class="row-margin">
+          <el-col :span="8">
+            <floating-input v-model="nhatKyChung.thongTinKhachHang.soTaiKhoan" label="Số tài khoản" />
+          </el-col>
+          <el-col :span="2" class="input-button-group">
+            <el-button size="mini" type="info" icon="el-icon-more" class="align-button" @click="openPopupTaiKhoanNganHang" />
+          </el-col>
+          <el-col :span="14">
+            <floating-input v-model="nhatKyChung.thongTinKhachHang.nganHang" label="Ngân hàng" :title="nhatKyChung.thongTinKhachHang.nganHang" />
+          </el-col>
+        </el-row>
+
+        <!-- Dòng 4 -->
+        <el-row :gutter="10" class="row-margin">
+          <el-col :span="10">
+            <floating-label-select v-model="nhatKyChung.thongTinKhachHang.hinhThucTT" placeholder="Chọn" label="Hình thức thanh toán">
+              <el-option label="Tiền mặt" value="tienmat" />
+              <el-option label="Chuyển khoản" value="ck" />
+            </floating-label-select>
+          </el-col>
+          <el-col :span="10">
+            <floating-input v-model="nhatKyChung.thongTinKhachHang.tenNguoiGiaoDich" label="Người giao dịch" :title="nhatKyChung.thongTinKhachHang.tenNguoiGiaoDich" />
+          </el-col>
+          <el-col :span="2" class="input-button-group">
+            <el-button size="mini" type="info" icon="el-icon-more" class="align-button" @click="openPopupNguoiGiaoDich" />
+          </el-col>
+        </el-row>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import FloatingInput from "@/components/FloatingInput";
+import FloatingLabelSelect from "@/components/FloatingLabelSelect";
+import FloatingLabelDatePicker from "@/components/FloatingLabelDatePicker";
+
 import { mapState, mapActions } from "vuex";
 
 export default {
   name: "NhatKyChung",
-  components: {},
+  components: { FloatingInput, FloatingLabelSelect, FloatingLabelDatePicker },
   props: ["popupRef"],
   data() {
     return {
@@ -292,6 +227,48 @@ export default {
     handleSelect(row) {
       console.log(row);
     },
+    async checkMst() {
+      const mstCanTim = (this.nhatKyChung?.thongTinKhachHang?.maSoThue || '').trim();
+      if (!mstCanTim) {
+        this.$message.warning('Vui lòng nhập mã số thuế cần kiểm tra.');
+        return;
+      }
+
+      // Tìm trong lstKhachHang
+      const khachHang = this.lstKhachHang.find(item => item.mst_kh_ncc === mstCanTim);
+
+      if (khachHang) {
+        this.$message.success('Tìm thấy trong danh sách khách hàng.');
+        console.log('Thông tin khách hàng:', khachHang);
+        this.updateMultipleNhatKyChung([
+          { path: "chungTu.khachHang", value: khachHang.id },
+          { path: "thongTinKhachHang.tenDonVi", value: khachHang.ten_congty },
+          { path: "thongTinKhachHang.diaChi", value: khachHang.dia_chi },
+          { path: "thongTinKhachHang.dienThoai", value: khachHang.dien_thoai },
+          { path: "thongTinKhachHang.email", value: khachHang.email },
+        ]);
+        return;
+      }
+
+      // Nếu không tìm thấy, tìm tiếp trong lstNhaCungCap
+      const nhaCungCap = this.lstNhaCungCap.find(item => item.mst_kh_ncc === mstCanTim);
+
+      if (nhaCungCap) {
+        this.$message.success('Tìm thấy trong danh sách nhà cung cấp.');
+        console.log('Thông tin nhà cung cấp:', nhaCungCap);
+        this.updateMultipleNhatKyChung([
+          { path: "thongTinKhachHang.nhaCungCap", value: nhaCungCap.id },
+          { path: "thongTinKhachHang.tenDonVi", value: nhaCungCap.ten_congty },
+          { path: "thongTinKhachHang.diaChi", value: nhaCungCap.dia_chi },
+          { path: "thongTinKhachHang.dienThoai", value: nhaCungCap.dien_thoai },
+          { path: "thongTinKhachHang.email", value: nhaCungCap.email },
+        ]);
+        return;
+      }
+
+      // Không tìm thấy ở cả 2
+      this.$message.error('Không tìm thấy mã số thuế trong danh sách khách hàng hoặc nhà cung cấp.');
+    },
     async openPopupKhachHang() {
       if (this.popupRef) {
         const result = await this.popupRef.openPopup({
@@ -382,22 +359,73 @@ export default {
 };
 </script>
 
-<style>
-#nkc-container {
+<style scoped>
+.container {
   display: flex;
-  flex-direction: row; /* Xếp các div theo chiều ngang */
-  height: 100%; /* Chiếm toàn bộ chiều cao của parent */
-  width: 100%; /* Chiếm toàn bộ chiều rộng của parent */
+  gap: 20px;
+  padding: 15px;
 }
 
-#nkc-container-trai {
-  flex: 1; /* Chiếm một phần không gian (có thể điều chỉnh) */
-  color: white;
-  padding: 10px;
+.panel-wrapper {
+  position: relative;
+  flex: 1;
+  margin-bottom: 0px;
 }
 
-#nkc-container-phai {
-  flex: 1; /* Chiếm một phần không gian (có thể điều chỉnh) */
-  padding: 10px;
+/* Label nổi trên border */
+.panel-label {
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  background: #fafafa;
+  padding: 0 8px;
+  font-size: 14px;
+  color: #409EFF;
+  font-weight: bold;
+  z-index: 1;
+}
+
+/* Khung chính */
+.left-panel,
+.right-panel {
+  border: 1px solid #dcdfe6;
+  border-radius: 6px;
+  background-color: #fafafa;
+  padding: 20px;
+  padding-top: 30px; /* chừa chỗ cho label nổi */
+  min-height: 200px;
+}
+
+/* Giãn cách giữa các dòng */
+.row-margin {
+  margin-top: 15px;
+}
+
+/* Căn giữa button so với input */
+.input-button-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Điều chỉnh lại chiều cao button cho khớp input */
+.align-button {
+  height: 36px;
+  padding: 0 10px;
+  font-size: 16px;
+}
+
+/* Cho el-form-item style "top" label để label combobox giống floating */
+::v-deep(.el-form-item__label) {
+  font-size: 13px;
+  color: #909399;
+}
+
+.checkbox-middle {
+  display: flex;
+  align-items: center; /* căn giữa theo chiều dọc */
+  height: 100%; /* đảm bảo phần tử con được căn giữa theo chiều cao */
+  padding-top: 8px;
 }
 </style>
+

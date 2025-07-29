@@ -289,6 +289,16 @@ export const asyncRoutes = [
           noCache: true,
         },
       },
+      {
+        path: "test",
+        component: () => import("@/views/test/index"),
+        name: "testview",
+        meta: {
+          title: "Test view",
+          icon: "documentation",
+          noCache: true,
+        },
+      },
     ],
   },
   // {

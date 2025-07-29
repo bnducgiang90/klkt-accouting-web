@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height: 100%;">
     <TableData
       :columns="columns"
       :data="hachToanData"
@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import TableData from "../../../components/TableData";
+import TableData from "@/components/TableData";
 import { mapState, mapActions } from "vuex";
 
 export default {
@@ -123,7 +123,7 @@ export default {
         {
           prop: "dongChungTu",
           label: "Dòng chứng từ",
-          minWidth: "110px",
+          minWidth: "120px",
           align: "center",
           disableEditing: true,
           identity: true,
@@ -131,7 +131,7 @@ export default {
         {
           prop: "tkNo",
           label: "TK Nợ",
-          minWidth: "100px",
+          minWidth: "80px",
           align: "center",
           onSpaceKey: true,
           regexPattern: "^[0-9]*$",
@@ -141,7 +141,7 @@ export default {
         {
           prop: "chiTietNo",
           label: "Chi tiết nợ",
-          minWidth: "120px",
+          minWidth: "150px",
           align: "center",
           regexPattern: "^[0-9]*$",
           maxLength: 15,
@@ -150,7 +150,7 @@ export default {
         {
           prop: "tkCo",
           label: "TK Có",
-          minWidth: "100px",
+          minWidth: "80px",
           align: "center",
           onSpaceKey: true,
           regexPattern: "^[0-9]*$",
@@ -160,7 +160,7 @@ export default {
         {
           prop: "chiTietCo",
           label: "Chi tiết có",
-          minWidth: "120px",
+          minWidth: "150px",
           align: "center",
           regexPattern: "^[0-9]*$",
           maxLength: 15,
@@ -179,21 +179,21 @@ export default {
         {
           prop: "thoiHanThanhToan",
           label: "Thời hạn thanh toán",
-          minWidth: "200px",
+          minWidth: "150px",
           align: "right",
           format: "date",
         },
         {
           prop: "thoiHanChietKhau",
           label: "Thời hạn chiết khấu",
-          minWidth: "200px",
+          minWidth: "150px",
           align: "right",
           format: "date",
         },
         {
           prop: "kyHieuSoHoaDon",
           label: "Ký hiệu số Hóa đơn",
-          minWidth: "180px",
+          minWidth: "150px",
           regexPattern: "^[a-zA-Z0-9-_]+$",
           maxLength: 20,
           errorMessage: "Chỉ nhập chữ, số, dấu - hoặc _!",
@@ -289,34 +289,71 @@ export default {
               });
             }
           } else {
-            // nếu khác show popup danh mục tài khoản & tài khoản chi tiết
-            const result = await this.popupRef.openPopup({
-              title: "DANH MỤC TÀI KHOẢN",
-              width: "50%",
-              columns: this.columnTaiKhoanPopupTable,
-              data: this.lstTaiKhoan,
-            });
-            if (result) {
-              // this.selectedRow = result
-              await this.updateHachToanCell({
-                dongChungTu: data.row.dongChungTu, // Số dòng cần update
-                column: data.col.prop, // Cột cần update
-                value: result.sohieutk, // Giá trị mới
-              });
-              await this.loadTaiKhoanChiTiet(result.sohieutk); // load danh sách toàn khoản chi tiết
-              // show popup
-              const result2 = await this.popupRef.openPopup({
-                title: "DANH MỤC TÀI KHOẢN CHI TIẾT",
-                width: "50%",
-                columns: this.columnTaiKhoanChiTietPopupTable,
-                data: this.lstTaiKhoanChiTiet,
-              });
-              if (result2) {
-                this.updateHachToanCell({
-                  dongChungTu: data.row.dongChungTu, // Số dòng cần update
-                  column: data.col.prop === "tkNo" ? "chiTietNo" : "chiTietCo", // Cột cần update
-                  value: result2.ma_chitiet, // Giá trị mới
+            const input_sohieutk = data.row[data.col.prop];
+            const dongTaiKhoan = this.lstTaiKhoan.find(item => item.sohieutk === input_sohieutk);
+
+            if (dongTaiKhoan) {
+              // Tìm thấy -> kiểm tra xem tài khoản này có tài khoản chi tiết hay không.
+              if (dongTaiKhoan.co_chitiet) {
+                console.log('co chi tiet ')
+                // Trường hợp cap_chitet bằng 0 => CÓ tài khoản con
+                await this.loadTaiKhoanChiTiet(dongTaiKhoan.sohieutk); // load danh sách toàn khoản chi tiết
+                // show popup
+                const result2 = await this.popupRef.openPopup({
+                  title: "DANH MỤC TÀI KHOẢN CHI TIẾT",
+                  width: "50%",
+                  columns: this.columnTaiKhoanChiTietPopupTable,
+                  data: this.lstTaiKhoanChiTiet,
                 });
+                if (result2) {
+                  this.updateHachToanCell({
+                    dongChungTu: data.row.dongChungTu, // Số dòng cần update
+                    column: data.col.prop === "tkNo" ? "chiTietNo" : "chiTietCo", // Cột cần update
+                    value: result2.ma_chitiet, // Giá trị mới
+                  });
+                }
+              }
+            } else {
+              // Không tìm thấy tài khoản NSD nhập vào
+              // Bật ra popup để chọn danh sách tài khoản
+              const result = await this.popupRef.openPopup({
+                title: "DANH MỤC TÀI KHOẢN",
+                width: "50%",
+                columns: this.columnTaiKhoanPopupTable,
+                data: this.lstTaiKhoan,
+              });
+              if (result) {
+                // this.selectedRow = result
+                await this.updateHachToanCell({
+                  dongChungTu: data.row.dongChungTu, // Số dòng cần update
+                  column: data.col.prop, // Cột cần update
+                  value: result.sohieutk, // Giá trị mới
+                });
+
+                // kiểm tra xem tài khoản chọn có phải là tài khoản cha hay không.
+                // Nếu là tài khoản cha => Bật ra popup chọn tài khoản chi tiết
+                if (result.co_chitiet) {
+                  // Trường hợp cap_chitet bằng 0 => CÓ tài khoản con
+                  await this.loadTaiKhoanChiTiet(result.sohieutk); // load danh sách toàn khoản chi tiết
+                  // show popup
+                  const result2 = await this.popupRef.openPopup({
+                    title: "DANH MỤC TÀI KHOẢN CHI TIẾT",
+                    width: "50%",
+                    columns: this.columnTaiKhoanChiTietPopupTable,
+                    data: this.lstTaiKhoanChiTiet,
+                  });
+                  if (result2) {
+                    this.updateHachToanCell({
+                      dongChungTu: data.row.dongChungTu, // Số dòng cần update
+                      column: data.col.prop === "tkNo" ? "chiTietNo" : "chiTietCo", // Cột cần update
+                      value: result2.ma_chitiet, // Giá trị mới
+                    });
+                  }
+                } else { // Nếu ko phải là tài khoản cha => stop.
+                  // Trường hợp cap_chitet khác 0 hoặc result không tồn tại
+                  console.log('cap_chitet ≠ 0 hoặc result không tồn tại');
+                }
+                
               }
             }
           }

@@ -5,7 +5,7 @@
       :data="filteredData"
       border
       class="custom-table"
-      style="width: 100%"
+      
       :header-cell-style="{ textAlign: 'center' }"
       :row-class-name="tableRowClass"
     >
@@ -146,14 +146,14 @@
             <el-button size="mini" type="success" @click="saveRow(scope.row)"
               >Lưu</el-button
             >
-            <el-button size="mini" ype="danger" @click="cancel(scope.row)">Hủy</el-button>
+            <el-button size="mini" type="danger" @click="cancel(scope.row)">Hủy</el-button>
           </template>
         </template>
       </el-table-column>
     </el-table>
     <div class="button-container">
       <el-button size="mini" type="primary" class="add-button" @click="addRow"
-        >Chèn</el-button
+        >Thêm dòng</el-button
       >
     </div>
   </div>
@@ -332,5 +332,9 @@ export default {
 .error-input {
   border: 1px solid red !important;
   background-color: #ffe6e6 !important; /* Màu nền nhạt để dễ nhận diện */
+}
+
+.el-table__footer-wrapper {
+  width: 100% !important;
 }
 </style>

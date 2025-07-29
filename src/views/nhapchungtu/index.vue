@@ -1,53 +1,33 @@
 <template>
   <div id="page-container">
-    <NhatKyChung :popup-ref="popupRef" />
-    <el-tabs
-      id="content-box"
-      v-model="activeTab"
-      type="border-card"
-      @tab-click="handleTabClick"
-    >
-      <!-- <el-tab-pane label="Nhật ký chung" name="TAB_NHAT_KY_CHUNG">
-        <NhatKyChung :popup-ref="popupRef" />
-      </el-tab-pane> -->
-      <el-tab-pane v-if="isHachToan" label="Hạch toán" name="TAB_HACH_TOAN">
-        <HachToan :popup-ref="popupRef" />
-      </el-tab-pane>
-      <el-tab-pane
-        v-if="isNhapVatTu"
-        label="Nhập vật tư"
-        name="TAB_NHAP_VAT_TU"
-      >
-        <NhapVatTu :popup-ref="popupRef" />
-      </el-tab-pane>
-      <el-tab-pane
-        v-if="isXuatVatTu"
-        label="Xuất vật tư"
-        name="TAB_XUAT_VAT_TU"
-      >
-        <XuatVatTu :popup-ref="popupRef" />
-      </el-tab-pane>
-      <el-tab-pane
-        v-if="isHoaDonMuaVao"
-        label="Hóa đơn mua vào"
-        name="TAB_HOA_DON_MUA_VAO"
-      >
-        <HoaDonMuaVao :popup-ref="popupRef" />
-      </el-tab-pane>
-      <el-tab-pane
-        v-if="isHoaDonBanRa"
-        label="Hóa đơn bán ra"
-        name="TAB_HOA_DON_BAN_RA"
-      >
-        <HoaDonBanRa :popup-ref="popupRef" />
-      </el-tab-pane>
-    </el-tabs>
-    <el-card id="control-box" class="border-card">
-      <div class="button-container">
-        <el-button>In chứng từ</el-button>
-        <el-button @click="sendData">Ghi</el-button>
+    <div class="grp-nhat-ky-chung">
+      <NhatKyChung :popup-ref="popupRef" />
+    </div>
+    
+    <div class="grp-table">
+      <HachToan v-if="activeTab === 'TAB_HACH_TOAN'" :popup-ref="popupRef" />
+      <NhapVatTu v-if="activeTab === 'TAB_NHAP_VAT_TU'" :popup-ref="popupRef" />
+      <XuatVatTu v-if="activeTab === 'TAB_XUAT_VAT_TU'" :popup-ref="popupRef" />
+      <HoaDonMuaVao v-if="activeTab === 'TAB_HOA_DON_MUA_VAO'"  :popup-ref="popupRef" />
+      <HoaDonBanRa v-if="activeTab === 'TAB_HOA_DON_BAN_RA'"  :popup-ref="popupRef" />
+    </div>
+
+    <div class="grp-control">
+      <div class="grp-control-tab">
+        <span v-if="isHachToan" @click="activeTab = 'TAB_HACH_TOAN'"  :class="{ 'active-tab': activeTab === 'TAB_HACH_TOAN' }">Hạch toán</span>
+        <span v-if="isNhapVatTu" @click="activeTab = 'TAB_NHAP_VAT_TU'" :class="{ 'active-tab': activeTab === 'TAB_NHAP_VAT_TU' }">Nhập vật tư</span>
+        <span v-if="isXuatVatTu" @click="activeTab = 'TAB_XUAT_VAT_TU'" :class="{ 'active-tab': activeTab === 'TAB_XUAT_VAT_TU' }">Xuất vật tư</span>
+        <span v-if="isHoaDonMuaVao" @click="activeTab = 'TAB_HOA_DON_MUA_VAO'" :class="{ 'active-tab': activeTab === 'TAB_HOA_DON_MUA_VAO' }">Hóa đơn mua vào</span>
+        <span v-if="isHoaDonBanRa" @click="activeTab = 'TAB_HOA_DON_BAN_RA'" :class="{ 'active-tab': activeTab === 'TAB_HOA_DON_BAN_RA' }">Hóa đơn bán ra</span>
       </div>
-    </el-card>
+      <div class="grp-control-button">
+        <span style="color: green; font-weight: bold;">hdr_id: {{ nhatKyChung.chungTu.hdr_id }}</span>
+        <el-divider direction="vertical"></el-divider>
+        <el-button type="info">In chứng từ</el-button>
+        <el-button type="success"  @click="sendData">Ghi</el-button>
+      </div>
+    </div>
+    
     <TablePopup ref="popupRef" />
   </div>
 </template>
@@ -86,6 +66,7 @@ export default {
 
   computed: {
     ...mapState("nhapchungtu", [
+      "nhatKyChung",
       "lstKhachHang",
       "lstNhaCungCap",
       "lstTaiKhoan",
@@ -221,40 +202,77 @@ export default {
 </script>
 
 <style>
-.header-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.container-row {
-  display: flex;
-  gap: 10px; /* Khoảng cách giữa 2 card */
-}
 
 #page-container {
   display: flex;
   flex-direction: column;
-  height: 100%; /* Đảm bảo container chiếm toàn bộ chiều cao của parent */
-  min-height: 100%; /* Đề phòng trường hợp parent không có chiều cao cố định */
+  height: 100vh; /* Hoặc 100% nếu cha đã có chiều cao */
 }
 
-#content-box {
-  flex-grow: 1;
-  overflow: auto;
+/* Phần đầu */
+.grp-nhat-ky-chung {
+  flex: 0 0 auto; /* Không co giãn, không chiếm thêm không gian */
 }
 
-#control-box {
-  width: 100%;
-  position: sticky;
-  bottom: 0;
-  z-index: 100;
+/* Phần giữa */
+.grp-table {
+  flex: 1 1 auto; /* Co giãn để chiếm khoảng giữa */
+  overflow: auto; /* Nếu nội dung dài thì scroll */
 }
 
-.button-container {
+/* Phần dưới */
+.grp-control {
+  flex: 0 0 auto;
   display: flex;
-  justify-content: center;
-  gap: 10px; /* Khoảng cách giữa các nút */
+  justify-content: space-between;
+  /* align-items: center; */
+  /* padding: 10px; */
+  border-top: 1px solid #ccc;
+  background-color: #f8f8f8;
+  height: 87px;
+}
+
+/* Tab bên trái */
+.grp-control-tab {
+  display: flex;
+  gap: 0px; /* khoảng cách giữa các tab */
+}
+
+.grp-control-tab span {
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 0 0 4px 4px; /* Bo góc dưới thay vì trên */
+  background-color: transparent;
+  cursor: pointer;
+  color: #606266;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.grp-control-tab span:hover {
+  background-color: #f5f7fa;
+}
+
+/* Tab đang được chọn */
+.grp-control-tab .active-tab {
+  background-color: #ffffff;
+  border-color: white #dcdfe6 #dcdfe6;
+  border-top: 2px solid white; /* xóa đường viền giữa tab và nội dung */
+  color: #409EFF;
+  font-weight: 600;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1); /* đổ bóng hướng lên trên */
+}
+
+/* Button bên phải */
+.grp-control-button {
+  text-align: right;
+  margin-right: 50px;
+}
+
+
+/* ===== CHỈNH KHOẢNG CÁCH GIỮA CÁC DÒNG - DÒNG TRÊN VS DÒNG DƯỚI */
+.el-form-item {
+    margin-bottom: 8px;
 }
 
 /* ======================MOI THEM============================ */
@@ -286,14 +304,14 @@ export default {
 .table-container th {
   background-color: #f1f5f9;
   font-weight: bold;
-  padding: 10px 14px;
+  padding: 2px 4px;
   border-bottom: 1px solid #e2e8f0;
   color: #334155;
   text-align: left;
 }
 
 .table-container td {
-  padding: 10px 14px;
+  padding: 5px 7px;
   border-bottom: 1px solid #f1f5f9;
   color: #475569;
   vertical-align: middle;
@@ -328,8 +346,8 @@ export default {
 .table-container input {
   border: 1px solid #cbd5e1;
   border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 11px;
+  padding: 2px 4px;
+  font-size: 12px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -339,4 +357,5 @@ export default {
   border-color: #3b82f6;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
+
 </style>
