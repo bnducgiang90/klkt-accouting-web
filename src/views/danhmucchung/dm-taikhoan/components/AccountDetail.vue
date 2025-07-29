@@ -6,8 +6,7 @@
     :before-close="handleClose"
   >
     <div v-if="accountData" class="account-detail-form">
-      <!-- Thông tin chung -->
-      <div class="section-title">Thông tin chung</div>
+      <div class="section-title">Thông tin tài khoản</div>
       <div class="form-row">
         <div class="form-label">MST:</div>
         <div class="form-value">{{ accountData.mst || 'N/A' }}</div>
@@ -16,37 +15,16 @@
       </div>
       <div class="form-row">
         <div class="form-label">Tên tài khoản:</div>
-        <div class="form-value" style="grid-column: span 3;">{{ accountData.ten_tk || 'N/A' }}</div>
+        <div class="form-value">{{ accountData.ten_tk || 'N/A' }}</div>
+        <div class="form-label">Tên tài khoản TA:</div>
+        <div class="form-value">{{ accountData.ten_tk_ta || 'N/A' }}</div>
       </div>
-
-      <!-- Số dư đầu kỳ -->
       <div class="section-title">Số dư đầu kỳ</div>
       <div class="form-row">
         <div class="form-label">Dư nợ đầu kỳ:</div>
         <div class="form-value amount debit">{{ formatCurrency(accountData.du_no_dau_ky) }}</div>
         <div class="form-label">Dư có đầu kỳ:</div>
         <div class="form-value amount credit">{{ formatCurrency(accountData.du_co_dau_ky) }}</div>
-      </div>
-
-      <!-- Thông tin khác -->
-      <div class="section-title">Thông tin khác</div>
-      <div class="form-row">
-        <div class="form-label">Ghi chú:</div>
-        <div class="form-value" style="grid-column: span 3;">{{ accountData.ghi_chu || 'Không có ghi chú' }}</div>
-      </div>
-      <div class="form-row">
-        <div class="form-label">Trạng thái:</div>
-        <div class="form-value">
-          <el-tag :type="accountData.trang_thai === 1 ? 'success' : 'danger'">
-            {{ accountData.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu hóa' }}
-          </el-tag>
-        </div>
-        <div class="form-label">Ngày tạo:</div>
-        <div class="form-value">{{ formatDate(accountData.created_at) }}</div>
-      </div>
-      <div class="form-row">
-        <div class="form-label">Ngày cập nhật:</div>
-        <div class="form-value">{{ formatDate(accountData.updated_at) }}</div>
       </div>
     </div>
     <div v-else class="loading-container">

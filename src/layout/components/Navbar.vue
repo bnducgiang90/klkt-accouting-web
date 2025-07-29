@@ -4,6 +4,11 @@
 
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
+    <span v-if="mst" class="mst-header">
+      <i class="el-icon-s-custom mst-icon"></i>
+      MST: {{ mst }}
+    </span>
+
     <div class="right-menu">
       <template v-if="device!=='mobile'">
         <search id="header-search" class="right-menu-item" />
@@ -17,7 +22,6 @@
         </el-tooltip>
 
       </template>
-
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
@@ -53,6 +57,7 @@ import ErrorLog from '@/components/ErrorLog'
 import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
+import { getUser } from '@/utils/auth'
 
 export default {
   components: {
@@ -68,7 +73,12 @@ export default {
       'sidebar',
       'avatar',
       'device'
-    ])
+    ]),
+    mst() {
+      const user = getUser()
+      return user && user.user && user.user.user 
+        && user.user.user.taxCode ? user.user.user.taxCode : ''
+    }
   },
   methods: {
     toggleSideBar() {
@@ -89,8 +99,12 @@ export default {
   position: relative;
   background: #fff;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
   .hamburger-container {
+    flex: 0 0 auto;
     line-height: 46px;
     height: 100%;
     float: left;
@@ -104,7 +118,8 @@ export default {
   }
 
   .breadcrumb-container {
-    float: left;
+    flex: 1 1 auto;
+    margin-left: 8px;
   }
 
   .errLog-container {
@@ -162,6 +177,36 @@ export default {
         }
       }
     }
+  }
+  .mst-header {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    color: #1976d2;
+    background: #e3f0ff;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 16px;
+    padding: 3px 16px 3px 10px;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.2;
+    letter-spacing: 1px;
+    box-shadow: 0 1px 4px rgba(25, 118, 210, 0.08);
+    border: 1px solid #bbdefb;
+    transition: background 0.2s, color 0.2s;
+    user-select: text;
+  }
+  .mst-header:hover {
+    background: #bbdefb;
+    color: #0d47a1;
+  }
+  .mst-icon {
+    font-size: 18px;
+    margin-right: 6px;
+    color: #1976d2;
+    vertical-align: middle;
   }
 }
 </style>

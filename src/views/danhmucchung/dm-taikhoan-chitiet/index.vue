@@ -29,7 +29,7 @@
           :index="indexMethod"
           align="center"
         />
-        <el-table-column prop="mst" label="MST" width="120" />
+        <el-table-column prop="mst" label="MST" width="120" v-if="false" />
         <el-table-column prop="sohieutk" label="Số hiệu TK" width="120" />
         <el-table-column prop="ma_chitiet" label="Mã chi tiết" width="150" />
         <el-table-column prop="ten_chitiet" label="Tên chi tiết" min-width="200" />
