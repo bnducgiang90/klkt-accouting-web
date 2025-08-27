@@ -66,6 +66,20 @@
               </template>
             </template>
           </el-table-column>
+          <el-table-column label="Vật tư" width="120" align="center">
+            <template slot-scope="scope">
+              <template v-if="!scope.row._isAddRow">
+                <el-button 
+                  type="info" 
+                  size="mini" 
+                  @click="openVatTuDrawer(scope.row)"
+                  style="font-size: 11px; padding: 4px 8px;"
+                >
+                  Vật tư (<span class="vat-tu-count">{{ scope.row.total_vattu || 0 }}</span>)
+                </el-button>
+              </template>
+            </template>
+          </el-table-column>
           <el-table-column label="Action" width="130" align="center" fixed="right">
             <template slot-scope="scope">
               <template v-if="isEditing(scope.row)">
@@ -95,6 +109,193 @@
         />
       </div>
     </el-card>
+
+    <!-- Vật tư Drawer -->
+    <el-drawer
+      :visible.sync="vatTuDrawer.visible"
+      size="70%"
+      @close="closeVatTuDrawer"
+    >
+      <div class="custom-drawer-title">
+        Danh sách vật tư của nhóm <span>{{ vatTuDrawer.ten_nhom }}</span>
+        (<span class="manhom-highlight">{{ vatTuDrawer.ma_nhom }}</span>)
+        - Kho: <span class="makho-highlight">{{ vatTuDrawer.ma_kho }}</span>
+      </div>
+      <div class="drawer-content-padding">
+        <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center; justify-content: space-between;">
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <el-input
+              v-model="vatTuDrawer.searchQuery"
+              placeholder="Nhập mã vật tư hoặc tên vật tư để tìm kiếm"
+              clearable
+              style="width: 300px;"
+              @keyup.enter.native="fetchVatTu"
+            />
+            <el-button type="primary" icon="el-icon-search" @click="fetchVatTu">Tìm kiếm</el-button>
+          </div>
+          <el-button type="success" icon="el-icon-plus" @click="openVatTuForm(false)">Thêm mới</el-button>
+        </div>
+        
+        <el-table
+          :data="vatTuDrawer.materials"
+          border
+          style="width: 100%"
+          v-loading="vatTuDrawer.loading"
+          empty-text="Không có dữ liệu"
+          max-height="400"
+        >
+          <el-table-column prop="ma_vattu" label="Mã vật tư" width="120" />
+          <el-table-column prop="ten_vattu" label="Tên vật tư" min-width="200" />
+          <el-table-column prop="dvt" label="Đơn vị tính" width="100" />
+          <el-table-column prop="luong_dau_ky" label="Lượng đầu kỳ" width="120" align="right">
+            <template slot-scope="scope">
+              {{ formatNumber(scope.row.luong_dau_ky) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="gia_tri_dau_ky" label="Giá trị đầu kỳ" width="130" align="right">
+            <template slot-scope="scope">
+              {{ formatCurrency(scope.row.gia_tri_dau_ky) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="trang_thai" label="Trạng thái" width="100" align="center">
+            <template slot-scope="scope">
+              <el-tag :type="scope.row.trang_thai === 1 ? 'success' : 'danger'">
+                {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu hóa' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="Action" width="200">
+            <template slot-scope="scope">
+              <div class="action-btn-group">
+                <el-button type="primary" size="small" icon="el-icon-edit" @click="openVatTuForm(true, scope.row)">Sửa</el-button>
+                <el-button 
+                  :type="scope.row.trang_thai === 1 ? 'danger' : 'warning'" 
+                  size="small" 
+                  :icon="scope.row.trang_thai === 1 ? 'el-icon-delete' : 'el-icon-check'" 
+                  @click="scope.row.trang_thai === 1 ? handleDisableVatTu(scope.row) : handleEnableVatTu(scope.row)"
+                >
+                  {{ scope.row.trang_thai === 1 ? 'Disable' : 'Enable' }}
+                </el-button>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+        
+        <div style="margin-top: 20px; text-align: right;">
+          <el-pagination
+            background
+            layout="prev, pager, next, jumper"
+            :current-page="vatTuDrawer.pagination.page"
+            :page-size="vatTuDrawer.pagination.pageSize"
+            :total="vatTuDrawer.pagination.total"
+            @current-change="handleVatTuPageChange"
+          />
+        </div>
+
+        <!-- Vật tư Form Inline -->
+        <div v-if="vatTuDrawer.showForm" style="margin-top: 24px; background: #fafbfc; padding: 24px; border-radius: 8px;">
+          <el-form
+            ref="vatTuForm"
+            :model="vatTuDrawer.formData"
+            :rules="vatTuDrawer.rules"
+            label-width="140px"
+            label-position="left"
+          >
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="MST" prop="mst">
+                  <el-input v-model="vatTuDrawer.formData.mst" placeholder="MST" clearable readonly />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Số hiệu TK" prop="sohieutk">
+                  <el-input v-model="vatTuDrawer.formData.sohieutk" placeholder="Số hiệu tài khoản" clearable readonly />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Mã kho" prop="ma_kho">
+                  <el-input v-model="vatTuDrawer.formData.ma_kho" placeholder="Mã kho" clearable readonly />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Mã nhóm" prop="ma_nhom">
+                  <el-input v-model="vatTuDrawer.formData.ma_nhom" placeholder="Mã nhóm" clearable readonly />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Mã vật tư" prop="ma_vattu">
+                  <el-input v-model="vatTuDrawer.formData.ma_vattu" placeholder="Nhập mã vật tư" clearable />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Tên vật tư" prop="ten_vattu">
+                  <el-input v-model="vatTuDrawer.formData.ten_vattu" placeholder="Nhập tên vật tư" clearable />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Đơn vị tính" prop="dvt">
+                  <el-input v-model="vatTuDrawer.formData.dvt" placeholder="Nhập đơn vị tính" clearable />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Năm" prop="nam">
+                  <el-input-number v-model="vatTuDrawer.formData.nam" :min="2000" :max="2100" style="width: 100%" placeholder="Năm" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Lượng đầu kỳ" prop="luong_dau_ky">
+                  <el-input-number v-model="vatTuDrawer.formData.luong_dau_ky" :min="0" style="width: 100%" placeholder="0" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Giá trị đầu kỳ" prop="gia_tri_dau_ky">
+                  <el-input-number v-model="vatTuDrawer.formData.gia_tri_dau_ky" :min="0" style="width: 100%" placeholder="0" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Hệ số quy đổi" prop="he_so_quy_doi">
+                  <el-input-number v-model="vatTuDrawer.formData.he_so_quy_doi" :min="0" style="width: 100%" placeholder="0" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Mã đơn vị quy đổi" prop="ma_don_vi_quy_doi">
+                  <el-input v-model="vatTuDrawer.formData.ma_don_vi_quy_doi" placeholder="Nhập mã đơn vị quy đổi" clearable />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Trạng thái" prop="trang_thai">
+                  <el-switch v-model="vatTuDrawer.formData.trang_thai" :active-value="1" :inactive-value="0" active-text="Hoạt động" inactive-text="Ngừng hoạt động" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-form-item label="Vị trí lưu trữ" prop="vi_tri_luu_tru">
+              <el-input v-model="vatTuDrawer.formData.vi_tri_luu_tru" placeholder="Nhập vị trí lưu trữ" clearable />
+            </el-form-item>
+            <el-form-item label="Ghi chú" prop="ghi_chu">
+              <el-input v-model="vatTuDrawer.formData.ghi_chu" type="textarea" :rows="2" placeholder="Nhập ghi chú (nếu có)" />
+            </el-form-item>
+          </el-form>
+          <div style="text-align: left; margin-top: 16px;">
+            <el-button @click="closeVatTuForm">Hủy</el-button>
+            <el-button type="primary" @click="submitVatTuForm" :loading="vatTuDrawer.formLoading">
+              {{ vatTuDrawer.isEdit ? 'Cập nhật' : 'Thêm mới' }}
+            </el-button>
+          </div>
+        </div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 <script>
@@ -120,7 +321,55 @@ export default {
       editingKey: null,
       editForm: {},
       editMode: '', // 'add' | 'edit'
-      isAdding: false
+      isAdding: false,
+      vatTuDrawer: {
+        visible: false,
+        ten_nhom: '',
+        ma_nhom: '',
+        ma_kho: '',
+        mst: '',
+        sohieutk: '',
+        searchQuery: '',
+        materials: [],
+        loading: false,
+        pagination: {
+          page: 1,
+          pageSize: 10,
+          total: 0,
+        },
+        isEdit: false,
+        currentRecord: {},
+        showForm: false,
+        formData: {
+          mst: '',
+          sohieutk: '',
+          ma_kho: '',
+          ma_nhom: '',
+          ma_vattu: '',
+          ten_vattu: '',
+          dvt: '',
+          luong_dau_ky: 0,
+          gia_tri_dau_ky: 0,
+          he_so_quy_doi: 0,
+          ma_don_vi_quy_doi: '',
+          vi_tri_luu_tru: '',
+          nam: new Date().getFullYear(),
+          ghi_chu: '',
+          trang_thai: 1
+        },
+        rules: {
+          ma_vattu: [
+            { required: true, message: 'Vui lòng nhập mã vật tư', trigger: 'blur' }
+          ],
+          ten_vattu: [
+            { required: true, message: 'Vui lòng nhập tên vật tư', trigger: 'blur' }
+          ],
+          dvt: [
+            { required: true, message: 'Vui lòng nhập đơn vị tính', trigger: 'blur' }
+          ]
+        },
+        formLoading: false
+      }
     }
   },
   computed: {
@@ -146,6 +395,14 @@ export default {
       }
     }
   },
+  mounted() {
+    // Cập nhật số lượng vật tư khi component được mount
+    // if (this.selectedKho && this.nhomList.length > 0) {
+    //   this.nhomList.forEach(nhom => {
+    //     this.updateVatTuCount(nhom);
+    //   });
+    // }
+  },
   methods: {
     async fetchNhomHang() {
       if (!this.selectedKho) return
@@ -164,6 +421,13 @@ export default {
         const res = await service.post(`${baseUrl}/dm/search`, payload)
         this.nhomList = (res.data && res.data.items) ? res.data.items : []
         this.pagination.total = (res.data && res.data.total) ? res.data.total : 0
+        
+        // Cập nhật số lượng vật tư cho mỗi nhóm hàng
+        // if (this.nhomList.length > 0) {
+        //   this.nhomList.forEach(nhom => {
+        //     this.updateVatTuCount(nhom);
+        //   });
+        // }
       } catch (e) {
         this.nhomList = []
         this.pagination.total = 0
@@ -219,6 +483,11 @@ export default {
         this.$message.success(this.editMode === 'add' ? 'Thêm mới thành công' : 'Cập nhật thành công')
         this.cancelEdit()
         this.fetchNhomHang()
+        
+        // // Cập nhật số lượng vật tư cho nhóm hàng mới/sửa
+        // if (this.editMode === 'add') {
+        //   this.updateVatTuCount(this.editForm);
+        // }
       } catch (e) {
         this.$message.error('Lỗi lưu nhóm hàng')
       }
@@ -251,6 +520,9 @@ export default {
         await service.post(`${baseUrl}/dm/delete`, payload)
         this.$message.success('Xóa thành công')
         this.fetchNhomHang()
+        
+        // Cập nhật số lượng vật tư sau khi xóa nhóm hàng
+        // this.updateVatTuCount(row);
       } catch (e) {
         if (e !== 'cancel') this.$message.error('Lỗi xóa nhóm hàng')
       }
@@ -266,6 +538,259 @@ export default {
           openAdd: 1
         }
       });
+    },
+
+    // Vật tư methods
+    openVatTuDrawer(row) {
+      this.vatTuDrawer.visible = true;
+      this.vatTuDrawer.ten_nhom = row.ten_nhom;
+      this.vatTuDrawer.ma_nhom = row.ma_nhom;
+      this.vatTuDrawer.ma_kho = row.ma_kho;
+      this.vatTuDrawer.mst = row.mst;
+      this.vatTuDrawer.sohieutk = row.sohieutk;
+      this.vatTuDrawer.searchQuery = '';
+      this.vatTuDrawer.pagination.page = 1;
+      this.vatTuDrawer.showForm = false;
+      this.fetchVatTu();
+      // this.updateVatTuCount(row);
+    },
+
+    closeVatTuDrawer() {
+      this.vatTuDrawer.visible = false;
+      this.vatTuDrawer.showForm = false;
+    },
+
+    async fetchVatTu() {
+      this.vatTuDrawer.loading = true;
+      try {
+        const payload = {
+          table_code: 'tbldmvattu_hanghoa',
+          mst: this.vatTuDrawer.mst,
+          sohieutk: this.vatTuDrawer.sohieutk,
+          ma_kho: this.vatTuDrawer.ma_kho,
+          ma_nhom: this.vatTuDrawer.ma_nhom,
+          ma_vattu: this.vatTuDrawer.searchQuery || undefined,
+          ten_vattu: this.vatTuDrawer.searchQuery || undefined,
+          page: this.vatTuDrawer.pagination.page,
+          pageSize: this.vatTuDrawer.pagination.pageSize,
+        };
+        const res = await service.post(`${baseUrl}/dm/search`, payload);
+        this.vatTuDrawer.materials = (res.data && res.data.items) ? res.data.items : [];
+        this.vatTuDrawer.pagination.total = (res.data && res.data.total) ? res.data.total : 0;
+      } catch (e) {
+        this.vatTuDrawer.materials = [];
+        this.vatTuDrawer.pagination.total = 0;
+        this.$message.error('Lỗi tải danh sách vật tư');
+      } finally {
+        this.vatTuDrawer.loading = false;
+      }
+    },
+
+    handleVatTuPageChange(page) {
+      this.vatTuDrawer.pagination.page = page;
+      this.fetchVatTu();
+    },
+
+    openVatTuForm(isEdit, row = {}) {
+      this.vatTuDrawer.isEdit = isEdit;
+      if (isEdit && row) {
+        this.vatTuDrawer.formData = {
+          mst: row.mst || '',
+          sohieutk: row.sohieutk || '',
+          ma_kho: row.ma_kho || '',
+          ma_nhom: row.ma_nhom || '',
+          ma_vattu: row.ma_vattu || '',
+          ten_vattu: row.ten_vattu || '',
+          dvt: row.dvt || '',
+          luong_dau_ky: row.luong_dau_ky || 0,
+          gia_tri_dau_ky: row.gia_tri_dau_ky || 0,
+          he_so_quy_doi: row.he_so_quy_doi || 0,
+          ma_don_vi_quy_doi: row.ma_don_vi_quy_doi || '',
+          vi_tri_luu_tru: row.vi_tri_luu_tru || '',
+          nam: row.nam || new Date().getFullYear(),
+          ghi_chu: row.ghi_chu || '',
+          trang_thai: row.trang_thai != null ? row.trang_thai : 1
+        };
+      } else {
+        this.vatTuDrawer.formData = {
+          mst: this.vatTuDrawer.mst || '',
+          sohieutk: this.vatTuDrawer.sohieutk || '',
+          ma_kho: this.vatTuDrawer.ma_kho || '',
+          ma_nhom: this.vatTuDrawer.ma_nhom || '',
+          ma_vattu: '',
+          ten_vattu: '',
+          dvt: '',
+          luong_dau_ky: 0,
+          gia_tri_dau_ky: 0,
+          he_so_quy_doi: 0,
+          ma_don_vi_quy_doi: '',
+          vi_tri_luu_tru: '',
+          nam: new Date().getFullYear(),
+          ghi_chu: '',
+          trang_thai: 1
+        };
+      }
+      this.vatTuDrawer.showForm = true;
+    },
+
+    closeVatTuForm() {
+      this.vatTuDrawer.showForm = false;
+      this.$refs.vatTuForm && this.$refs.vatTuForm.resetFields();
+    },
+
+    async submitVatTuForm() {
+      this.$refs.vatTuForm.validate(async (valid) => {
+        if (!valid) return;
+        this.vatTuDrawer.formLoading = true;
+        try {
+          const payload = {
+            table_code: 'tbldmvattu_hanghoa',
+            ...this.vatTuDrawer.formData
+          };
+          await service.post(`${baseUrl}/dm/upsert`, payload);
+          this.$message.success(this.vatTuDrawer.isEdit ? 'Cập nhật thành công' : 'Thêm mới thành công');
+          this.vatTuDrawer.showForm = false;
+          await this.fetchVatTu();
+          // this.updateVatTuCount({ 
+          //   ma_kho: this.vatTuDrawer.ma_kho, 
+          //   ma_nhom: this.vatTuDrawer.ma_nhom,
+          //   mst: this.vatTuDrawer.mst,
+          //   sohieutk: this.vatTuDrawer.sohieutk
+          // });
+        } catch (e) {
+          this.$message.error('Có lỗi xảy ra khi lưu dữ liệu');
+        } finally {
+          this.vatTuDrawer.formLoading = false;
+        }
+      });
+    },
+
+    async handleDisableVatTu(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn vô hiệu hóa vật tư "${row.ten_vattu}" (${row.ma_vattu})?`,
+          'Xác nhận vô hiệu hóa',
+          {
+            confirmButtonText: 'Vô hiệu hóa',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--danger'
+          }
+        );
+        this.vatTuDrawer.loading = true;
+        const payload = {
+          table_code: 'tbldmvattu_hanghoa',
+          mst: row.mst,
+          sohieutk: row.sohieutk,
+          ma_kho: row.ma_kho,
+          ma_nhom: row.ma_nhom,
+          ma_vattu: row.ma_vattu,
+          trang_thai: 0
+        };
+        await service.post(`${baseUrl}/dm/update-status`, payload);
+        this.$message.success('Vô hiệu hóa vật tư thành công');
+        await this.fetchVatTu();
+        // this.updateVatTuCount({ 
+        //   ma_kho: this.vatTuDrawer.ma_kho, 
+        //   ma_nhom: this.vatTuDrawer.ma_nhom,
+        //   mst: this.vatTuDrawer.mst,
+        //   sohieutk: this.vatTuDrawer.sohieutk
+        // });
+      } catch (error) {
+        if (error !== 'cancel') {
+          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa vật tư');
+        }
+      } finally {
+        this.vatTuDrawer.loading = false;
+      }
+    },
+
+    async handleEnableVatTu(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn kích hoạt vật tư "${row.ten_vattu}" (${row.ma_vattu})?`,
+          'Xác nhận kích hoạt',
+          {
+            confirmButtonText: 'Kích hoạt',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--success'
+          }
+        );
+        this.vatTuDrawer.loading = true;
+        const payload = {
+          table_code: 'tbldmvattu_hanghoa',
+          mst: row.mst,
+          sohieutk: row.sohieutk,
+          ma_kho: row.ma_kho,
+          ma_nhom: row.ma_nhom,
+          ma_vattu: row.ma_vattu,
+          trang_thai: 1
+        };
+        await service.post(`${baseUrl}/dm/update-status`, payload);
+        this.$message.success('Kích hoạt vật tư thành công');
+        await this.fetchVatTu();
+        // this.updateVatTuCount({ 
+        //   ma_kho: this.vatTuDrawer.ma_kho, 
+        //   ma_nhom: this.vatTuDrawer.ma_nhom,
+        //   mst: this.vatTuDrawer.mst,
+        //   sohieutk: this.vatTuDrawer.sohieutk
+        // });
+      } catch (error) {
+        if (error !== 'cancel') {
+          this.$message.error('Có lỗi xảy ra khi kích hoạt vật tư');
+        }
+      } finally {
+        this.vatTuDrawer.loading = false;
+      }
+    },
+
+    // async updateVatTuCount(row) {
+    //   try {
+    //     const payload = {
+    //       table_code: 'tbldmvattu_hanghoa',
+    //       mst: row.mst,
+    //       sohieutk: row.sohieutk,
+    //       ma_kho: row.ma_kho,
+    //       ma_nhom: row.ma_nhom
+    //     };
+    //     // const res = await service.post(`${baseUrl}/dm/count`, payload);
+    //     const count = res.data && res.data.count ? res.data.count : 0;
+        
+    //     // Cập nhật số lượng vật tư trong danh sách nhóm hàng
+    //     const nhomIndex = this.nhomList.findIndex(n => 
+    //       n.ma_nhom === row.ma_nhom && 
+    //       n.ma_kho === row.ma_kho && 
+    //       n.mst === row.mst
+    //     );
+    //     if (nhomIndex !== -1) {
+    //       this.$set(this.nhomList[nhomIndex], 'vatTuCount', count);
+    //     }
+    //   } catch (e) {
+    //     console.error('Lỗi cập nhật số lượng vật tư:', e);
+    //     // Nếu có lỗi, set số lượng về 0
+    //     const nhomIndex = this.nhomList.findIndex(n => 
+    //       n.ma_nhom === row.ma_nhom && 
+    //       n.ma_kho === row.ma_kho && 
+    //       n.mst === row.mst
+    //     );
+    //     if (nhomIndex !== -1) {
+    //       this.$set(this.nhomList[nhomIndex], 'vatTuCount', 0);
+    //     }
+    //   }
+    // },
+
+    formatNumber(value) {
+      if (value === null || value === undefined) return '';
+      return new Intl.NumberFormat('vi-VN').format(value);
+    },
+
+    formatCurrency(value) {
+      if (value === null || value === undefined) return '';
+      return new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND'
+      }).format(value);
     }
   }
 }
@@ -386,5 +911,65 @@ export default {
   .el-table .cell {
     padding: 6px 0;
   }
+}
+
+/* Vật tư drawer styles */
+.custom-drawer-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 10px;
+  padding-left: 16px;
+}
+
+.custom-drawer-title .manhom-highlight {
+  color: #d32f2f;
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.custom-drawer-title .makho-highlight {
+  color: #1976d2;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.drawer-content-padding {
+  padding: 24px;
+}
+
+.vat-tu-count {
+  color: #d32f2f;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.action-btn-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Drawer header styles */
+:deep(.el-drawer__header) {
+  display: none !important;
+}
+
+:deep(.el-drawer__body) {
+  padding-top: 0 !important;
+}
+
+:deep(.el-drawer) {
+  padding-top: 0 !important;
+}
+
+:deep(.el-drawer__wrapper) {
+  padding-top: 0 !important;
+}
+
+:deep(.el-drawer__container) {
+  padding-top: 0 !important;
 }
 </style> 
