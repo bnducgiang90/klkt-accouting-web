@@ -50,14 +50,14 @@ export default {
         {
           prop: "maKhoNhap",
           label: "Mã Kho nhập",
-          minWidth: "100px",
+          minWidth: "80px",
           align: "center",
           onSpaceKey: true,
         },
         {
           prop: "maVatTu",
           label: "Mã vật tư",
-          minWidth: "120px",
+          minWidth: "80px",
           align: "center",
           onSpaceKey: true,
         },
@@ -72,7 +72,7 @@ export default {
         {
           prop: "soLuong",
           label: "Số lượng",
-          minWidth: "180px",
+          minWidth: "150px",
           align: "right",
           format: "currency",
           onChangeValue: true,
@@ -83,20 +83,20 @@ export default {
         {
           prop: "soLuongTheoChungTu",
           label: "Số lượng theo C.Từ",
-          minWidth: "200px",
+          minWidth: "150px",
           align: "right",
         },
         {
           prop: "donGiaBan",
           label: "Đơn giá Bán",
-          minWidth: "200px",
+          minWidth: "100px",
           align: "right",
           onChangeValue: true,
         },
         {
           prop: "thanhTien",
           label: "Thành tiền",
-          minWidth: "180px",
+          minWidth: "100px",
           align: "right  ",
         },
         {
@@ -106,7 +106,12 @@ export default {
           align: "center",
           type: "boolean",
         },
-        { prop: "chietKhau", label: "Chiết khấu", minWidth: "180px" },
+        { 
+          prop: "chietKhau", 
+          label: "Chiết khấu", 
+          minWidth: "180px",
+          onChangeValue: true
+        },
         { prop: "thanhToan", label: "Thanh toán", minWidth: "180px" },
         { prop: "ghiChu", label: "Ghi chú", minWidth: "180px" },
         {
@@ -223,9 +228,17 @@ export default {
           this.updateNhapVatTuCell({
             dongHachToan: data.row.dongHachToan, // Số dòng cần update
             column: "thanhToan", // Cột cần update
-            value: data.row["soLuong"] * data.row["donGiaBan"], // Giá trị mới
+            value: data.row["soLuong"] * data.row["donGiaBan"] - data.row["chietKhau"], // Giá trị mới
           });
         }
+      }
+      if (data.col.prop === "chietKhau") {
+        console.log("vao roi")
+        this.updateXuatVatTuCell({
+          dongHachToan: data.row.dongHachToan, // Số dòng cần update
+          column: "thanhToan", // Cột cần update
+          value: data.row["thanhTien"] - data.row["chietKhau"], // Giá trị mới
+        });
       }
     },
   },

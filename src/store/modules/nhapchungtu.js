@@ -70,15 +70,15 @@ const state = {
       "maVatTu": "15",
       "tenVatTu": "Mỡ bôi trơn castrol SPHEEROL EPL3",
       "dvt": "Kg",
-      "soLuong": "12",
-      "soLuongTheoChungTu": "12",
-      "donGiaBan": "2",
+      "soLuong": 12,
+      "soLuongTheoChungTu": 12,
+      "donGiaBan": 2,
       "thanhTien": 24,
       "khuyenMai": null,
-      "chietKhau": "2",
+      "chietKhau": 2,
       "thanhToan": 24,
       "ghiChu": "dfsd",
-      "dongHachToan": "1",
+      "dongHachToan": 1,
       "editType": "inserted"
     }
   ],
@@ -359,6 +359,15 @@ const mutations = {
           }
           delete item.originalData; // Xóa dữ liệu gốc sau khi lưu
 
+          // UPDATE LẠI STT CỦA CÁC DÒNG BÊN DƯỚI KHI DÒNG TRÊN BỊ XOÁ
+          console.log('state[stateName]:',state[stateName])
+          state[stateName].forEach(item => {
+            if (item[key] > value) {
+              item[key] -= 1;
+            }
+          });
+          //========================
+
           break;
 
         default:
@@ -372,6 +381,18 @@ const mutations = {
       editType: "raw",
     }));
   },
+  UPDATE_STT_AFTER_DELETE(state, { stateName, fieldName, startValue }) {
+    if (!state[stateName] || !Array.isArray(state[stateName])) {
+      console.warn(`State ${stateName} không tồn tại hoặc không phải là mảng`);
+      return;
+    }
+
+    state[stateName].forEach(item => {
+      if (item[fieldName] > startValue) {
+        item[fieldName] -= 1;
+      }
+    });
+  }
 };
 
 const actions = {

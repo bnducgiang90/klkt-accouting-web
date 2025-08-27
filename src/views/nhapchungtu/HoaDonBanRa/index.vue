@@ -92,7 +92,7 @@ export default {
           disableEditing: true,
           identity: true,
         },
-        { prop: "tkThueDauRa", label: "TK Thuế đầu ra", minWidth: "110px" },
+        { prop: "tkThueDauRa", label: "TK Thuế đầu ra", minWidth: "120px" },
         {
           prop: "hoaDonDt",
           label: "Hóa đơn ĐT",

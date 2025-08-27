@@ -7,6 +7,16 @@
         <button class="popup-close" @click="closePopup">Đóng</button>
       </div>
 
+      <!-- Thanh tìm kiếm -->
+      <div style="margin-bottom: 8px; text-align: right;">
+        <input
+          v-model="searchText"
+          type="text"
+          placeholder="Tìm kiếm..."
+          style="padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; width: 250px;"
+        />
+      </div>
+
       <!-- Dữ liệu có thanh cuộn -->
       <div class="popup-body">
         <table class="data-table">
@@ -23,7 +33,7 @@
           </thead>
           <tbody>
             <tr
-              v-for="(row, index) in data"
+              v-for="(row, index) in filteredData"
               :key="index"
               @dblclick="selectRow(row)"
             >
@@ -46,6 +56,7 @@
 export default {
   data() {
     return {
+      searchText: "",
       isOpen: false,
       resolve: null,
       title: "",
@@ -53,6 +64,19 @@ export default {
       columns: [],
       data: [],
     };
+  },
+  computed: {
+    filteredData() {
+      if (!this.searchText) return this.data;
+
+      const keyword = this.searchText.toLowerCase();
+      return this.data.filter((row) =>
+        this.columns.some((col) => {
+          const value = row[col.prop];
+          return value && value.toString().toLowerCase().includes(keyword);
+        })
+      );
+    },
   },
   methods: {
     openPopup({ title, width, columns, data }) {

@@ -44,20 +44,20 @@ export default {
         {
           prop: "tkXuat",
           label: "TK xuất",
-          minWidth: "110px",
+          minWidth: "80px",
           onSpaceKey: true,
         },
         {
           prop: "maKhoXuat",
           label: "Mã Kho xuất",
-          minWidth: "100px",
+          minWidth: "110px",
           align: "center",
           onSpaceKey: true,
         },
         {
           prop: "maVatTu",
           label: "Mã vật tư",
-          minWidth: "120px",
+          minWidth: "110px",
           align: "center",
           onSpaceKey: true,
         },
@@ -68,11 +68,11 @@ export default {
           align: "left",
           onSpaceKey: true,
         },
-        { prop: "dvt", label: "ĐVT", minWidth: "120px", align: "center" },
+        { prop: "dvt", label: "ĐVT", minWidth: "80px", align: "center" },
         {
           prop: "soLuong",
           label: "Số lượng",
-          minWidth: "180px",
+          minWidth: "120px",
           align: "right",
           format: "currency",
           onChangeValue: true,
@@ -83,36 +83,42 @@ export default {
         {
           prop: "soLuongTheoChungTu",
           label: "Số lượng theo C.Từ",
-          minWidth: "200px",
+          minWidth: "150px",
           align: "right",
         },
         {
           prop: "donGiaBan",
           label: "Đơn giá Bán",
-          minWidth: "200px",
+          minWidth: "120px",
           align: "right",
           onChangeValue: true,
         },
         {
           prop: "thanhTien",
           label: "Thành tiền",
-          minWidth: "180px",
+          minWidth: "130px",
           align: "right  ",
         },
         {
           prop: "khuyenMai",
           label: "Khuyến mại",
-          minWidth: "180px",
+          minWidth: "120px",
           align: "center",
           type: "boolean",
         },
-        { prop: "chietKhau", label: "Chiết khấu", minWidth: "180px" },
-        { prop: "thanhToan", label: "Thanh toán", minWidth: "180px" },
+        { 
+          prop: "chietKhau", 
+          label: "Chiết khấu", 
+          minWidth: "120px",
+          onChangeValue: true,
+          align: "right  "
+        },
+        { prop: "thanhToan", label: "Thanh toán", minWidth: "120px", align: "right  " },
         { prop: "ghiChu", label: "Ghi chú", minWidth: "180px" },
         {
           prop: "dongHachToan",
           label: "Dòng hoạch toán",
-          minWidth: "180px",
+          minWidth: "130px",
           regexPattern: "^[0-9]*$",
           maxLength: 15,
           errorMessage: "Chỉ được nhập số!",
@@ -223,9 +229,17 @@ export default {
           this.updateXuatVatTuCell({
             dongHachToan: data.row.dongHachToan, // Số dòng cần update
             column: "thanhToan", // Cột cần update
-            value: data.row["soLuong"] * data.row["donGiaBan"], // Giá trị mới
+            value: data.row["soLuong"] * data.row["donGiaBan"] - data.row["chietKhau"], // Giá trị mới
           });
         }
+      }
+      if (data.col.prop === "chietKhau") {
+        console.log("vao roi")
+        this.updateXuatVatTuCell({
+          dongHachToan: data.row.dongHachToan, // Số dòng cần update
+          column: "thanhToan", // Cột cần update
+          value: data.row["thanhTien"] - data.row["chietKhau"], // Giá trị mới
+        });
       }
     },
   },
