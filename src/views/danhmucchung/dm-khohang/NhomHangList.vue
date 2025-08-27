@@ -80,7 +80,21 @@
               </template>
             </template>
           </el-table-column>
-          <el-table-column label="Action" width="130" align="center" fixed="right">
+          <el-table-column label="Tài sản" width="120" align="center">
+            <template slot-scope="scope">
+              <template v-if="!scope.row._isAddRow">
+                <el-button 
+                  type="warning" 
+                  size="mini" 
+                  @click="openTaiSanDrawer(scope.row)"
+                  style="font-size: 11px; padding: 4px 8px;"
+                >
+                  Tài sản (<span class="tai-san-count">{{ scope.row.total_taisan || 0 }}</span>)
+                </el-button>
+              </template>
+            </template>
+          </el-table-column>
+          <el-table-column label="Action" width="200" align="center" fixed="right">
             <template slot-scope="scope">
               <template v-if="isEditing(scope.row)">
                 <el-button type="success" icon="el-icon-check" circle size="mini" @click="saveEdit(scope.row)" />
@@ -93,6 +107,7 @@
                 <el-button type="primary" icon="el-icon-edit" circle size="mini" @click="startEdit(scope.row)" />
                 <el-button type="danger" icon="el-icon-delete" circle size="mini" @click="deleteRow(scope.row)" />
                 <el-button type="success" icon="el-icon-box" circle size="mini" @click="goToAddVatTu(scope.row)" title="Thêm vật tư" />
+                <el-button type="warning" icon="el-icon-office-building" circle size="mini" @click="goToAddTaiSan(scope.row)" title="Thêm tài sản" />
               </template>
             </template>
           </el-table-column>
@@ -296,6 +311,281 @@
         </div>
       </div>
     </el-drawer>
+
+    <!-- Tài sản Drawer -->
+    <el-drawer
+      :visible.sync="taiSanDrawer.visible"
+      size="70%"
+      @close="closeTaiSanDrawer"
+    >
+      <div class="custom-drawer-title">
+        Danh sách tài sản của nhóm <span>{{ taiSanDrawer.ten_nhom }}</span>
+        (<span class="manhom-highlight">{{ taiSanDrawer.ma_nhom }}</span>)
+        - Kho: <span class="makho-highlight">{{ taiSanDrawer.ma_kho }}</span>
+      </div>
+      <div class="drawer-content-padding">
+        <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center; justify-content: space-between;">
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <el-input
+              v-model="taiSanDrawer.searchQuery"
+              placeholder="Nhập mã tài sản hoặc tên tài sản để tìm kiếm"
+              clearable
+              style="width: 300px;"
+              @keyup.enter.native="fetchTaiSan"
+            />
+            <el-button type="primary" icon="el-icon-search" @click="fetchTaiSan">Tìm kiếm</el-button>
+          </div>
+          <el-button type="success" icon="el-icon-plus" @click="openTaiSanForm(false)">Thêm mới</el-button>
+        </div>
+        
+        <el-table
+          :data="taiSanDrawer.assets"
+          border
+          style="width: 100%"
+          v-loading="taiSanDrawer.loading"
+          empty-text="Không có dữ liệu"
+          max-height="400"
+        >
+          <el-table-column prop="ma_taisan" label="Mã tài sản" width="120" />
+          <el-table-column prop="ten_taisan" label="Tên tài sản" min-width="200" />
+          <el-table-column prop="dvt" label="Đơn vị tính" width="100" />
+          <el-table-column prop="so_the" label="Số thẻ" width="120" />
+          <el-table-column prop="ngaylap_the" label="Ngày lập thẻ" width="120">
+            <template slot-scope="scope">
+              {{ formatDate(scope.row.ngaylap_the) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="hang_taisan" label="Hãng tài sản" width="120" />
+          <el-table-column prop="nam_sanxuat" label="Năm sản xuất" width="120" align="center">
+            <template slot-scope="scope">
+              {{ formatNumber(scope.row.nam_sanxuat) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="soluong_dauky" label="Số lượng đầu kỳ" width="130" align="right">
+            <template slot-scope="scope">
+              {{ formatNumber(scope.row.soluong_dauky) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="nguyengia" label="Nguyên giá" width="120" align="right">
+            <template slot-scope="scope">
+              {{ formatCurrency(scope.row.nguyengia) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="giatri_conlai" label="Giá trị còn lại" width="130" align="right">
+            <template slot-scope="scope">
+              {{ formatCurrency(scope.row.giatri_conlai) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="trang_thai" label="Trạng thái" width="100" align="center">
+            <template slot-scope="scope">
+              <el-tag :type="scope.row.trang_thai === 1 ? 'success' : 'danger'">
+                {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu hóa' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="Action" width="200">
+            <template slot-scope="scope">
+              <div class="action-btn-group">
+                <el-button type="primary" size="small" icon="el-icon-edit" @click="openTaiSanForm(true, scope.row)">Sửa</el-button>
+                <el-button 
+                  :type="scope.row.trang_thai === 1 ? 'danger' : 'warning'" 
+                  size="small" 
+                  :icon="scope.row.trang_thai === 1 ? 'el-icon-delete' : 'el-icon-check'" 
+                  @click="scope.row.trang_thai === 1 ? handleDisableTaiSan(scope.row) : handleEnableTaiSan(scope.row)"
+                >
+                  {{ scope.row.trang_thai === 1 ? 'Disable' : 'Enable' }}
+                </el-button>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+        
+        <div style="margin-top: 20px; text-align: right;">
+          <el-pagination
+            background
+            layout="prev, pager, next, jumper"
+            :current-page="taiSanDrawer.pagination.page"
+            :page-size="taiSanDrawer.pagination.pageSize"
+            :total="taiSanDrawer.pagination.total"
+            @current-change="handleTaiSanPageChange"
+          />
+        </div>
+
+        <!-- Tài sản Form Inline -->
+        <div v-if="taiSanDrawer.showForm" style="margin-top: 24px; background: #fafbfc; padding: 24px; border-radius: 8px;">
+          <el-form
+            ref="taiSanForm"
+            :model="taiSanDrawer.formData"
+            :rules="taiSanDrawer.rules"
+            label-width="140px"
+            label-position="left"
+          >
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="MST" prop="mst">
+                  <el-input v-model="taiSanDrawer.formData.mst" placeholder="MST" clearable readonly />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Số hiệu TK" prop="sohieutk">
+                  <el-input v-model="taiSanDrawer.formData.sohieutk" placeholder="Số hiệu tài khoản" clearable readonly />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Mã kho" prop="ma_kho">
+                  <el-input v-model="taiSanDrawer.formData.ma_kho" placeholder="Mã kho" clearable readonly />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Mã nhóm" prop="ma_nhom">
+                  <el-input v-model="taiSanDrawer.formData.ma_nhom" placeholder="Mã nhóm" clearable readonly />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Mã tài sản" prop="ma_taisan">
+                  <el-input v-model="taiSanDrawer.formData.ma_taisan" placeholder="Nhập mã tài sản" clearable />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Tên tài sản" prop="ten_taisan">
+                  <el-input v-model="taiSanDrawer.formData.ten_taisan" placeholder="Nhập tên tài sản" clearable />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Đơn vị tính" prop="dvt">
+                  <el-input v-model="taiSanDrawer.formData.dvt" placeholder="Nhập đơn vị tính" clearable />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Số thẻ" prop="so_the">
+                  <el-input v-model="taiSanDrawer.formData.so_the" placeholder="Nhập số thẻ" clearable />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Ngày lập thẻ" prop="ngaylap_the">
+                  <el-date-picker v-model="taiSanDrawer.formData.ngaylap_the" type="date" placeholder="Chọn ngày" style="width: 100%;" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Hãng tài sản" prop="hang_taisan">
+                  <el-input v-model="taiSanDrawer.formData.hang_taisan" placeholder="Nhập hãng tài sản" clearable />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Công suất thiết kế" prop="congsuat_thietke">
+                  <el-input v-model="taiSanDrawer.formData.congsuat_thietke" placeholder="Nhập công suất thiết kế" clearable />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Nước sản xuất" prop="nuoc_sanxuat">
+                  <el-input v-model="taiSanDrawer.formData.nuoc_sanxuat" placeholder="Nhập nước sản xuất" clearable />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Năm sản xuất" prop="nam_sanxuat">
+                  <el-input-number v-model="taiSanDrawer.formData.nam_sanxuat" :min="1900" :max="2100" style="width: 100%" placeholder="Năm sản xuất" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Hiện trạng" prop="hientrang">
+                  <el-input v-model="taiSanDrawer.formData.hientrang" placeholder="Nhập hiện trạng" clearable />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Mã đơn vị quản lý" prop="donvi_quanly">
+                  <el-input v-model="taiSanDrawer.formData.donvi_quanly" placeholder="Nhập mã đơn vị quản lý" clearable />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Tên đơn vị quản lý" prop="ten_donvi_quanly">
+                  <el-input v-model="taiSanDrawer.formData.ten_donvi_quanly" placeholder="Nhập tên đơn vị quản lý" clearable />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Nguồn vốn" prop="nguonvon">
+                  <el-input v-model="taiSanDrawer.formData.nguonvon" placeholder="Nhập nguồn vốn" clearable />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Số biên bản bàn giao" prop="so_bienban_bangiao">
+                  <el-input v-model="taiSanDrawer.formData.so_bienban_bangiao" placeholder="Nhập số biên bản bàn giao" clearable />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Ngày biên bản bàn giao" prop="ngay_bienban_bangiao">
+                  <el-date-picker v-model="taiSanDrawer.formData.ngay_bienban_bangiao" type="date" placeholder="Chọn ngày" style="width: 100%;" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Ngày điều chỉnh" prop="ngay_dieuchinh">
+                  <el-date-picker v-model="taiSanDrawer.formData.ngay_dieuchinh" type="date" placeholder="Chọn ngày" style="width: 100%;" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Lý do điều chỉnh" prop="lydo_dieuchinh">
+                  <el-input v-model="taiSanDrawer.formData.lydo_dieuchinh" placeholder="Nhập lý do điều chỉnh" clearable />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Số năm phân bổ" prop="so_nam_phanbo">
+                  <el-input-number v-model="taiSanDrawer.formData.so_nam_phanbo" :min="0" style="width: 100%" placeholder="0" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-form-item label="Kỳ phân bổ" prop="ky_phanbo">
+                  <el-input v-model="taiSanDrawer.formData.ky_phanbo" placeholder="Nhập kỳ phân bổ" clearable />
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="Trạng thái" prop="trang_thai">
+                  <el-switch v-model="taiSanDrawer.formData.trang_thai" :active-value="1" :inactive-value="0" active-text="Hoạt động" inactive-text="Ngừng hoạt động" />
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-form-item label="Số lượng đầu kỳ" prop="soluong_dauky">
+              <el-input-number v-model="taiSanDrawer.formData.soluong_dauky" :min="0" style="width: 100%" placeholder="0" />
+            </el-form-item>
+            <el-form-item label="Nguyên giá" prop="nguyengia">
+              <el-input-number v-model="taiSanDrawer.formData.nguyengia" :min="0" style="width: 100%" placeholder="0" />
+            </el-form-item>
+            <el-form-item label="Hao mòn lũy kế" prop="haomon_luyke">
+              <el-input-number v-model="taiSanDrawer.formData.haomon_luyke" :min="0" style="width: 100%" placeholder="0" />
+            </el-form-item>
+            <el-form-item label="Giá trị còn lại" prop="giatri_conlai">
+              <el-input-number v-model="taiSanDrawer.formData.giatri_conlai" :min="0" style="width: 100%" placeholder="0" />
+            </el-form-item>
+          </el-form>
+          <div style="text-align: left; margin-top: 16px;">
+            <el-button @click="closeTaiSanForm">Hủy</el-button>
+            <el-button type="primary" @click="submitTaiSanForm" :loading="taiSanDrawer.formLoading">
+              {{ taiSanDrawer.isEdit ? 'Cập nhật' : 'Thêm mới' }}
+            </el-button>
+          </div>
+        </div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 <script>
@@ -363,6 +653,67 @@ export default {
           ],
           ten_vattu: [
             { required: true, message: 'Vui lòng nhập tên vật tư', trigger: 'blur' }
+          ],
+          dvt: [
+            { required: true, message: 'Vui lòng nhập đơn vị tính', trigger: 'blur' }
+          ]
+        },
+        formLoading: false
+      },
+      taiSanDrawer: {
+        visible: false,
+        ten_nhom: '',
+        ma_nhom: '',
+        ma_kho: '',
+        mst: '',
+        sohieutk: '',
+        searchQuery: '',
+        assets: [],
+        loading: false,
+        pagination: {
+          page: 1,
+          pageSize: 10,
+          total: 0,
+        },
+        isEdit: false,
+        currentRecord: {},
+        showForm: false,
+        formData: {
+          mst: '',
+          sohieutk: '',
+          ma_kho: '',
+          ma_nhom: '',
+          ma_taisan: '',
+          ten_taisan: '',
+          dvt: '',
+          so_the: '',
+          ngaylap_the: '',
+          hang_taisan: '',
+          congsuat_thietke: '',
+          nuoc_sanxuat: '',
+          nam_sanxuat: new Date().getFullYear(),
+          hientrang: '',
+          donvi_quanly: '',
+          ten_donvi_quanly: '',
+          nguonvon: '',
+          so_bienban_bangiao: '',
+          ngay_bienban_bangiao: '',
+          ngay_dieuchinh: '',
+          lydo_dieuchinh: '',
+          soluong_dauky: 0,
+          nguyengia: 0,
+          haomon_luyke: 0,
+          giatri_conlai: 0,
+          so_nam_phanbo: 0,
+          ky_phanbo: '',
+          trang_thai: 1
+        },
+        rules: {
+          ma_taisan: [
+            { required: true, message: 'Vui lòng nhập mã tài sản', trigger: 'blur' }
+          ],
+          ten_taisan: [
+            { required: true, message: 'Vui lòng nhập tên tài sản', trigger: 'blur' }
           ],
           dvt: [
             { required: true, message: 'Vui lòng nhập đơn vị tính', trigger: 'blur' }
@@ -530,6 +881,18 @@ export default {
     goToAddVatTu(row) {
       this.$router.push({
         path: '/dm-vatu-hanghoa',
+        query: {
+          ma_kho: row.ma_kho,
+          ma_nhom: row.ma_nhom,
+          sohieutk: row.sohieutk,
+          mst: row.mst,
+          openAdd: 1
+        }
+      });
+    },
+    goToAddTaiSan(row) {
+      this.$router.push({
+        path: '/dm-taisan-hanghoa',
         query: {
           ma_kho: row.ma_kho,
           ma_nhom: row.ma_nhom,
@@ -780,6 +1143,218 @@ export default {
     //   }
     // },
 
+    // Tài sản methods
+    openTaiSanDrawer(row) {
+      this.taiSanDrawer.visible = true;
+      this.taiSanDrawer.ten_nhom = row.ten_nhom;
+      this.taiSanDrawer.ma_nhom = row.ma_nhom;
+      this.taiSanDrawer.ma_kho = row.ma_kho;
+      this.taiSanDrawer.mst = row.mst;
+      this.taiSanDrawer.sohieutk = row.sohieutk;
+      this.taiSanDrawer.searchQuery = '';
+      this.taiSanDrawer.pagination.page = 1;
+      this.taiSanDrawer.showForm = false;
+      this.fetchTaiSan();
+    },
+
+    closeTaiSanDrawer() {
+      this.taiSanDrawer.visible = false;
+      this.taiSanDrawer.showForm = false;
+    },
+
+    async fetchTaiSan() {
+      this.taiSanDrawer.loading = true;
+      try {
+        const payload = {
+          table_code: 'tbldmtaisan',
+          mst: this.taiSanDrawer.mst,
+          sohieutk: this.taiSanDrawer.sohieutk,
+          ma_kho: this.taiSanDrawer.ma_kho,
+          ma_nhom: this.taiSanDrawer.ma_nhom,
+          ma_taisan: this.taiSanDrawer.searchQuery || undefined,
+          ten_taisan: this.taiSanDrawer.searchQuery || undefined,
+          page: this.taiSanDrawer.pagination.page,
+          pageSize: this.taiSanDrawer.pagination.pageSize,
+        };
+        const res = await service.post(`${baseUrl}/dm/search`, payload);
+        this.taiSanDrawer.assets = (res.data && res.data.items) ? res.data.items : [];
+        this.taiSanDrawer.pagination.total = (res.data && res.data.total) ? res.data.total : 0;
+      } catch (e) {
+        this.taiSanDrawer.assets = [];
+        this.taiSanDrawer.pagination.total = 0;
+        this.$message.error('Lỗi tải danh sách tài sản');
+      } finally {
+        this.taiSanDrawer.loading = false;
+      }
+    },
+
+    handleTaiSanPageChange(page) {
+      this.taiSanDrawer.pagination.page = page;
+      this.fetchTaiSan();
+    },
+
+    openTaiSanForm(isEdit, row = {}) {
+      this.taiSanDrawer.isEdit = isEdit;
+      if (isEdit && row) {
+        this.taiSanDrawer.formData = {
+          mst: row.mst || '',
+          sohieutk: row.sohieutk || '',
+          ma_kho: row.ma_kho || '',
+          ma_nhom: row.ma_nhom || '',
+          ma_taisan: row.ma_taisan || '',
+          ten_taisan: row.ten_taisan || '',
+          dvt: row.dvt || '',
+          so_the: row.so_the || '',
+          ngaylap_the: row.ngaylap_the || '',
+          hang_taisan: row.hang_taisan || '',
+          congsuat_thietke: row.congsuat_thietke || '',
+          nuoc_sanxuat: row.nuoc_sanxuat || '',
+          nam_sanxuat: row.nam_sanxuat || new Date().getFullYear(),
+          hientrang: row.hientrang || '',
+          donvi_quanly: row.donvi_quanly || '',
+          ten_donvi_quanly: row.ten_donvi_quanly || '',
+          nguonvon: row.nguonvon || '',
+          so_bienban_bangiao: row.so_bienban_bangiao || '',
+          ngay_bienban_bangiao: row.ngay_bienban_bangiao || '',
+          ngay_dieuchinh: row.ngay_dieuchinh || '',
+          lydo_dieuchinh: row.lydo_dieuchinh || '',
+          soluong_dauky: row.soluong_dauky || 0,
+          nguyengia: row.nguyengia || 0,
+          haomon_luyke: row.haomon_luyke || 0,
+          giatri_conlai: row.giatri_conlai || 0,
+          so_nam_phanbo: row.so_nam_phanbo || 0,
+          ky_phanbo: row.ky_phanbo || '',
+          trang_thai: row.trang_thai != null ? row.trang_thai : 1
+        };
+      } else {
+        this.taiSanDrawer.formData = {
+          mst: this.taiSanDrawer.mst || '',
+          sohieutk: this.taiSanDrawer.sohieutk || '',
+          ma_kho: this.taiSanDrawer.ma_kho || '',
+          ma_nhom: this.taiSanDrawer.ma_nhom || '',
+          ma_taisan: '',
+          ten_taisan: '',
+          dvt: '',
+          so_the: '',
+          ngaylap_the: '',
+          hang_taisan: '',
+          congsuat_thietke: '',
+          nuoc_sanxuat: '',
+          nam_sanxuat: new Date().getFullYear(),
+          hientrang: '',
+          donvi_quanly: '',
+          ten_donvi_quanly: '',
+          nguonvon: '',
+          so_bienban_bangiao: '',
+          ngay_bienban_bangiao: '',
+          ngay_dieuchinh: '',
+          lydo_dieuchinh: '',
+          soluong_dauky: 0,
+          nguyengia: 0,
+          haomon_luyke: 0,
+          giatri_conlai: 0,
+          so_nam_phanbo: 0,
+          ky_phanbo: '',
+          trang_thai: 1
+        };
+      }
+      this.taiSanDrawer.showForm = true;
+    },
+
+    closeTaiSanForm() {
+      this.taiSanDrawer.showForm = false;
+      this.$refs.taiSanForm && this.$refs.taiSanForm.resetFields();
+    },
+
+    async submitTaiSanForm() {
+      this.$refs.taiSanForm.validate(async (valid) => {
+        if (!valid) return;
+        this.taiSanDrawer.formLoading = true;
+        try {
+          const payload = {
+            table_code: 'tbldmtaisan',
+            ...this.taiSanDrawer.formData
+          };
+          await service.post(`${baseUrl}/dm/upsert`, payload);
+          this.$message.success(this.taiSanDrawer.isEdit ? 'Cập nhật thành công' : 'Thêm mới thành công');
+          this.taiSanDrawer.showForm = false;
+          await this.fetchTaiSan();
+        } catch (e) {
+          this.$message.error('Có lỗi xảy ra khi lưu dữ liệu');
+        } finally {
+          this.taiSanDrawer.formLoading = false;
+        }
+      });
+    },
+
+    async handleDisableTaiSan(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn vô hiệu hóa tài sản "${row.ten_taisan}" (${row.ma_taisan})?`,
+          'Xác nhận vô hiệu hóa',
+          {
+            confirmButtonText: 'Vô hiệu hóa',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--danger'
+          }
+        );
+        this.taiSanDrawer.loading = true;
+        const payload = {
+          table_code: 'tbldmtaisan',
+          mst: row.mst,
+          sohieutk: row.sohieutk,
+          ma_kho: row.ma_kho,
+          ma_nhom: row.ma_nhom,
+          ma_taisan: row.ma_taisan,
+          trang_thai: 0
+        };
+        await service.post(`${baseUrl}/dm/update-status`, payload);
+        this.$message.success('Vô hiệu hóa tài sản thành công');
+        await this.fetchTaiSan();
+      } catch (error) {
+        if (error !== 'cancel') {
+          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa tài sản');
+        }
+      } finally {
+        this.taiSanDrawer.loading = false;
+      }
+    },
+
+    async handleEnableTaiSan(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn kích hoạt tài sản "${row.ten_taisan}" (${row.ma_taisan})?`,
+          'Xác nhận kích hoạt',
+          {
+            confirmButtonText: 'Kích hoạt',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--success'
+          }
+        );
+        this.taiSanDrawer.loading = true;
+        const payload = {
+          table_code: 'tbldmtaisan',
+          mst: row.mst,
+          sohieutk: row.sohieutk,
+          ma_kho: row.ma_kho,
+          ma_nhom: row.ma_nhom,
+          ma_taisan: row.ma_taisan,
+          trang_thai: 1
+        };
+        await service.post(`${baseUrl}/dm/update-status`, payload);
+        this.$message.success('Kích hoạt tài sản thành công');
+        await this.fetchTaiSan();
+      } catch (error) {
+        if (error !== 'cancel') {
+          this.$message.error('Có lỗi xảy ra khi kích hoạt tài sản');
+        }
+      } finally {
+        this.taiSanDrawer.loading = false;
+      }
+    },
+
     formatNumber(value) {
       if (value === null || value === undefined) return '';
       return new Intl.NumberFormat('vi-VN').format(value);
@@ -791,6 +1366,13 @@ export default {
         style: 'currency',
         currency: 'VND'
       }).format(value);
+    },
+
+    formatDate(value) {
+      if (!value) return '';
+      const date = new Date(value);
+      if (isNaN(date.getTime())) return '';
+      return date.toLocaleDateString('vi-VN');
     }
   }
 }
@@ -941,6 +1523,12 @@ export default {
 
 .vat-tu-count {
   color: #d32f2f;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.tai-san-count {
+  color: #f57c00;
   font-weight: bold;
   font-size: 12px;
 }

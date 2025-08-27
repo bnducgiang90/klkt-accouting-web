@@ -52,16 +52,20 @@
         <el-table-column prop="linh_vuc_kd" label="Lĩnh vực KD" min-width="150" />
         <el-table-column prop="khach_hang" label="Khách hàng" width="100" align="center">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.khach_hang ? 'success' : 'info'" size="small">
-              {{ scope.row.khach_hang ? 'Có' : 'Không' }}
-            </el-tag>
+            <el-checkbox
+              v-model="scope.row.khach_hang"
+              @change="(val) => handleCheckboxChange(scope.row, 'khach_hang', val)"
+              :disabled="scope.row.trang_thai !== 1"
+            />
           </template>
         </el-table-column>
         <el-table-column prop="nha_cungcap" label="Nhà cung cấp" width="120" align="center">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.nha_cungcap ? 'success' : 'info'" size="small">
-              {{ scope.row.nha_cungcap ? 'Có' : 'Không' }}
-            </el-tag>
+            <el-checkbox
+              v-model="scope.row.nha_cungcap"
+              @change="(val) => handleCheckboxChange(scope.row, 'nha_cungcap', val)"
+              :disabled="scope.row.trang_thai !== 1"
+            />
           </template>
         </el-table-column>
         <el-table-column prop="tai_khoan" label="Tài khoản" width="120" />
@@ -326,11 +330,45 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+
+    // Method for checkbox change
+    async handleCheckboxChange(row, field, value) {
+      try {
+        // Tạo payload giống với upsert
+        const payload = {
+          table_code: 'tbldmkhachhang',
+          id: row.id,
+          mst: row.mst,
+          mst_kh_ncc: row.mst_kh_ncc,
+          
+          khach_hang: field === 'khach_hang' ? value : row.khach_hang,
+          nha_cungcap: field === 'nha_cungcap' ? value : row.nha_cungcap,
+          update_type: 'KH-NCC'
+        };
+
+        // Gọi API update
+        await service.post(`${baseUrl}/dm/update`, payload);
+        
+        // Hiển thị thông báo thành công
+        const fieldName = field === 'khach_hang' ? 'khách hàng' : 'nhà cung cấp';
+        const action = value ? 'kích hoạt' : 'vô hiệu hóa';
+        this.$message.success(`Đã ${action} ${fieldName} thành công`);
+        
+        // Cập nhật lại dữ liệu
+        this.fetchCustomers();
+      } catch (error) {
+        console.error('Error updating checkbox:', error);
+        this.$message.error('Có lỗi xảy ra khi cập nhật trạng thái');
+        
+        // Khôi phục giá trị cũ nếu có lỗi
+        this.$set(row, field, !value);
+      }
     }
   },
   created() {
     this.fetchCustomers();
-  },
+  }
 };
 </script>
 
