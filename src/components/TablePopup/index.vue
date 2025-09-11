@@ -159,6 +159,7 @@ export default {
   position: relative;
   width: 50%;
   transition: all 0.3s ease;
+  min-height: 80vh;  /* hoặc giá trị bạn muốn giữ cố định */
 }
 
 /* Header với gradient hoặc màu nổi bật */
