@@ -3,31 +3,70 @@
     <div class="grp-nhat-ky-chung">
       <NhatKyChung :popup-ref="popupRef" />
     </div>
-    
+
     <div class="grp-table">
       <HachToan v-if="activeTab === 'TAB_HACH_TOAN'" :popup-ref="popupRef" />
       <NhapVatTu v-if="activeTab === 'TAB_NHAP_VAT_TU'" :popup-ref="popupRef" />
       <XuatVatTu v-if="activeTab === 'TAB_XUAT_VAT_TU'" :popup-ref="popupRef" />
-      <HoaDonMuaVao v-if="activeTab === 'TAB_HOA_DON_MUA_VAO'"  :popup-ref="popupRef" />
-      <HoaDonBanRa v-if="activeTab === 'TAB_HOA_DON_BAN_RA'"  :popup-ref="popupRef" />
+      <HoaDonMuaVao
+        v-if="activeTab === 'TAB_HOA_DON_MUA_VAO'"
+        :popup-ref="popupRef"
+      />
+      <HoaDonBanRa
+        v-if="activeTab === 'TAB_HOA_DON_BAN_RA'"
+        :popup-ref="popupRef"
+      />
     </div>
 
     <div class="grp-control">
       <div class="grp-control-tab">
-        <span v-if="isHachToan" @click="activeTab = 'TAB_HACH_TOAN'"  :class="{ 'active-tab': activeTab === 'TAB_HACH_TOAN' }">Hạch toán</span>
-        <span v-if="isNhapVatTu" @click="activeTab = 'TAB_NHAP_VAT_TU'" :class="{ 'active-tab': activeTab === 'TAB_NHAP_VAT_TU' }">Nhập vật tư</span>
-        <span v-if="isXuatVatTu" @click="activeTab = 'TAB_XUAT_VAT_TU'" :class="{ 'active-tab': activeTab === 'TAB_XUAT_VAT_TU' }">Xuất vật tư</span>
-        <span v-if="isHoaDonMuaVao" @click="activeTab = 'TAB_HOA_DON_MUA_VAO'" :class="{ 'active-tab': activeTab === 'TAB_HOA_DON_MUA_VAO' }">Hóa đơn mua vào</span>
-        <span v-if="isHoaDonBanRa" @click="activeTab = 'TAB_HOA_DON_BAN_RA'" :class="{ 'active-tab': activeTab === 'TAB_HOA_DON_BAN_RA' }">Hóa đơn bán ra</span>
+        <span
+          v-if="isHachToan"
+          @click="activeTab = 'TAB_HACH_TOAN'"
+          :class="{ 'active-tab': activeTab === 'TAB_HACH_TOAN' }"
+          >Hạch toán</span
+        >
+        <span
+          v-if="isNhapVatTu"
+          @click="activeTab = 'TAB_NHAP_VAT_TU'"
+          :class="{ 'active-tab': activeTab === 'TAB_NHAP_VAT_TU' }"
+          >Nhập vật tư</span
+        >
+        <span
+          v-if="isXuatVatTu"
+          @click="activeTab = 'TAB_XUAT_VAT_TU'"
+          :class="{ 'active-tab': activeTab === 'TAB_XUAT_VAT_TU' }"
+          >Xuất vật tư</span
+        >
+        <span
+          v-if="isHoaDonMuaVao"
+          @click="activeTab = 'TAB_HOA_DON_MUA_VAO'"
+          :class="{ 'active-tab': activeTab === 'TAB_HOA_DON_MUA_VAO' }"
+          >Hóa đơn mua vào</span
+        >
+        <span
+          v-if="isHoaDonBanRa"
+          @click="activeTab = 'TAB_HOA_DON_BAN_RA'"
+          :class="{ 'active-tab': activeTab === 'TAB_HOA_DON_BAN_RA' }"
+          >Hóa đơn bán ra</span
+        >
       </div>
       <div class="grp-control-button">
-        <span style="color: green; font-weight: bold;">hdr_id: {{ nhatKyChung.chungTu.hdr_id }}</span>
+        <span style="color: green; font-weight: bold"
+          >hdr_id: {{ nhatKyChung.chungTu.hdr_id }}</span
+        >
         <el-divider direction="vertical"></el-divider>
         <el-button type="info">In chứng từ</el-button>
-        <el-button type="success"  @click="sendData">Ghi</el-button>
+        <el-button type="success" @click="sendData">Ghi</el-button>
+        <el-button
+          type="success"
+          @click="initData"
+          :disabled="!nhatKyChung.chungTu || !nhatKyChung.chungTu.hdr_id"
+          >Thêm mới chứng từ</el-button
+        >
       </div>
     </div>
-    
+
     <TablePopup ref="popupRef" />
   </div>
 </template>
@@ -104,6 +143,7 @@ export default {
       "updateLoaiChungTu",
       "updateTabType",
       "sendData",
+      "initData",
     ]),
     onSubmit() {
       console.log("submit!");
@@ -202,7 +242,6 @@ export default {
 </script>
 
 <style>
-
 #page-container {
   display: flex;
   flex-direction: column;
@@ -258,7 +297,7 @@ export default {
   background-color: #ffffff;
   border-color: white #dcdfe6 #dcdfe6;
   border-top: 2px solid white; /* xóa đường viền giữa tab và nội dung */
-  color: #409EFF;
+  color: #409eff;
   font-weight: 600;
   box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1); /* đổ bóng hướng lên trên */
 }
@@ -269,10 +308,9 @@ export default {
   margin-right: 50px;
 }
 
-
 /* ===== CHỈNH KHOẢNG CÁCH GIỮA CÁC DÒNG - DÒNG TRÊN VS DÒNG DƯỚI */
 .el-form-item {
-    margin-bottom: 8px;
+  margin-bottom: 8px;
 }
 
 /* ======================MOI THEM============================ */
@@ -357,5 +395,4 @@ export default {
   border-color: #3b82f6;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
-
 </style>
