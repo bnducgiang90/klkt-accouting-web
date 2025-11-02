@@ -7,10 +7,10 @@
         <!-- Dòng 1 -->
         <el-row :gutter="10">
           <el-col :span="12">
-            <floating-input v-model="nhatKyChung.chungTu.sttgs" label="STT GS" />
+            <floating-input disabled v-model="nhatKyChung.chungTu.sttgs" label="STT GS" />
           </el-col>
           <el-col :span="12">
-            <floating-input v-model="nhatKyChung.chungTu.kyHieuSoCT" label="Ký hiệu - Số CT" />
+            <floating-input disabled v-model="nhatKyChung.chungTu.kyHieuSoCT" label="Ký hiệu - Số CT" />
           </el-col>
         </el-row>
 
