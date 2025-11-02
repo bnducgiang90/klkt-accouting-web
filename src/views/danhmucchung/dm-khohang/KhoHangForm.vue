@@ -1,18 +1,38 @@
 <template>
-  <el-dialog :visible.sync="visible" :title="isEdit ? 'Sửa kho hàng' : 'Thêm kho hàng'" width="400px" @close="$emit('close')">
+  <el-dialog
+    :visible.sync="visible"
+    :title="isEdit ? 'Sửa kho hàng' : 'Thêm kho hàng'"
+    width="520px"
+    :close-on-click-modal="false"
+    :destroy-on-close="true"
+    :append-to-body="true"
+    @close="$emit('close')"
+  >
     <el-form :model="form" :rules="rules" ref="formRef" label-width="120px" label-position="left">
-      <el-form-item label="MST" prop="mst">
-        <el-input v-model="form.mst" maxlength="15" readonly />
-      </el-form-item>
-      <el-form-item label="Số hiệu TK" prop="sohieutk">
-        <el-input v-model="form.sohieutk" maxlength="10" />
-      </el-form-item>
-      <el-form-item label="Mã kho" prop="ma_kho">
-        <el-input v-model="form.ma_kho" maxlength="10" :disabled="isEdit" />
-      </el-form-item>
-      <el-form-item label="Tên kho" prop="ten_kho">
-        <el-input v-model="form.ten_kho" maxlength="100" />
-      </el-form-item>
+      <el-row :gutter="16">
+        <el-col :span="12">
+          <el-form-item label="MST" prop="mst">
+            <el-input v-model="form.mst" maxlength="15" readonly placeholder="Mã số thuế" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="Số hiệu TK" prop="sohieutk">
+            <el-input v-model="form.sohieutk" maxlength="10" placeholder="VD: 152, 153..." />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="16">
+        <el-col :span="12">
+          <el-form-item label="Mã kho" prop="ma_kho">
+            <el-input v-model="form.ma_kho" maxlength="10" :disabled="isEdit" placeholder="Nhập mã kho" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="Tên kho" prop="ten_kho">
+            <el-input v-model="form.ten_kho" maxlength="100" placeholder="Nhập tên kho" />
+          </el-form-item>
+        </el-col>
+      </el-row>
       <el-form-item label="Trạng thái" prop="trang_thai">
         <el-switch v-model="form.trang_thai" active-value="1" inactive-value="0" active-text="Hoạt động" inactive-text="Vô hiệu" />
       </el-form-item>
@@ -22,7 +42,7 @@
       <el-button type="primary" @click="handleSubmit">Lưu</el-button>
     </div>
   </el-dialog>
-</template>
+  </template>
 <script>
 import service from '@/utils/request'
 import { getUser } from '@/utils/auth'

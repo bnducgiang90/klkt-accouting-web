@@ -8,8 +8,9 @@
           clearable
           class="search-input"
           @keyup.enter.native="handleSearch"
+          size="mini"
         />
-        <el-button type="primary" icon="el-icon-search" @click="handleSearch">Tìm kiếm</el-button>
+        <el-button type="primary" icon="el-icon-search" @click="handleSearch" size="mini">Tìm kiếm</el-button>
       </div>
       <div class="table-scroll-x">
         <el-table
@@ -20,11 +21,12 @@
           empty-text="Không có dữ liệu"
           max-height="500"
           highlight-current-row
-          @current-change="row => $emit('select', row)"
+          size="mini"
+          @current-change="handleCurrentChange"
           :row-class-name="rowClassName"
         >
           <el-table-column type="index" label="STT" width="70" align="center" :index="indexMethod" />
-          <el-table-column prop="ma_kho" label="Mã kho" width="120" align="center">
+          <el-table-column prop="ma_kho" label="Mã kho" width="200" align="center">
             <template slot-scope="scope">
               <template v-if="isEditing(scope.row)">
                 <el-input v-model="editForm.ma_kho" maxlength="10" :disabled="editMode==='edit'" size="mini" />
@@ -34,7 +36,7 @@
               </template>
             </template>
           </el-table-column>
-          <el-table-column prop="ten_kho" label="Tên kho" width="200" show-overflow-tooltip>
+          <el-table-column prop="ten_kho" label="Tên kho" min-width="200" show-overflow-tooltip>
             <template slot-scope="scope">
               <template v-if="isEditing(scope.row)">
                 <el-input v-model="editForm.ten_kho" maxlength="100" size="mini" />
@@ -44,7 +46,7 @@
               </template>
             </template>
           </el-table-column>
-          <el-table-column prop="sohieutk" label="Số hiệu TK" width="120" align="center">
+          <el-table-column prop="sohieutk" label="Số hiệu TK" width="200" align="center">
             <template slot-scope="scope">
               <template v-if="isEditing(scope.row)">
                 <el-input v-model="editForm.sohieutk" maxlength="10" size="mini" />
@@ -54,17 +56,21 @@
               </template>
             </template>
           </el-table-column>
-          <el-table-column label="Action" width="100" align="center" fixed="right">
+          <el-table-column label="Action" width="200" align="center" fixed="right">
             <template slot-scope="scope">
               <template v-if="isEditing(scope.row)">
                 <el-button type="success" icon="el-icon-check" circle size="mini" @click="saveEdit(scope.row)" />
                 <el-button type="danger" icon="el-icon-close" circle size="mini" @click="cancelEdit" />
               </template>
               <template v-else-if="scope.row._isAddRow">
-                <el-button type="success" icon="el-icon-plus" circle size="mini" @click="startAdd" />
+                <el-tooltip content="Thêm kho" placement="top">
+                  <el-button type="success" icon="el-icon-plus" circle size="mini" @click="startAdd" />
+                </el-tooltip>
               </template>
               <template v-else>
-                <el-button type="primary" icon="el-icon-edit" circle size="mini" @click="startEdit(scope.row)" />
+                <el-tooltip content="Sửa kho" placement="top">
+                  <el-button type="primary" icon="el-icon-edit" circle size="mini" @click="startEdit(scope.row)" />
+                </el-tooltip>
               </template>
             </template>
           </el-table-column>
@@ -97,6 +103,7 @@ export default {
       khoList: [],
       loading: false,
       searchQuery: '',
+      debounceTimer: null,
       pagination: {
         page: 1,
         pageSize: 10,
@@ -106,6 +113,14 @@ export default {
       editForm: {},
       editMode: '', // 'add' | 'edit'
       isAdding: false
+    }
+  },
+  watch: {
+    searchQuery() {
+      if (this.debounceTimer) clearTimeout(this.debounceTimer)
+      this.debounceTimer = setTimeout(() => {
+        this.handleSearch()
+      }, 400)
     }
   },
   computed: {
@@ -171,6 +186,8 @@ export default {
       this.editingKey = '__add__'
       this.editMode = 'add'
       this.isAdding = true
+      // Clear selection below while adding new
+      this.$emit('select', null)
       this.editForm = {
         mst: user.user.user.taxCode,
         sohieutk: '',
@@ -200,6 +217,15 @@ export default {
       this.editForm = {}
       this.editMode = ''
       this.isAdding = false
+    },
+    handleCurrentChange(row) {
+      // Khi click vào dòng thêm mới hoặc đang ở chế độ thêm -> clear bảng dưới
+      if (!row) return
+      if (row._isAddRow || this.isAdding || this.editMode === 'add') {
+        this.$emit('select', null)
+        return
+      }
+      this.$emit('select', row)
     }
   }
 }
@@ -207,6 +233,7 @@ export default {
 <style scoped>
 .khohang-list-container {
   padding: 8px 0 8px 0;
+  height: 100%;
 }
 .toolbar {
   display: flex;
@@ -215,7 +242,7 @@ export default {
   margin-bottom: 16px;
 }
 .search-input {
-  width: 260px;
+  width: 220px;
 }
 .pagination-bar {
   margin-top: 16px;
@@ -225,10 +252,10 @@ export default {
   overflow-x: auto;
 }
 .el-card {
-  border-radius: 18px;
-  box-shadow: 0 6px 32px rgba(0,0,0,0.09);
+  border-radius: 12px;
+  box-shadow: 0 3px 16px rgba(0,0,0,0.06);
   background: #fff;
-  padding: 12px 0 24px 0;
+  padding: 8px 0 12px 0;
 }
 .el-table {
   border-radius: 16px;
@@ -237,20 +264,20 @@ export default {
   box-shadow: 0 2px 12px rgba(0,0,0,0.04);
 }
 .el-table .cell {
-  padding: 8px 0;
+  padding: 6px 0;
   font-size: 12px;
 }
 .el-table th {
-  background: linear-gradient(90deg, #e3f0ff 0%, #f8fbff 100%);
-  font-weight: bold;
-  color: #1a237e;
-  font-size: 17px;
-  padding: 14px 0;
-  border-bottom: 2px solid #e3eaf2;
+  background: linear-gradient(90deg, var(--th-bg-start, #e3f0ff) 0%, var(--th-bg-end, #f8fbff) 100%);
+  font-weight: 600;
+  color: var(--brand-primary, #1a237e);
+  font-size: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid #e3eaf2;
 }
 .el-table td {
-  padding: 12px 0;
-  font-size: 16px;
+  padding: 8px 0;
+  font-size: 13px;
   color: #222;
 }
 .el-table__body tr:hover > td {
@@ -287,8 +314,8 @@ export default {
   display: block;
 }
 .el-pagination {
-  margin-top: 20px;
-  padding: 10px 0;
+  margin-top: 12px;
+  padding: 6px 0;
   background-color: #fff;
   border-top: 1px solid #ebeef5;
 }

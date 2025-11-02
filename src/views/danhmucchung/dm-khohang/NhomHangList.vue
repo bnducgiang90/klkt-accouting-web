@@ -9,8 +9,9 @@
           class="search-input"
           @keyup.enter.native="handleSearch"
           :disabled="!selectedKho"
+          size="mini"
         />
-        <el-button type="primary" icon="el-icon-search" @click="handleSearch" :disabled="!selectedKho">Tìm kiếm</el-button>
+        <el-button type="primary" icon="el-icon-search" @click="handleSearch" :disabled="!selectedKho" size="mini">Tìm kiếm</el-button>
       </div>
       <div v-if="!selectedKho" class="empty">Chọn kho hàng để xem nhóm hàng</div>
       <div v-else class="table-scroll-x">
@@ -22,6 +23,7 @@
           empty-text="Không có dữ liệu"
           max-height="500"
           highlight-current-row
+          size="mini"
           @current-change="row => $emit('select', row)"
           :row-class-name="rowClassName"
         >
@@ -69,28 +71,32 @@
           <el-table-column label="Vật tư" width="120" align="center">
             <template slot-scope="scope">
               <template v-if="!scope.row._isAddRow">
-                <el-button 
-                  type="info" 
-                  size="mini" 
-                  @click="openVatTuDrawer(scope.row)"
-                  style="font-size: 11px; padding: 4px 8px;"
-                >
-                  Vật tư (<span class="vat-tu-count">{{ scope.row.total_vattu || 0 }}</span>)
-                </el-button>
+                <el-tooltip content="Xem vật tư của nhóm" placement="top">
+                  <el-button 
+                    type="info" 
+                    size="mini" 
+                    @click="openVatTuDrawer(scope.row)"
+                    style="font-size: 11px; padding: 4px 8px;"
+                  >
+                    Vật tư (<span class="vat-tu-count">{{ scope.row.total_vattu || 0 }}</span>)
+                  </el-button>
+                </el-tooltip>
               </template>
             </template>
           </el-table-column>
           <el-table-column label="Tài sản" width="120" align="center">
             <template slot-scope="scope">
               <template v-if="!scope.row._isAddRow">
-                <el-button 
-                  type="warning" 
-                  size="mini" 
-                  @click="openTaiSanDrawer(scope.row)"
-                  style="font-size: 11px; padding: 4px 8px;"
-                >
-                  Tài sản (<span class="tai-san-count">{{ scope.row.total_taisan || 0 }}</span>)
-                </el-button>
+                <el-tooltip content="Xem tài sản của nhóm" placement="top">
+                  <el-button 
+                    type="warning" 
+                    size="mini" 
+                    @click="openTaiSanDrawer(scope.row)"
+                    style="font-size: 11px; padding: 4px 8px;"
+                  >
+                    Tài sản (<span class="tai-san-count">{{ scope.row.total_taisan || 0 }}</span>)
+                  </el-button>
+                </el-tooltip>
               </template>
             </template>
           </el-table-column>
@@ -101,13 +107,23 @@
                 <el-button type="danger" icon="el-icon-close" circle size="mini" @click="cancelEdit" />
               </template>
               <template v-else-if="scope.row._isAddRow">
-                <el-button type="success" icon="el-icon-plus" circle size="mini" @click="startAdd" />
+                <el-tooltip content="Thêm nhóm" placement="top">
+                  <el-button type="success" icon="el-icon-plus" circle size="mini" @click="startAdd" />
+                </el-tooltip>
               </template>
               <template v-else>
-                <el-button type="primary" icon="el-icon-edit" circle size="mini" @click="startEdit(scope.row)" />
-                <el-button type="danger" icon="el-icon-delete" circle size="mini" @click="deleteRow(scope.row)" />
-                <el-button type="success" icon="el-icon-box" circle size="mini" @click="goToAddVatTu(scope.row)" title="Thêm vật tư" />
-                <el-button type="warning" icon="el-icon-office-building" circle size="mini" @click="goToAddTaiSan(scope.row)" title="Thêm tài sản" />
+                <el-tooltip content="Sửa nhóm" placement="top">
+                  <el-button type="primary" icon="el-icon-edit" circle size="mini" @click="startEdit(scope.row)" />
+                </el-tooltip>
+                <el-tooltip content="Xóa nhóm" placement="top">
+                  <el-button type="danger" icon="el-icon-delete" circle size="mini" @click="deleteRow(scope.row)" />
+                </el-tooltip>
+                <el-tooltip content="Thêm vật tư" placement="top">
+                  <el-button type="success" icon="el-icon-box" circle size="mini" @click="goToAddVatTu(scope.row)" />
+                </el-tooltip>
+                <el-tooltip content="Thêm tài sản" placement="top">
+                  <el-button type="warning" icon="el-icon-office-building" circle size="mini" @click="goToAddTaiSan(scope.row)" />
+                </el-tooltip>
               </template>
             </template>
           </el-table-column>
@@ -1380,6 +1396,7 @@ export default {
 <style scoped>
 .nhomhang-list-container {
   padding: 8px 0 8px 0;
+  height: 100%;
 }
 .toolbar {
   display: flex;
@@ -1388,20 +1405,20 @@ export default {
   margin-bottom: 16px;
 }
 .search-input {
-  width: 260px;
+  width: 220px;
 }
 .pagination-bar {
-  margin-top: 16px;
+  margin-top: 12px;
   text-align: right;
 }
 .table-scroll-x {
   overflow-x: auto;
 }
 .el-card {
-  border-radius: 18px;
-  box-shadow: 0 6px 32px rgba(0,0,0,0.09);
+  border-radius: 12px;
+  box-shadow: 0 3px 16px rgba(0,0,0,0.06);
   background: #fff;
-  padding: 12px 0 24px 0;
+  padding: 8px 0 12px 0;
 }
 .el-table {
   border-radius: 16px;
@@ -1410,20 +1427,20 @@ export default {
   box-shadow: 0 2px 12px rgba(0,0,0,0.04);
 }
 .el-table .cell {
-  padding: 8px 0;
+  padding: 6px 0;
   font-size: 12px;
 }
 .el-table th {
-  background: linear-gradient(90deg, #e3f0ff 0%, #f8fbff 100%);
-  font-weight: bold;
-  color: #1a237e;
-  font-size: 17px;
-  padding: 14px 0;
-  border-bottom: 2px solid #e3eaf2;
+  background: linear-gradient(90deg, var(--th-bg-start, #e3f0ff) 0%, var(--th-bg-end, #f8fbff) 100%);
+  font-weight: 600;
+  color: var(--brand-primary, #1a237e);
+  font-size: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid #e3eaf2;
 }
 .el-table td {
-  padding: 12px 0;
-  font-size: 16px;
+  padding: 8px 0;
+  font-size: 13px;
   color: #222;
 }
 .el-table__body tr:hover > td {
