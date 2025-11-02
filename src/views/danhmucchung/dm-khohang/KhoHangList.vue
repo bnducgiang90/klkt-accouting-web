@@ -56,6 +56,21 @@
               </template>
             </template>
           </el-table-column>
+          <el-table-column prop="trang_thai" label="Trạng thái" width="120" align="center">
+            <template slot-scope="scope">
+              <template v-if="isEditing(scope.row)">
+                <el-switch v-model="editForm.trang_thai" active-value="1" inactive-value="0" />
+              </template>
+              <template v-else-if="scope.row._isAddRow">
+                <!-- Empty for add row -->
+              </template>
+              <template v-else>
+                <el-tag :type="scope.row.trang_thai === 1 ? 'success' : 'danger'" size="mini">
+                  {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Hủy kích hoạt' }}
+                </el-tag>
+              </template>
+            </template>
+          </el-table-column>
           <el-table-column label="Action" width="200" align="center" fixed="right">
             <template slot-scope="scope">
               <template v-if="isEditing(scope.row)">
@@ -70,6 +85,14 @@
               <template v-else>
                 <el-tooltip content="Sửa kho" placement="top">
                   <el-button type="primary" icon="el-icon-edit" circle size="mini" @click="startEdit(scope.row)" />
+                </el-tooltip>
+                <el-tooltip :content="scope.row.trang_thai === 1 ? 'Hủy kích hoạt kho' : 'Kích hoạt kho'" placement="top">
+                  <el-button 
+                    :type="scope.row.trang_thai === 1 ? 'danger' : 'warning'" 
+                    :icon="scope.row.trang_thai === 1 ? 'el-icon-remove' : 'el-icon-check'" 
+                    circle size="mini" 
+                    @click="scope.row.trang_thai === 1 ? handleDisableKhoHang(scope.row) : handleEnableKhoHang(scope.row)" 
+                  />
                 </el-tooltip>
               </template>
             </template>
@@ -226,6 +249,58 @@ export default {
         return
       }
       this.$emit('select', row)
+    },
+    async handleDisableKhoHang(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn Hủy kích hoạt kho hàng "${row.ten_kho}" (${row.ma_kho})?`,
+          'Xác nhận Hủy kích hoạt',
+          {
+            confirmButtonText: 'Hủy kích hoạt',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--danger'
+          }
+        )
+        const payload = {
+          table_code: 'tbldmkhohang',
+          mst: row.mst,
+          sohieutk: row.sohieutk,
+          ma_kho: row.ma_kho,
+          trang_thai: 0
+        }
+        await service.post(`${baseUrl}/dm/update-status`, payload)
+        this.$message.success('Hủy kích hoạt kho hàng thành công')
+        this.fetchKhoHang()
+      } catch (e) {
+        if (e !== 'cancel') this.$message.error('Lỗi Hủy kích hoạt kho hàng')
+      }
+    },
+    async handleEnableKhoHang(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn kích hoạt kho hàng "${row.ten_kho}" (${row.ma_kho})?`,
+          'Xác nhận kích hoạt',
+          {
+            confirmButtonText: 'Kích hoạt',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--success'
+          }
+        )
+        const payload = {
+          table_code: 'tbldmkhohang',
+          mst: row.mst,
+          sohieutk: row.sohieutk,
+          ma_kho: row.ma_kho,
+          trang_thai: 1
+        }
+        await service.post(`${baseUrl}/dm/update-status`, payload)
+        this.$message.success('Kích hoạt kho hàng thành công')
+        this.fetchKhoHang()
+      } catch (e) {
+        if (e !== 'cancel') this.$message.error('Lỗi kích hoạt kho hàng')
+      }
     }
   }
 }
@@ -242,7 +317,7 @@ export default {
   margin-bottom: 16px;
 }
 .search-input {
-  width: 220px;
+  width: 350px;
 }
 .pagination-bar {
   margin-top: 16px;

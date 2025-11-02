@@ -250,10 +250,10 @@ export default {
     async handleDisable(row) {
       try {
         await this.$confirm(
-          `Bạn có chắc chắn muốn vô hiệu hóa nhà cung cấp "${row.ten_congty}" (MST: ${row.mst})?`,
-          'Xác nhận vô hiệu hóa',
+          `Bạn có chắc chắn muốn Hủy kích hoạt nhà cung cấp "${row.ten_congty}" (MST: ${row.mst})?`,
+          'Xác nhận Hủy kích hoạt',
           {
-            confirmButtonText: 'Vô hiệu hóa',
+            confirmButtonText: 'Hủy kích hoạt',
             cancelButtonText: 'Hủy',
             type: 'warning',
             confirmButtonClass: 'el-button--danger'
@@ -267,11 +267,11 @@ export default {
           trang_thai: 0
         };
         await service.post(`${baseUrl}/dm/update-status`, payload);
-        this.$message.success('Vô hiệu hóa nhà cung cấp thành công');
+        this.$message.success('Hủy kích hoạt nhà cung cấp thành công');
         this.fetchSuppliers();
       } catch (error) {
         if (error !== 'cancel') {
-          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa nhà cung cấp');
+          this.$message.error('Có lỗi xảy ra khi Hủy kích hoạt nhà cung cấp');
         }
       } finally {
         this.loading = false;

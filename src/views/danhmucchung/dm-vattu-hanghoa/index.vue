@@ -63,7 +63,7 @@
         <el-table-column prop="trang_thai" label="Trạng thái" width="120" align="center">
           <template slot-scope="scope">
             <el-tag :type="scope.row.trang_thai === 1 ? 'success' : 'danger'">
-              {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu hóa' }}
+              {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Hủy kích hoạt' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -219,10 +219,10 @@ export default {
     async handleDisable(row) {
       try {
         await this.$confirm(
-          `Bạn có chắc chắn muốn vô hiệu hóa vật tư "${row.ten_vattu}" (${row.ma_vattu})?`,
-          'Xác nhận vô hiệu hóa',
+          `Bạn có chắc chắn muốn Hủy kích hoạt vật tư "${row.ten_vattu}" (${row.ma_vattu})?`,
+          'Xác nhận Hủy kích hoạt',
           {
-            confirmButtonText: 'Vô hiệu hóa',
+            confirmButtonText: 'Hủy kích hoạt',
             cancelButtonText: 'Hủy',
             type: 'warning',
             confirmButtonClass: 'el-button--danger'
@@ -239,11 +239,11 @@ export default {
           trang_thai: 0
         };
         await service.post(`${baseUrl}/dm/update-status`, payload);
-        this.$message.success('Vô hiệu hóa vật tư thành công');
+        this.$message.success('Hủy kích hoạt vật tư thành công');
         this.fetchMaterials();
       } catch (error) {
         if (error !== 'cancel') {
-          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa vật tư');
+          this.$message.error('Có lỗi xảy ra khi Hủy kích hoạt vật tư');
         }
       } finally {
         this.loading = false;

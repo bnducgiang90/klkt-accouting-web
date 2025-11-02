@@ -56,7 +56,7 @@ export default {
       khoFormVisible: false,
       isEditKho: false,
       editingKho: null,
-      topHeightPercent: 50,
+      topHeightPercent: 35, // Kho hàng 35%, nhóm hàng 65% vì nhóm hàng nhiều dữ liệu hơn
       dragging: false,
     }
   },
@@ -83,7 +83,7 @@ export default {
       const y = e.clientY - rect.top
       let percent = (y / rect.height) * 100
       if (percent < 20) percent = 20
-      if (percent > 80) percent = 80
+      if (percent > 70) percent = 70 // Giới hạn tối đa 70% cho kho hàng
       this.topHeightPercent = Math.round(percent)
     },
     stopDrag() {

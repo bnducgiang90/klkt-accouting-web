@@ -68,6 +68,21 @@
               </template>
             </template>
           </el-table-column>
+          <el-table-column prop="trang_thai" label="Trạng thái" width="120" align="center">
+            <template slot-scope="scope">
+              <template v-if="isEditing(scope.row)">
+                <el-switch v-model="editForm.trang_thai" active-value="1" inactive-value="0" />
+              </template>
+              <template v-else-if="scope.row._isAddRow">
+                <!-- Empty for add row -->
+              </template>
+              <template v-else>
+                <el-tag :type="scope.row.trang_thai === 1 ? 'success' : 'danger'" size="mini">
+                  {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Hủy kích hoạt' }}
+                </el-tag>
+              </template>
+            </template>
+          </el-table-column>
           <el-table-column label="Vật tư" width="120" align="center">
             <template slot-scope="scope">
               <template v-if="!scope.row._isAddRow">
@@ -115,8 +130,13 @@
                 <el-tooltip content="Sửa nhóm" placement="top">
                   <el-button type="primary" icon="el-icon-edit" circle size="mini" @click="startEdit(scope.row)" />
                 </el-tooltip>
-                <el-tooltip content="Xóa nhóm" placement="top">
-                  <el-button type="danger" icon="el-icon-delete" circle size="mini" @click="deleteRow(scope.row)" />
+                <el-tooltip :content="scope.row.trang_thai === 1 ? 'Hủy kích hoạt nhóm' : 'Kích hoạt nhóm'" placement="top">
+                  <el-button 
+                    :type="scope.row.trang_thai === 1 ? 'danger' : 'warning'" 
+                    :icon="scope.row.trang_thai === 1 ? 'el-icon-remove' : 'el-icon-check'" 
+                    circle size="mini" 
+                    @click="scope.row.trang_thai === 1 ? handleDisableNhomHang(scope.row) : handleEnableNhomHang(scope.row)" 
+                  />
                 </el-tooltip>
                 <el-tooltip content="Thêm vật tư" placement="top">
                   <el-button type="success" icon="el-icon-box" circle size="mini" @click="goToAddVatTu(scope.row)" />
@@ -191,7 +211,7 @@
           <el-table-column prop="trang_thai" label="Trạng thái" width="100" align="center">
             <template slot-scope="scope">
               <el-tag :type="scope.row.trang_thai === 1 ? 'success' : 'danger'">
-                {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu hóa' }}
+                {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Hủy kích hoạt' }}
               </el-tag>
             </template>
           </el-table-column>
@@ -395,7 +415,7 @@
           <el-table-column prop="trang_thai" label="Trạng thái" width="100" align="center">
             <template slot-scope="scope">
               <el-tag :type="scope.row.trang_thai === 1 ? 'success' : 'danger'">
-                {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu hóa' }}
+                {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Hủy kích hoạt' }}
               </el-tag>
             </template>
           </el-table-column>
@@ -865,13 +885,13 @@ export default {
       this.editMode = ''
       this.isAdding = false
     },
-    async deleteRow(row) {
+    async handleDisableNhomHang(row) {
       try {
         await this.$confirm(
-          `Bạn có chắc chắn muốn xóa nhóm hàng "${row.ten_nhom}" (${row.ma_nhom})?`,
-          'Xác nhận xóa',
+          `Bạn có chắc chắn muốn Hủy kích hoạt nhóm hàng "${row.ten_nhom}" (${row.ma_nhom})?`,
+          'Xác nhận Hủy kích hoạt',
           {
-            confirmButtonText: 'Xóa',
+            confirmButtonText: 'Hủy kích hoạt',
             cancelButtonText: 'Hủy',
             type: 'warning',
             confirmButtonClass: 'el-button--danger'
@@ -882,16 +902,41 @@ export default {
           mst: row.mst,
           sohieutk: row.sohieutk,
           ma_kho: row.ma_kho,
-          ma_nhom: row.ma_nhom
+          ma_nhom: row.ma_nhom,
+          trang_thai: 0
         }
-        await service.post(`${baseUrl}/dm/delete`, payload)
-        this.$message.success('Xóa thành công')
+        await service.post(`${baseUrl}/dm/update-status`, payload)
+        this.$message.success('Hủy kích hoạt nhóm hàng thành công')
         this.fetchNhomHang()
-        
-        // Cập nhật số lượng vật tư sau khi xóa nhóm hàng
-        // this.updateVatTuCount(row);
       } catch (e) {
-        if (e !== 'cancel') this.$message.error('Lỗi xóa nhóm hàng')
+        if (e !== 'cancel') this.$message.error('Lỗi Hủy kích hoạt nhóm hàng')
+      }
+    },
+    async handleEnableNhomHang(row) {
+      try {
+        await this.$confirm(
+          `Bạn có chắc chắn muốn kích hoạt nhóm hàng "${row.ten_nhom}" (${row.ma_nhom})?`,
+          'Xác nhận kích hoạt',
+          {
+            confirmButtonText: 'Kích hoạt',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--success'
+          }
+        )
+        const payload = {
+          table_code: 'tbldmnhomhang',
+          mst: row.mst,
+          sohieutk: row.sohieutk,
+          ma_kho: row.ma_kho,
+          ma_nhom: row.ma_nhom,
+          trang_thai: 1
+        }
+        await service.post(`${baseUrl}/dm/update-status`, payload)
+        this.$message.success('Kích hoạt nhóm hàng thành công')
+        this.fetchNhomHang()
+      } catch (e) {
+        if (e !== 'cancel') this.$message.error('Lỗi kích hoạt nhóm hàng')
       }
     },
     goToAddVatTu(row) {
@@ -1047,10 +1092,10 @@ export default {
     async handleDisableVatTu(row) {
       try {
         await this.$confirm(
-          `Bạn có chắc chắn muốn vô hiệu hóa vật tư "${row.ten_vattu}" (${row.ma_vattu})?`,
-          'Xác nhận vô hiệu hóa',
+          `Bạn có chắc chắn muốn Hủy kích hoạt vật tư "${row.ten_vattu}" (${row.ma_vattu})?`,
+          'Xác nhận Hủy kích hoạt',
           {
-            confirmButtonText: 'Vô hiệu hóa',
+            confirmButtonText: 'Hủy kích hoạt',
             cancelButtonText: 'Hủy',
             type: 'warning',
             confirmButtonClass: 'el-button--danger'
@@ -1067,7 +1112,7 @@ export default {
           trang_thai: 0
         };
         await service.post(`${baseUrl}/dm/update-status`, payload);
-        this.$message.success('Vô hiệu hóa vật tư thành công');
+        this.$message.success('Hủy kích hoạt vật tư thành công');
         await this.fetchVatTu();
         // this.updateVatTuCount({ 
         //   ma_kho: this.vatTuDrawer.ma_kho, 
@@ -1077,7 +1122,7 @@ export default {
         // });
       } catch (error) {
         if (error !== 'cancel') {
-          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa vật tư');
+          this.$message.error('Có lỗi xảy ra khi Hủy kích hoạt vật tư');
         }
       } finally {
         this.vatTuDrawer.loading = false;
@@ -1306,10 +1351,10 @@ export default {
     async handleDisableTaiSan(row) {
       try {
         await this.$confirm(
-          `Bạn có chắc chắn muốn vô hiệu hóa tài sản "${row.ten_taisan}" (${row.ma_taisan})?`,
-          'Xác nhận vô hiệu hóa',
+          `Bạn có chắc chắn muốn Hủy kích hoạt tài sản "${row.ten_taisan}" (${row.ma_taisan})?`,
+          'Xác nhận Hủy kích hoạt',
           {
-            confirmButtonText: 'Vô hiệu hóa',
+            confirmButtonText: 'Hủy kích hoạt',
             cancelButtonText: 'Hủy',
             type: 'warning',
             confirmButtonClass: 'el-button--danger'
@@ -1326,11 +1371,11 @@ export default {
           trang_thai: 0
         };
         await service.post(`${baseUrl}/dm/update-status`, payload);
-        this.$message.success('Vô hiệu hóa tài sản thành công');
+        this.$message.success('Hủy kích hoạt tài sản thành công');
         await this.fetchTaiSan();
       } catch (error) {
         if (error !== 'cancel') {
-          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa tài sản');
+          this.$message.error('Có lỗi xảy ra khi Hủy kích hoạt tài sản');
         }
       } finally {
         this.taiSanDrawer.loading = false;
@@ -1405,7 +1450,7 @@ export default {
   margin-bottom: 16px;
 }
 .search-input {
-  width: 220px;
+  width: 350px;
 }
 .pagination-bar {
   margin-top: 12px;

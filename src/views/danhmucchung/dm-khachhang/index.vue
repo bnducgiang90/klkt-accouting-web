@@ -266,10 +266,10 @@ export default {
     async handleDisable(row) {
       try {
         await this.$confirm(
-          `Bạn có chắc chắn muốn vô hiệu hóa khách hàng "${row.ten_congty}" (${row.mst})?`,
-          'Xác nhận vô hiệu hóa',
+          `Bạn có chắc chắn muốn Hủy kích hoạt khách hàng "${row.ten_congty}" (${row.mst})?`,
+          'Xác nhận Hủy kích hoạt',
           {
-            confirmButtonText: 'Vô hiệu hóa',
+            confirmButtonText: 'Hủy kích hoạt',
             cancelButtonText: 'Hủy',
             type: 'warning',
             confirmButtonClass: 'el-button--danger'
@@ -285,12 +285,12 @@ export default {
         };
         
         await service.post(`${baseUrl}/dm/update-status`, payload);
-        this.$message.success('Vô hiệu hóa khách hàng thành công');
+        this.$message.success('Hủy kích hoạt khách hàng thành công');
         this.fetchCustomers();
       } catch (error) {
         if (error !== 'cancel') {
           console.error('Error disabling customer:', error);
-          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa khách hàng');
+          this.$message.error('Có lỗi xảy ra khi Hủy kích hoạt khách hàng');
         }
       } finally {
         this.loading = false;
@@ -352,7 +352,7 @@ export default {
         
         // Hiển thị thông báo thành công
         const fieldName = field === 'khach_hang' ? 'khách hàng' : 'nhà cung cấp';
-        const action = value ? 'kích hoạt' : 'vô hiệu hóa';
+        const action = value ? 'kích hoạt' : 'Hủy kích hoạt';
         this.$message.success(`Đã ${action} ${fieldName} thành công`);
         
         // Cập nhật lại dữ liệu

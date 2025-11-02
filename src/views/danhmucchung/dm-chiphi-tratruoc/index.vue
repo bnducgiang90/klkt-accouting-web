@@ -287,10 +287,10 @@ export default {
     async handleDisable(row) {
       try {
         await this.$confirm(
-          `Bạn có chắc chắn muốn vô hiệu hóa chi phí trả trước "${row.ten_taisan}" (${row.ma_taisan})?`,
-          'Xác nhận vô hiệu hóa',
+          `Bạn có chắc chắn muốn Hủy kích hoạt chi phí trả trước "${row.ten_taisan}" (${row.ma_taisan})?`,
+          'Xác nhận Hủy kích hoạt',
           {
-            confirmButtonText: 'Vô hiệu hóa',
+            confirmButtonText: 'Hủy kích hoạt',
             cancelButtonText: 'Hủy',
             type: 'warning',
             confirmButtonClass: 'el-button--danger'
@@ -308,12 +308,12 @@ export default {
         };
         
         await service.post(`${baseUrl}/dm/update-status`, payload);
-        this.$message.success('Vô hiệu hóa chi phí trả trước thành công');
+        this.$message.success('Hủy kích hoạt chi phí trả trước thành công');
         this.fetchChiphiTratruoc();
       } catch (error) {
         if (error !== 'cancel') {
           console.error('Error disabling chiphi tratruoc:', error);
-          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa chi phí trả trước');
+          this.$message.error('Có lỗi xảy ra khi Hủy kích hoạt chi phí trả trước');
         }
       } finally {
         this.loading = false;

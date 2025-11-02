@@ -9,6 +9,17 @@ export function login(data) {
   })
 }
 
+export function getFinancialYears(mst) {
+  return request({
+    url: baseUrl + '/auth/years',
+    method: 'post',
+    data: {
+      tax_code: mst,
+      table_code: 'tbldmnamtaichinh'
+    }
+  })
+}
+
 export function getInfo(token) {
   return request({
     url: '/vue-element-admin/user/info',

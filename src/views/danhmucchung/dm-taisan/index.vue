@@ -53,7 +53,7 @@
         <el-table-column prop="trang_thai" label="Trạng thái" width="100" align="center">
           <template slot-scope="scope">
             <el-tag :type="scope.row.trang_thai === 1 ? 'success' : 'danger'">
-              {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu' }}
+              {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Hủy kích hoạt' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -275,10 +275,10 @@ export default {
     async handleDisable(row) {
       try {
         await this.$confirm(
-          `Bạn có chắc chắn muốn vô hiệu hóa tài khoản chi tiết "${row.ma_nhom}" (${row.ma_taisan})?`,
-          'Xác nhận vô hiệu hóa',
+          `Bạn có chắc chắn muốn Hủy kích hoạt hóa tài khoản chi tiết "${row.ma_nhom}" (${row.ma_taisan})?`,
+          'Xác nhận Hủy kích hoạt hóa',
           {
-            confirmButtonText: 'Vô hiệu hóa',
+            confirmButtonText: 'Hủy kích hoạt hóa',
             cancelButtonText: 'Hủy',
             type: 'warning',
             confirmButtonClass: 'el-button--danger'
@@ -295,12 +295,12 @@ export default {
           trang_thai: 0
         };
         await service.post(`${baseUrl}/dm/update-status`, payload);
-        this.$message.success('Vô hiệu tài sản thành công');
+        this.$message.success('Hủy kích hoạt tài sản thành công');
         this.fetchAssets();
       } catch (error) {
         if (error !== 'cancel') {
           console.error('Error disabling account detail:', error);
-          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa tài sản');
+          this.$message.error('Có lỗi xảy ra khi Hủy kích hoạt hóa tài sản');
         }
       } finally {
         this.loading = false;

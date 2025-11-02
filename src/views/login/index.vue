@@ -3,8 +3,49 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">Đăng nhập hệ thống</h3>
       </div>
+
+      <el-form-item prop="mst">
+        <span class="svg-container">
+          <svg-icon icon-class="guide" />
+        </span>
+        <el-input
+          ref="mst"
+          v-model="loginForm.mst"
+          placeholder="Mã số thuế"
+          name="mst"
+          type="text"
+          tabindex="1"
+          autocomplete="on"
+          @blur="handleMstBlur"
+        />
+      </el-form-item>
+
+      <el-form-item prop="financialYear" class="financial-year-item">
+        <span class="svg-container">
+          <svg-icon icon-class="date" />
+        </span>
+        <el-select
+          v-model="loginForm.financialYear"
+          placeholder="Chọn năm tài chính"
+          class="financial-year-select"
+          style="width: 85%;"
+          :loading="loadingFinancialYears"
+          :disabled="!loginForm.mst || loginForm.mst.trim() === ''"
+          clearable
+        >
+          <el-option
+            v-for="year in financialYears"
+            :key="year.value"
+            :label="year.label"
+            :value="year.value"
+          />
+        </el-select>
+        <span class="show-dropdown-icon" :class="{ 'is-disabled': !loginForm.mst || loginForm.mst.trim() === '' }">
+          <i class="el-icon-arrow-down"></i>
+        </span>
+      </el-form-item>
 
       <el-form-item prop="username">
         <span class="svg-container">
@@ -16,7 +57,7 @@
           placeholder="Username"
           name="username"
           type="text"
-          tabindex="1"
+          tabindex="3"
           autocomplete="on"
         />
       </el-form-item>
@@ -33,7 +74,7 @@
             :type="passwordType"
             placeholder="Password"
             name="password"
-            tabindex="2"
+            tabindex="4"
             autocomplete="on"
             @keyup.native="checkCapslock"
             @blur="capsTooltip = false"
@@ -76,6 +117,7 @@
 <script>
 import { validUsername } from '@/utils/validate'
 import SocialSign from './components/SocialSignin'
+import { getFinancialYears } from '@/api/user'
 
 export default {
   name: 'Login',
@@ -95,18 +137,38 @@ export default {
         callback()
       }
     }
+    const validateMst = (rule, value, callback) => {
+      if (!value || value.trim() === '') {
+        callback(new Error('Vui lòng nhập mã số thuế'))
+      } else {
+        callback()
+      }
+    }
+    const validateFinancialYear = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('Vui lòng chọn năm tài chính'))
+      } else {
+        callback()
+      }
+    }
     return {
       loginForm: {
+        mst: '',
+        financialYear: null,
         username: 'admin@openx.com',
         password: '123456'
       },
       loginRules: {
+        mst: [{ required: true, trigger: 'blur', validator: validateMst }],
+        financialYear: [{ required: true, trigger: 'change', validator: validateFinancialYear }],
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       passwordType: 'password',
       capsTooltip: false,
       loading: false,
+      loadingFinancialYears: false,
+      financialYears: [],
       showDialog: false,
       redirect: undefined,
       otherQuery: {}
@@ -122,13 +184,15 @@ export default {
         }
       },
       immediate: true
-    }
+    },
   },
   created() {
     // window.addEventListener('storage', this.afterQRScan)
   },
   mounted() {
-    if (this.loginForm.username === '') {
+    if (this.loginForm.mst === '') {
+      this.$refs.mst.focus()
+    } else if (this.loginForm.username === '') {
       this.$refs.username.focus()
     } else if (this.loginForm.password === '') {
       this.$refs.password.focus()
@@ -183,6 +247,72 @@ export default {
         }
         return acc
       }, {})
+    },
+    async fetchFinancialYears(mst) {
+      if (!mst || mst.trim() === '') {
+        this.financialYears = []
+        this.loginForm.financialYear = null
+        return
+      }
+
+      this.loadingFinancialYears = true
+      try {
+        const response = await getFinancialYears(mst.trim())
+        // Xử lý response từ API /dm/search với payload {mst}
+        // Format response: [{namtc:2021, "ten_namtc":"Năm 2021"}]
+        let years = []
+        if (response && response.data && response.data.items) {
+          years = response.data.items
+        } else if (response && response.data) {
+          years = response.data
+        } else if (Array.isArray(response)) {
+          years = response
+        } else if (response && response.items) {
+          years = response.items
+        }
+        
+        // Format dữ liệu năm tài chính theo format: [{namtc:2021, "ten_namtc":"Năm 2021"}]
+        this.financialYears = years.map(year => {
+          if (typeof year === 'object') {
+            // Xử lý format: {namtc: 2021, ten_namtc: "Năm 2021"}
+            return {
+              value: year.namtc || year.nam_tai_chinh || year.value || year.id,
+              label: year.ten_namtc || year.ten_nam_tai_chinh || year.label || year.name || `Năm ${year.namtc || year.nam_tai_chinh || year.value || year.id}`
+            }
+          }
+          // Nếu là số hoặc chuỗi, tạo object
+          return {
+            value: year,
+            label: `Năm ${year}`
+          }
+        })
+        
+        // Tự động chọn năm có giá trị lớn nhất nếu chưa có selection
+        if (this.financialYears.length > 0) {
+          if (!this.loginForm.financialYear || !this.financialYears.find(y => y.value === this.loginForm.financialYear)) {
+            const maxYear = Math.max(...this.financialYears.map(y => Number(y.value)))
+            this.loginForm.financialYear = maxYear
+          }
+        } else {
+          this.loginForm.financialYear = null
+        }
+      } catch (error) {
+        console.error('Error fetching financial years:', error)
+        this.$message.error('Không thể tải danh sách năm tài chính')
+        this.financialYears = []
+        this.loginForm.financialYear = null
+      } finally {
+        this.loadingFinancialYears = false
+      }
+    },
+    handleMstBlur() {
+      // Gọi API khi MST blur và có giá trị
+      if (this.loginForm.mst && this.loginForm.mst.trim() !== '') {
+        this.fetchFinancialYears(this.loginForm.mst)
+      } else {
+        this.financialYears = []
+        this.loginForm.financialYear = null
+      }
     }
     // afterQRScan() {
     //   if (e.key === 'x-admin-oauth-code') {
@@ -231,6 +361,7 @@ $cursor: #fff;
       background: transparent;
       border: 0px;
       -webkit-appearance: none;
+      appearance: none;
       border-radius: 0px;
       padding: 12px 5px 12px 15px;
       color: $light_gray;
@@ -242,6 +373,31 @@ $cursor: #fff;
         -webkit-text-fill-color: $cursor !important;
       }
     }
+  }
+
+  .el-select.financial-year-select {
+    display: inline-block;
+    height: 47px;
+    width: 85%;
+    position: relative;
+
+    .el-input {
+      height: 47px;
+      position: relative;
+      
+      input {
+        background: transparent;
+        border: 0px;
+        padding: 12px 40px 12px 15px;
+        color: $light_gray;
+        height: 47px;
+        caret-color: $cursor;
+      }
+    }
+  }
+
+  .financial-year-item .el-select.financial-year-select .el-input .el-input__suffix {
+    display: none !important;
   }
 
   .el-form-item {
@@ -313,6 +469,64 @@ $light_gray:#eee;
     color: $dark_gray;
     cursor: pointer;
     user-select: none;
+  }
+
+  .show-dropdown-icon {
+    position: absolute;
+    right: 10px;
+    top: 7px;
+    font-size: 16px;
+    color: $dark_gray;
+    cursor: pointer;
+    user-select: none;
+    pointer-events: none;
+
+    &.is-disabled {
+      opacity: 0.5;
+    }
+  }
+
+  .financial-year-item {
+    position: relative;
+
+    .el-select.financial-year-select {
+      ::v-deep .el-input {
+        position: relative !important;
+
+        .el-input__suffix {
+          right: 10px !important;
+          left: auto !important;
+          position: absolute !important;
+          top: 7px !important;
+          bottom: auto !important;
+          height: auto !important;
+          line-height: 1 !important;
+          width: auto !important;
+          transform: none !important;
+          margin: 0 !important;
+          padding: 0 !important;
+
+          .el-input__suffix-inner {
+            pointer-events: all;
+            line-height: 1 !important;
+            display: inline-block !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            
+            .el-select__caret {
+              color: $dark_gray !important;
+              font-size: 16px !important;
+              cursor: pointer !important;
+              line-height: 1 !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              transform: none !important;
+              display: inline-block !important;
+            }
+          }
+        }
+      }
+    }
   }
 
   .thirdparty-button {

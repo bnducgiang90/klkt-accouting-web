@@ -169,7 +169,7 @@
         <el-table-column prop="trang_thai" label="Trạng thái" width="100" align="center">
           <template slot-scope="scope">
             <el-tag :type="scope.row.trang_thai === 1 ? 'success' : 'danger'">
-              {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu' }}
+              {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Hủy kích hoạt' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -292,7 +292,7 @@
           <el-table-column prop="trang_thai" label="Trạng thái" width="100" align="center">
             <template slot-scope="scope">
               <el-tag :type="scope.row.trang_thai === 1 ? 'success' : 'danger'">
-                {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Vô hiệu' }}
+                {{ scope.row.trang_thai === 1 ? 'Hoạt động' : 'Hủy kích hoạt' }}
               </el-tag>
             </template>
           </el-table-column>
@@ -381,7 +381,7 @@
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item label="Trạng thái" prop="trang_thai">
-                  <el-switch v-model="subAccountDrawer.formData.trang_thai" :active-value="1" :inactive-value="0" active-text="Hoạt động" inactive-text="Vô hiệu" />
+                  <el-switch v-model="subAccountDrawer.formData.trang_thai" :active-value="1" :inactive-value="0" active-text="Hoạt động" inactive-text="Hủy kích hoạt" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -590,10 +590,10 @@ export default {
     async handleDisable(row) {
       try {
         await this.$confirm(
-          `Bạn có chắc chắn muốn vô hiệu hóa tài khoản "${row.ten_tk}" (${row.sohieutk})?`,
-          'Xác nhận vô hiệu hóa',
+          `Bạn có chắc chắn muốn Hủy kích hoạt tài khoản "${row.ten_tk}" (${row.sohieutk})?`,
+          'Xác nhận Hủy kích hoạt',
           {
-            confirmButtonText: 'Vô hiệu hóa',
+            confirmButtonText: 'Hủy kích hoạt',
             cancelButtonText: 'Hủy',
             type: 'warning',
             confirmButtonClass: 'el-button--danger'
@@ -609,12 +609,12 @@ export default {
         };
         
         await service.post(`${baseUrl}/dm/update-status`, payload);
-        this.$message.success('Vô hiệu hóa tài khoản thành công');
+        this.$message.success('Hủy kích hoạt tài khoản thành công');
         this.fetchAccounts();
       } catch (error) {
         if (error !== 'cancel') {
           console.error('Error disabling account:', error);
-          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa tài khoản');
+          this.$message.error('Có lỗi xảy ra khi Hủy kích hoạt tài khoản');
         }
       } finally {
         this.loading = false;
@@ -804,10 +804,10 @@ export default {
     async handleDisableSubAccount(row) {
       try {
         await this.$confirm(
-          `Bạn có chắc chắn muốn vô hiệu hóa tài khoản chi tiết "${row.ten_chitiet}" (${row.ma_chitiet})?`,
-          'Xác nhận vô hiệu hóa',
+          `Bạn có chắc chắn muốn Hủy kích hoạt tài khoản chi tiết "${row.ten_chitiet}" (${row.ma_chitiet})?`,
+          'Xác nhận Hủy kích hoạt',
           {
-            confirmButtonText: 'Vô hiệu hóa',
+            confirmButtonText: 'Hủy kích hoạt',
             cancelButtonText: 'Hủy',
             type: 'warning',
             confirmButtonClass: 'el-button--danger'
@@ -822,14 +822,14 @@ export default {
           trang_thai: 0
         };
         await service.post(`${baseUrl}/dm/update-status`, payload);
-        this.$message.success('Vô hiệu hóa tài khoản chi tiết thành công');
+        this.$message.success('Hủy kích hoạt tài khoản chi tiết thành công');
         this.fetchSubAccounts();
         await this.fetchSubAccountBalance(); // Lấy tổng mới nhất
         await this.updateMainAccountBalance(); // Cập nhật số dư tài khoản cha
         this.fetchAccounts();
       } catch (error) {
         if (error !== 'cancel') {
-          this.$message.error('Có lỗi xảy ra khi vô hiệu hóa tài khoản chi tiết');
+          this.$message.error('Có lỗi xảy ra khi Hủy kích hoạt tài khoản chi tiết');
         }
       } finally {
         this.subAccountDrawer.loading = false;
